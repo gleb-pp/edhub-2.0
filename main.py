@@ -1,37 +1,41 @@
 from fastapi import FastAPI, HTTPException
 app = FastAPI()
 
-lst = ['привет', 'тимур', 'как', 'твои', 'дела', 'hello', 'world', 'pip', 'install', 'python']
+courses = [{'course_id': 0, 'name' : 'Intro to Python'}, {'course_id': 1, 'name' : 'Probability & Statistics'}]
+users = [{'email': 'tamaro4ka1973@gmail.com', 'name': 'Tamara Udina'}, {'email': 'i.ivanov@gmail.com', 'name': 'Ivan Ivanov'}]
+user_course = [{'email' : 'tamaro4ka1973@gmail.com', 'course_id' : 0}, {'email' : 'tamaro4ka1973@gmail.com', 'course_id' : 1}, {'email' : 'i.ivanov@gmail.com', 'course_id' : 0}]
+materials = [{'course_id' : 0, 'material_id' : 0, 'title' : 'Important Announcement', 'describtion' : 'Attention! The lesson on June 7 is cancelled!'}]
 
-# @app.get('/')
-# async def landing():
-#     return {"This is": "the landing page!",
-#             "JSON by": "Timur",
-#             "recommended": [
-#                 "/hello",
-#                 "/goodbye?times=5&excl=3"
-#             ]}
+@app.get('/available_courses')
+async def available_courses(user_email):
 
-# @app.get("/hello")
-# async def hello():
-#     return {'Hello': 'World',
-#             'recommended': "Go touch grass"}
+    # looking for user with such email
+    found = False
+    for user in users:
+        if user['email'] == user_email:
+            found = True
+    if not found:
+        raise HTTPException(status_code=400, detail="No user with provided email")
+    
+    # finding available courses
+    res = [uc['course_id'] for uc in user_course if uc['email'] == user_email]
+    return res
 
-@app.get('/get')
-async def goodbye(index):
-    ind = int(index)
-    assert ind >= 0 and ind <= 9 and float(index) == int(index)
-    return {'lst_num': lst[ind]}
+@app.get('/get_course_feed')
+async def get_course_feed(course_id):
+    
+    # looking for course with such course_id
+    found = False
+    for course in courses:
+        if course['course_id'] == course_id:
+            found = True
+    if not found:
+        raise HTTPException(status_code=400, detail="No course with provided ID")
+    
+    # finding course feed
+    res = [(mat['course_id'], mat['material_id']) for mat in materials if mat['course_id'] == course_id]
+    return res
 
-@app.get('/len')
-async def lenn():
-    return len(lst)
-
-@app.post("/register")
-async def register(email: str, password: str):
-    if len(password) < 8:
-        raise HTTPException(status_code=400, detail="Password too short")
-    if email in users_db:
-        raise HTTPException(status_code=400, detail="Email already exists")
-    users_db[email] = {"password": password}  # Хэшируйте пароль на практике!
-    return {"message": "User created"}
+@app.get('/get_course_feed')
+async def get_course_feed(course_id):
+    
