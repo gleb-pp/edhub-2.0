@@ -1,24 +1,69 @@
 from fastapi import FastAPI, HTTPException
 from database import db
-from datetime import datetime
 
 app = FastAPI()
 db_connection = db()
 db_cursor = db_connection.cursor()
 
-# courses = [{'course_id': '0', 'name' : 'Intro to Python'}, {'course_id': '1', 'name' : 'Probability & Statistics'}]
-# users = [{'email': 'tamaro4ka1973@gmail.com', 'name': 'Tamara Udina'}, {'email': 'i.ivanov@gmail.com', 'name': 'Ivan Ivanov'}]
-# user_course = [{'email' : 'tamaro4ka1973@gmail.com', 'course_id' : '0'}, {'email' : 'tamaro4ka1973@gmail.com', 'course_id' : '1'}, {'email' : 'i.ivanov@gmail.com', 'course_id' : '0'}]
-# materials = [{'course_id' : '0', 'material_id' : '0', 'creation_date' : '06-07-2025 17:31:25', 'title' : 'Important Announcement', 'description' : 'Attention! The lesson on June 7 is cancelled!'}]
+# checking whether the user exists in our LMS
+async def check_user_exists(user_email: str):
+    db_cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE email = %s)", (user_email,))
+    user_exists = (await db_cursor.fetchone())[0]
+    if not user_exists:
+        raise HTTPException(status_code=400, detail="No user with provided email")
+    return True
+
+# checking whether the course exists in our LMS
+async def check_course_exists(course_id: str):
+    db_cursor.execute("SELECT EXISTS(SELECT 1 FROM courses WHERE courseid = %s)", (course_id,))
+    course_exists = db_cursor.fetchone()[0]
+    if not course_exists:
+        raise HTTPException(status_code=400, detail="No course with provided ID")
+    return True
+
+# checking whether the user has access to course in our LMS
+async def check_course_access(user_email: str, course_id: str, is_teacher : bool = False, is_student : bool = False, is_parent : bool = False):
+
+    if is_teacher:
+        db_cursor.execute("SELECT EXISTS(SELECT 1 FROM teaches WHERE email = %s AND courseid = %s)", (user_email, course_id))
+        has_access = (await db_cursor.fetchone())[0]
+        if not has_access:
+            raise HTTPException(status_code=403, detail="User is not teacher at this course")
+        return True
+    
+    elif is_student:
+        db_cursor.execute("SELECT EXISTS(SELECT 1 FROM student_at WHERE email = %s AND courseid = %s)", (user_email, course_id))
+        has_access = (await db_cursor.fetchone())[0]
+        if not has_access:
+            raise HTTPException(status_code=403, detail="User is not student at this course")
+        return True
+
+    elif is_parent:
+        db_cursor.execute("SELECT EXISTS(SELECT 1 FROM parent_of_at_course WHERE parentemail = %s AND courseid = %s)", (user_email, course_id))
+        has_access = (await db_cursor.fetchone())[0]
+        if not has_access:
+            raise HTTPException(status_code=403, detail="User is not parent at this course")
+        return True
+
+    else:
+        db_cursor.execute("""
+            SELECT EXISTS(
+                SELECT 1 FROM teaches WHERE email = %s AND courseid = %s
+                UNION
+                SELECT 1 FROM student_at WHERE email = %s AND courseid = %s
+                UNION
+                SELECT 1 FROM parent_of_at_course WHERE parentemail = %s AND courseid = %s
+            )
+        """, (user_email, course_id, user_email, course_id, user_email, course_id))
+        has_access = (await db_cursor.fetchone())[0]
+        if not has_access:
+            raise HTTPException(status_code=403, detail="User does not have access to this course")
+        return True
 
 @app.get('/available_courses')
 async def available_courses(user_email: str):
 
-    # looking for user with such email
-    db_cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE email = %s)", (user_email,))
-    user_exists = db_cursor.fetchone()[0]
-    if not user_exists:
-        raise HTTPException(status_code=400, detail="No user with provided email")
+    await check_user_exists(user_email, db_cursor)
     
     # finding available courses
     db_cursor.execute("""
@@ -32,13 +77,11 @@ async def available_courses(user_email: str):
     return result
 
 @app.get('/get_course_feed')
-async def get_course_feed(course_id: str):
-    
-    # looking for course with such course_id
-    db_cursor.execute("SELECT EXISTS(SELECT 1 FROM courses WHERE courseid = %s)", (course_id,))
-    course_exists = db_cursor.fetchone()[0]
-    if not course_exists:
-        raise HTTPException(status_code=400, detail="No course with provided ID")
+async def get_course_feed(course_id: str, user_email: str):
+
+    await check_user_exists(user_email)
+    await check_course_exists(course_id)
+    await check_course_access(user_email=user_email, course_id=course_id)
     
     # finding course feed
     db_cursor.execute("SELECT courseid, matid FROM course_materials WHERE courseid = %s", (course_id,))
@@ -47,13 +90,17 @@ async def get_course_feed(course_id: str):
     return res
 
 @app.get('/get_material')
-async def get_material(course_id : str, material_id : str):
+async def get_material(course_id : str, material_id : str, user_email: str):
+
+    await check_user_exists(user_email)
+    await check_course_exists(course_id)
+    await check_course_access(user_email=user_email, course_id=course_id)
 
     db_cursor.execute("""
         SELECT courseid, matid, timeadded, name, description
         FROM course_materials
         WHERE courseid = %s AND matid = %s
-    """, (str(course_id), material_id))
+    """, (course_id, material_id))
 
     material = db_cursor.fetchone()
     if not material:
@@ -68,6 +115,80 @@ async def get_material(course_id : str, material_id : str):
     }]
     return res
 
-# @app.post('/create_material')
-# async def create_material(course_id, title, description):
-#     materials.append({'course_id' : course_id, 'material_id' : 5, 'creation_date' : str(datetime.now()), 'title' : title, 'description' : description})
+@app.post('/create_material')
+async def create_material(course_id : str, title : str, description : str, user_email: str):
+
+    await check_user_exists(user_email)
+    await check_course_exists(course_id)
+    await check_course_access(user_email=user_email, course_id=course_id, is_teacher=True)
+    
+    db_cursor.execute(
+        "INSERT INTO course_materials (courseid, name, description, timeadded) VALUES (%s, %s, %s, now()) RETURNING matid",
+        (course_id, title, description)
+    )
+    material_id = db_cursor.fetchone()[0]
+    db_connection.commit()
+    return {"material_id": material_id}
+
+@app.post('/create_course')
+async def create_course(title : str, user_email : str):
+
+    await check_user_exists(user_email)
+
+    # create course
+    db_cursor.execute(
+        "INSERT INTO courses (courseid, name, timecreated) VALUES (gen_random_uuid(), %s, now()) RETURNING courseid",
+        (title)
+    )
+    course_id = db_cursor.fetchone()[0]
+    db_connection.commit()
+
+    # add teacher
+    db_cursor.execute(
+        "INSERT INTO teaches (email, courseid) VALUES (%s, %s)",
+        (user_email, course_id)
+    )
+    db_connection.commit()
+
+    return {"course_id": course_id}
+
+@app.post('/invite_student')
+async def invite_student(course_id : str, teacher_email : str, student_email : str):
+    
+    await check_user_exists(teacher_email)
+    await check_user_exists(student_email)
+    await check_course_exists(course_id)
+    await check_course_access(user_email=teacher_email, course_id=course_id, is_teacher=True)
+
+    # invite student
+    db_cursor.execute(
+        "INSERT INTO student_at (email, courseid) VALUES (%s, %s)",
+        (student_email, course_id)
+    )
+    db_connection.commit()
+
+    return {"course_id": course_id, 'student_email' : student_email, 'success' : True}
+
+@app.post('/invite_parent')
+async def invite_parent(course_id : str, teacher_email : str, student_email : str, parent_email : str):
+
+    await check_user_exists(teacher_email)
+    await check_user_exists(student_email)
+    await check_user_exists(parent_email)
+    await check_course_exists(course_id)
+    await check_course_access(user_email=teacher_email, course_id=course_id, is_teacher=True)
+    await check_course_access(user_email=student_email, course_id=course_id, is_student=True)
+
+    # invite parent
+    db_cursor.execute(
+        "INSERT INTO parent_of_at_course (parentemail, studentemail, courseid) VALUES (%s, %s, %s)",
+        (parent_email, student_email, course_id)
+    )
+    db_connection.commit()
+
+    return {"course_id": course_id, 'student_email' : student_email, 'parent_email' : parent_email, 'success' : True}
+
+# TODO : авторизация
+# @app.post('/create_user')
+# async def create_user(name : str):
+#     return 0
