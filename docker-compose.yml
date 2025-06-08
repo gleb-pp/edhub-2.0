@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     build: ./database
@@ -10,6 +12,27 @@ services:
       - edhub_postgres_storage:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      - edhub-network
+
+  backend:
+    build: ./backend
+    restart: always
+    ports:
+      - 8000:8000
+    environment:
+      - DATABASE_URL=postgresql://postgres:12345678@db:5432/edhub
+    depends_on:
+      - db
+    networks:
+      - edhub-network
 
 volumes:
   edhub_postgres_storage:
+
+networks:
+  edhub-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
