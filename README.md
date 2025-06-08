@@ -1,4 +1,4 @@
-# What is EdHub?
+## What is EdHub?
 
 
 We want to develop a Learning Management System for interaction between teachers, students, and parents. Teachers can create courses, upload materials, create homework assignments, see student submissions, grade them based on criteria, and calculate course grade.
@@ -10,7 +10,7 @@ Most existing LMSs have limited functionality and cannot be fully utilized in sc
 
 On the other hand, a lot of LMSs have awkward website design and cause difficulties in everyday use. For example, [Moodle](https://moodle.org/) platform has extensive functionality, but is too complex to use, requiring clear customization and support at the IT administrator level. In addition, the platform has no assessment of assignments by criteria.
 
-# 🚀 How to Launch
+## 🚀 How to Launch
 
 ### Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) (v20.10+)
@@ -35,20 +35,7 @@ docker-compose up --build
 | **Backend**   | http://localhost:8000         | 8000  | FastAPI application       |
 | **Database**  | postgresql://db:5432/edhub    | 5432  | PostgreSQL container      |
 
-### API Documentation
-
-#### Available Endpoints:
-```http
-GET /available_courses?user_email={email}
-POST /create_course
-Content-Type: application/json
-{
-  "title": "Course Name",
-  "user_email": "teacher@example.com"
-}
-```
-
-#### Full Endpoint List:
+### API Endpoints
 | Method | Endpoint           | Description                          |
 |--------|--------------------|--------------------------------------|
 | GET    | `/available_courses` | List accessible courses for user    |
