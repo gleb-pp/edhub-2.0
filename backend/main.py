@@ -1,5 +1,15 @@
 from fastapi import FastAPI, HTTPException
-from database import db
+import psycopg2
+
+def db():
+    conn = psycopg2.connect(
+        dbname="edhub",
+        user="postgres",
+        password="12345678",
+        host="localhost",
+        port="5432"
+    )
+    return conn
 
 app = FastAPI()
 db_connection = db()
