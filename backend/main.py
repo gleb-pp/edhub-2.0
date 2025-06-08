@@ -1,17 +1,9 @@
-from fastapi import FastAPI, HTTPException
-import psycopg2
-
-def db():
-    conn = psycopg2.connect(
-        dbname="edhub",
-        user="postgres",
-        password="12345678",
-        host="db",
-        port="5432"
-    )
-    return conn
+from fastapi import FastAPI, HTTPException, Depends
+from auth import get_current_user, router as auth_router, db
 
 app = FastAPI()
+app.include_router(auth_router)
+
 db_connection = db()
 db_cursor = db_connection.cursor()
 
@@ -71,9 +63,7 @@ def check_course_access(user_email: str, course_id: str, is_teacher : bool = Fal
         return True
 
 @app.get('/available_courses')
-async def available_courses(user_email: str):
-
-    check_user_exists(user_email)
+async def available_courses(user_email: str = Depends(get_current_user)):
     
     # finding available courses
     db_cursor.execute("""
@@ -87,9 +77,8 @@ async def available_courses(user_email: str):
     return result
 
 @app.get('/get_course_feed')
-async def get_course_feed(course_id: str, user_email: str):
+async def get_course_feed(course_id: str, user_email: str = Depends(get_current_user)):
 
-    check_user_exists(user_email)
     check_course_exists(course_id)
     check_course_access(user_email=user_email, course_id=course_id)
     
@@ -100,9 +89,8 @@ async def get_course_feed(course_id: str, user_email: str):
     return res
 
 @app.get('/get_material')
-async def get_material(course_id : str, material_id : str, user_email: str):
+async def get_material(course_id : str, material_id : str, user_email: str = Depends(get_current_user)):
 
-    check_user_exists(user_email)
     check_course_exists(course_id)
     check_course_access(user_email=user_email, course_id=course_id)
 
@@ -126,9 +114,8 @@ async def get_material(course_id : str, material_id : str, user_email: str):
     return res
 
 @app.post('/create_material')
-async def create_material(course_id : str, title : str, description : str, user_email: str):
+async def create_material(course_id : str, title : str, description : str, user_email: str = Depends(get_current_user)):
 
-    check_user_exists(user_email)
     check_course_exists(course_id)
     check_course_access(user_email=user_email, course_id=course_id, is_teacher=True)
     
@@ -141,9 +128,7 @@ async def create_material(course_id : str, title : str, description : str, user_
     return {"material_id": material_id}
 
 @app.post('/create_course')
-async def create_course(title : str, user_email : str):
-
-    check_user_exists(user_email)
+async def create_course(title : str, user_email: str = Depends(get_current_user)):
 
     # create course
     db_cursor.execute(
@@ -163,10 +148,8 @@ async def create_course(title : str, user_email : str):
     return {"course_id": course_id}
 
 @app.post('/invite_student')
-async def invite_student(course_id : str, teacher_email : str, student_email : str):
-    
-    check_user_exists(teacher_email)
-    check_user_exists(student_email)
+async def invite_student(course_id : str, student_email : str, teacher_email: str = Depends(get_current_user)):
+
     check_course_exists(course_id)
     check_course_access(user_email=teacher_email, course_id=course_id, is_teacher=True)
 
@@ -186,9 +169,8 @@ async def invite_student(course_id : str, teacher_email : str, student_email : s
     return {"course_id": course_id, 'student_email' : student_email, 'success' : True}
 
 @app.post('/invite_parent')
-async def invite_parent(course_id : str, teacher_email : str, student_email : str, parent_email : str):
+async def invite_parent(course_id : str, student_email : str, parent_email : str, teacher_email: str = Depends(get_current_user)):
 
-    check_user_exists(teacher_email)
     check_user_exists(student_email)
     check_user_exists(parent_email)
     check_course_exists(course_id)
@@ -209,8 +191,3 @@ async def invite_parent(course_id : str, teacher_email : str, student_email : st
     db_connection.commit()
 
     return {"course_id": course_id, 'student_email' : student_email, 'parent_email' : parent_email, 'success' : True}
-
-# TODO : авторизация
-# @app.post('/create_user')
-# async def create_user(name : str):
-#     return 0
