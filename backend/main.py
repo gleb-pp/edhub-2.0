@@ -1,11 +1,21 @@
 from fastapi import FastAPI, HTTPException, Depends
 from auth import get_current_user, router as auth_router, db
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 app.include_router(auth_router)
 
 db_connection = db()
 db_cursor = db_connection.cursor()
+
+# TODO: прописать конкретные доверенные источники
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # checking whether the user exists in our LMS
 def check_user_exists(user_email: str):
