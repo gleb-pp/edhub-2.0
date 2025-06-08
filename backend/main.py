@@ -20,7 +20,7 @@ def check_user_exists(user_email: str):
     db_cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE email = %s)", (user_email,))
     user_exists = db_cursor.fetchone()[0]
     if not user_exists:
-        raise HTTPException(status_code=400, detail="No user with provided email")
+        raise HTTPException(status_code=404, detail="No user with provided email")
     return True
 
 # checking whether the course exists in our LMS
@@ -28,7 +28,7 @@ def check_course_exists(course_id: str):
     db_cursor.execute("SELECT EXISTS(SELECT 1 FROM courses WHERE courseid = %s)", (course_id,))
     course_exists = db_cursor.fetchone()[0]
     if not course_exists:
-        raise HTTPException(status_code=400, detail="No course with provided ID")
+        raise HTTPException(status_code=404, detail="No course with provided ID")
     return True
 
 # checking whether the user has access to course in our LMS
@@ -65,7 +65,7 @@ def check_course_access(user_email: str, course_id: str, is_teacher : bool = Fal
                 SELECT 1 FROM parent_of_at_course WHERE parentemail = %s AND courseid = %s
             )
         """, (user_email, course_id, user_email, course_id, user_email, course_id))
-        has_access = db_cursor.fetchone[0]
+        has_access = db_cursor.fetchone()[0]
         if not has_access:
             raise HTTPException(status_code=403, detail="User does not have access to this course")
         return True
