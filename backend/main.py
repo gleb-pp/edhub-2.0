@@ -170,6 +170,12 @@ async def invite_student(course_id : str, teacher_email : str, student_email : s
     check_course_exists(course_id)
     check_course_access(user_email=teacher_email, course_id=course_id, is_teacher=True)
 
+    # check if the student already enrolled to course
+    db_cursor.execute("SELECT EXISTS(SELECT 1 FROM student_at WHERE email = %s AND courseid = %s)", (student_email, course_id))
+    student_enrolled = db_cursor.fetchone()[0]
+    if student_enrolled:
+        raise HTTPException(status_code=404, detail="Student already enrolled at this course")
+
     # invite student
     db_cursor.execute(
         "INSERT INTO student_at (email, courseid) VALUES (%s, %s)",
@@ -188,6 +194,12 @@ async def invite_parent(course_id : str, teacher_email : str, student_email : st
     check_course_exists(course_id)
     check_course_access(user_email=teacher_email, course_id=course_id, is_teacher=True)
     check_course_access(user_email=student_email, course_id=course_id, is_student=True)
+
+    # check if the parent already assigned to the course with the student
+    db_cursor.execute("SELECT EXISTS(SELECT 1 FROM parent_of_at_course WHERE parentemail = %s AND studentemail = %s AND courseid = %s)", (parent_email, student_email, course_id))
+    parent_assigned = db_cursor.fetchone()[0]
+    if parent_assigned:
+        raise HTTPException(status_code=404, detail="Parent already assigned to this student at this course")
 
     # invite parent
     db_cursor.execute(
