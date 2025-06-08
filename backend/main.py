@@ -148,7 +148,7 @@ async def create_course(title : str, user_email : str):
     # create course
     db_cursor.execute(
         "INSERT INTO courses (courseid, name, timecreated) VALUES (gen_random_uuid(), %s, now()) RETURNING courseid",
-        (title)
+        (title,)
     )
     course_id = db_cursor.fetchone()[0]
     db_connection.commit()
