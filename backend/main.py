@@ -365,7 +365,7 @@ async def remove_parent(course_id : str, student_email : str, parent_email : str
     )
     db_connection.commit()
 
-    return {"course_id": course_id, "student_email" : student_email, "success" : True}
+    return {"course_id": course_id, "student_email" : student_email, "parent_email" : parent_email, "success" : True}
 
 @app.get('/get_course_teachers')
 async def get_course_teachers(course_id: str, user_email: str = Depends(get_current_user)):
