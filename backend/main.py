@@ -95,97 +95,6 @@ async def available_courses(user_email: str = Depends(get_current_user)):
     result = [{'course_id': row[0]} for row in db_cursor.fetchall()]
     return result
 
-@app.get('/get_course_feed')
-async def get_course_feed(course_id: str, user_email: str = Depends(get_current_user)):
-
-    check_course_exists(course_id)
-    check_course_access(user_email=user_email, course_id=course_id)
-    
-    # finding course feed
-    db_cursor.execute("SELECT courseid, matid FROM course_materials WHERE courseid = %s", (course_id,))
-    course_feed = db_cursor.fetchall()
-    res = [{'course_id': str(mat[0]), 'material_id': mat[1]} for mat in course_feed]
-    return res
-
-# TODO: pull-request на Release of version with authorization
-
-@app.get('/get_course_info')
-async def get_course_info(course_id : str, user_email: str = Depends(get_current_user)):
-
-    check_course_exists(course_id)
-    check_course_access(user_email=user_email, course_id=course_id)
-
-    db_cursor.execute("""
-        SELECT c.courseid, c.name, c.timecreated, COUNT(sa.email) AS student_count
-        FROM courses c
-        LEFT JOIN student_at sa ON c.courseid = sa.courseid
-        WHERE c.courseid = %s
-        GROUP BY c.courseid
-    """, (course_id,))
-
-    course = db_cursor.fetchone()
-    if not course:
-        raise HTTPException(status_code=404, detail="Course not found")
-    
-    res = [{
-        "course_id": str(course[0]),
-        "title": course[1],
-        "creation_date": course[2].strftime("%m-%d-%Y %H:%M:%S"),
-        "number_of_students" : course[3]
-    }]
-    return res
-
-@app.get('/get_material')
-async def get_material(course_id : str, material_id : str, user_email: str = Depends(get_current_user)):
-
-    check_course_exists(course_id)
-    check_course_access(user_email=user_email, course_id=course_id)
-
-    db_cursor.execute("""
-        SELECT courseid, matid, timeadded, name, description
-        FROM course_materials
-        WHERE courseid = %s AND matid = %s
-    """, (course_id, material_id))
-
-    material = db_cursor.fetchone()
-    if not material:
-        raise HTTPException(status_code=404, detail="Material not found")
-    
-    res = [{
-        "course_id": str(material[0]),
-        "material_id": material[1],
-        "creation_date": material[2].strftime("%m-%d-%Y %H:%M:%S"),
-        "title": material[3],
-        "description": material[4]
-    }]
-    return res
-
-@app.post('/create_material')
-async def create_material(course_id : str, title : str, description : str, user_email: str = Depends(get_current_user)):
-
-    check_course_exists(course_id)
-    check_course_access(user_email=user_email, course_id=course_id, is_teacher=True)
-    
-    db_cursor.execute(
-        "INSERT INTO course_materials (courseid, name, description, timeadded) VALUES (%s, %s, %s, now()) RETURNING matid",
-        (course_id, title, description)
-    )
-    material_id = db_cursor.fetchone()[0]
-    db_connection.commit()
-    return {"material_id": material_id}
-
-@app.post('/remove_material')
-async def remove_material(course_id : str, material_id : str, user_email: str = Depends(get_current_user)):
-    check_material_exists(course_id, material_id)
-    check_course_access(user_email=user_email, course_id=course_id, is_teacher=True)
-    
-    db_cursor.execute(
-        "DELETE FROM course_materials WHERE courseid = %s AND matid = %s",
-        (course_id, material_id)
-    )
-    db_connection.commit()
-    return {"course_id": course_id, "material_id": material_id, "success": True}
-
 @app.post('/create_course')
 async def create_course(title : str, user_email: str = Depends(get_current_user)):
 
@@ -248,6 +157,117 @@ async def remove_course(course_id : str, user_email: str = Depends(get_current_u
     db_connection.commit()
 
     return {"course_id": course_id, "success" : True}
+
+@app.get('/get_course_info')
+async def get_course_info(course_id : str, user_email: str = Depends(get_current_user)):
+
+    check_course_exists(course_id)
+    check_course_access(user_email=user_email, course_id=course_id)
+
+    db_cursor.execute("""
+        SELECT c.courseid, c.name, c.timecreated, COUNT(sa.email) AS student_count
+        FROM courses c
+        LEFT JOIN student_at sa ON c.courseid = sa.courseid
+        WHERE c.courseid = %s
+        GROUP BY c.courseid
+    """, (course_id,))
+
+    course = db_cursor.fetchone()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    
+    res = [{
+        "course_id": str(course[0]),
+        "title": course[1],
+        "creation_date": course[2].strftime("%m-%d-%Y %H:%M:%S"),
+        "number_of_students" : course[3]
+    }]
+    return res
+
+@app.get('/get_course_feed')
+async def get_course_feed(course_id: str, user_email: str = Depends(get_current_user)):
+
+    check_course_exists(course_id)
+    check_course_access(user_email=user_email, course_id=course_id)
+    
+    # finding course feed
+    db_cursor.execute("SELECT courseid, matid FROM course_materials WHERE courseid = %s", (course_id,))
+    course_feed = db_cursor.fetchall()
+    res = [{'course_id': str(mat[0]), 'material_id': mat[1]} for mat in course_feed]
+    return res
+
+@app.post('/create_material')
+async def create_material(course_id : str, title : str, description : str, user_email: str = Depends(get_current_user)):
+
+    check_course_exists(course_id)
+    check_course_access(user_email=user_email, course_id=course_id, is_teacher=True)
+    
+    db_cursor.execute(
+        "INSERT INTO course_materials (courseid, name, description, timeadded) VALUES (%s, %s, %s, now()) RETURNING matid",
+        (course_id, title, description)
+    )
+    material_id = db_cursor.fetchone()[0]
+    db_connection.commit()
+    return {"material_id": material_id}
+
+@app.post('/remove_material')
+async def remove_material(course_id : str, material_id : str, user_email: str = Depends(get_current_user)):
+    check_material_exists(course_id, material_id)
+    check_course_access(user_email=user_email, course_id=course_id, is_teacher=True)
+    
+    db_cursor.execute(
+        "DELETE FROM course_materials WHERE courseid = %s AND matid = %s",
+        (course_id, material_id)
+    )
+    db_connection.commit()
+    return {"course_id": course_id, "material_id": material_id, "success": True}
+
+@app.get('/get_material')
+async def get_material(course_id : str, material_id : str, user_email: str = Depends(get_current_user)):
+
+    check_course_exists(course_id)
+    check_course_access(user_email=user_email, course_id=course_id)
+
+    db_cursor.execute("""
+        SELECT courseid, matid, timeadded, name, description
+        FROM course_materials
+        WHERE courseid = %s AND matid = %s
+    """, (course_id, material_id))
+
+    material = db_cursor.fetchone()
+    if not material:
+        raise HTTPException(status_code=404, detail="Material not found")
+    
+    res = [{
+        "course_id": str(material[0]),
+        "material_id": material[1],
+        "creation_date": material[2].strftime("%m-%d-%Y %H:%M:%S"),
+        "title": material[3],
+        "description": material[4]
+    }]
+    return res
+
+@app.get('/get_enrolled_students')
+async def get_enrolled_students(course_id: str, user_email: str = Depends(get_current_user)):
+
+    check_course_exists(course_id)
+    check_course_access(user_email=user_email, course_id=course_id)
+
+    # finding enrolled students
+    db_cursor.execute("""
+        SELECT 
+            s.email,
+            u.publicname,
+            ARRAY_AGG(p.parentemail) AS parent_emails
+        FROM student_at s
+        JOIN users u ON s.email = u.email
+        LEFT JOIN parent_of_at_course p ON s.email = p.studentemail AND s.courseid = p.courseid
+        WHERE s.courseid = %s
+        GROUP BY s.email, u.publicname
+    """, (course_id,))
+    students = db_cursor.fetchall()
+    res = [{'student_email': st[0], 'student_name' : st[1], 'parent_email' : st[2] if st[2] and st[2][0] is not None else []} for st in students]
+    return res
 
 @app.post('/invite_student')
 async def invite_student(course_id : str, student_email : str, teacher_email: str = Depends(get_current_user)):
@@ -346,6 +366,26 @@ async def remove_parent(course_id : str, student_email : str, parent_email : str
     db_connection.commit()
 
     return {"course_id": course_id, "student_email" : student_email, "success" : True}
+
+@app.get('/get_course_teachers')
+async def get_course_teachers(course_id: str, user_email: str = Depends(get_current_user)):
+
+    check_course_exists(course_id)
+    check_course_access(user_email=user_email, course_id=course_id)
+
+    # finding assigned teachers
+    db_cursor.execute("""
+        SELECT 
+            t.email,
+            u.publicname
+        FROM teaches t
+        JOIN users u ON t.email = u.email
+        WHERE t.courseid = %s
+        GROUP BY t.email, u.publicname
+    """, (course_id,))
+    teachers = db_cursor.fetchall()
+    res = [{'teacher_email': tch[0], 'teacher_name' : tch[1]} for tch in teachers]
+    return res
 
 @app.post('/invite_teacher')
 async def invite_teacher(course_id : str, new_teacher_email : str, teacher_email: str = Depends(get_current_user)):
