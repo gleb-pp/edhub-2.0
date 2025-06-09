@@ -35,12 +35,16 @@ def check_course_exists(course_id: str):
 
 # checking whether the course exists in our LMS
 def check_material_exists(course_id: str, material_id : str):
-    check_course_exists(course_id)
-    db_cursor.execute("SELECT EXISTS(SELECT 1 FROM course_materials WHERE courseid = %s AND matid = %s)", (course_id, material_id))
-    material_exists = db_cursor.fetchone()[0]
-    if not material_exists:
-        raise HTTPException(status_code=404, detail="No material with provided ID in this course")
-    return True
+    try:
+        material_id = int(material_id)
+        check_course_exists(course_id)
+        db_cursor.execute("SELECT EXISTS(SELECT 1 FROM course_materials WHERE courseid = %s AND matid = %s  )", (course_id, material_id))
+        material_exists = db_cursor.fetchone()[0]
+        if not material_exists:
+            raise HTTPException(status_code=404, detail="No material with provided ID in this course")
+        return True
+    except:
+        raise HTTPException(status_code=404, detail="Material ID should be integer")
 
 # checking whether the user has access to course in our LMS
 def check_course_access(user_email: str, course_id: str, is_teacher : bool = False, is_student : bool = False, is_parent : bool = False):
