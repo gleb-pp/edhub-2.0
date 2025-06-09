@@ -1,0 +1,34 @@
+from pydantic import BaseModel
+from typing import List
+
+class Success(BaseModel):
+    success: bool
+
+class User(BaseModel):
+    email: str
+    name : str
+
+class StudentParent(BaseModel):
+    student_email: str
+    student_name: str
+    parent_emails: List[str]
+
+class CourseId(BaseModel):
+    course_id: str
+
+class Course(BaseModel):
+    course_id: str
+    title: str
+    creation_date: str
+    number_of_students: int
+
+class MaterialID(BaseModel):
+    course_id: str
+    material_id: str
+
+class Material(BaseModel):
+    course_id: str
+    material_id: str
+    creation_date: str
+    title: str
+    description: str
