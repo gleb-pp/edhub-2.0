@@ -8,11 +8,6 @@ class User(BaseModel):
     email: str
     name : str
 
-class StudentParent(BaseModel):
-    student_email: str
-    student_name: str
-    parent_emails: List[str]
-
 class CourseId(BaseModel):
     course_id: str
 

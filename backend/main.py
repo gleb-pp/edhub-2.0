@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from auth import get_current_user, router as auth_router, get_db
 from fastapi.middleware.cors import CORSMiddleware
-import classes
+import json_classes
 from typing import List
 
 app = FastAPI()
@@ -84,7 +84,7 @@ def check_course_access(db_cursor, user_email: str, course_id: str, is_teacher :
             raise HTTPException(status_code=403, detail="User does not have access to this course")
         return True
 
-@app.get('/available_courses', response_model=List[classes.CourseId])
+@app.get('/available_courses', response_model=List[json_classes.CourseId])
 async def available_courses(user_email: str = Depends(get_current_user)):
 
     # finding available courses
@@ -101,7 +101,7 @@ async def available_courses(user_email: str = Depends(get_current_user)):
     result = [{'course_id': crs[0]} for crs in courses]
     return result
 
-@app.post('/create_course', response_model=classes.CourseId)
+@app.post('/create_course', response_model=json_classes.CourseId)
 async def create_course(title : str, user_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -118,7 +118,7 @@ async def create_course(title : str, user_email: str = Depends(get_current_user)
 
     return {"course_id": course_id}
 
-@app.post('/remove_course', response_model=classes.Success)
+@app.post('/remove_course', response_model=json_classes.Success)
 async def remove_course(course_id : str, user_email: str = Depends(get_current_user)):
 
     with get_db() as (db_conn, db_cursor):
@@ -150,7 +150,7 @@ async def remove_course(course_id : str, user_email: str = Depends(get_current_u
 
     return {"success" : True}
 
-@app.get('/get_course_info', response_model=classes.Course)
+@app.get('/get_course_info', response_model=json_classes.Course)
 async def get_course_info(course_id : str, user_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -180,7 +180,7 @@ async def get_course_info(course_id : str, user_email: str = Depends(get_current
     }
     return res
 
-@app.get('/get_course_feed', response_model=List[classes.MaterialID])
+@app.get('/get_course_feed', response_model=List[json_classes.MaterialID])
 async def get_course_feed(course_id: str, user_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -197,7 +197,7 @@ async def get_course_feed(course_id: str, user_email: str = Depends(get_current_
     res = [{'course_id': str(mat[0]), 'material_id': mat[1]} for mat in course_feed]
     return res
 
-@app.post('/create_material', response_model=classes.MaterialID)
+@app.post('/create_material', response_model=json_classes.MaterialID)
 async def create_material(course_id : str, title : str, description : str, user_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -217,7 +217,7 @@ async def create_material(course_id : str, title : str, description : str, user_
 
     return {"course_id": course_id, "material_id": material_id}
 
-@app.post('/remove_material', response_model=classes.Success)
+@app.post('/remove_material', response_model=json_classes.Success)
 async def remove_material(course_id : str, material_id : str, user_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -233,7 +233,7 @@ async def remove_material(course_id : str, material_id : str, user_email: str = 
 
     return {"success": True}
 
-@app.get('/get_material', response_model=classes.Material)
+@app.get('/get_material', response_model=json_classes.Material)
 async def get_material(course_id : str, material_id : str, user_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -262,7 +262,7 @@ async def get_material(course_id : str, material_id : str, user_email: str = Dep
     }
     return res
 
-@app.get('/get_enrolled_students', response_model=classes.StudentParent)
+@app.get('/get_enrolled_students', response_model=List[json_classes.User])
 async def get_enrolled_students(course_id: str, user_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -276,20 +276,17 @@ async def get_enrolled_students(course_id: str, user_email: str = Depends(get_cu
         db_cursor.execute("""
             SELECT 
                 s.email,
-                u.publicname,
-                ARRAY_AGG(p.parentemail) AS parent_emails
+                u.publicname
             FROM student_at s
             JOIN users u ON s.email = u.email
-            LEFT JOIN parent_of_at_course p ON s.email = p.studentemail AND s.courseid = p.courseid
             WHERE s.courseid = %s
-            GROUP BY s.email, u.publicname
         """, (course_id,))
         students = db_cursor.fetchall()
 
-    res = [{'student_email': st[0], 'student_name' : st[1], 'parent_emails' : st[2] if st[2] and st[2][0] is not None else []} for st in students]
+    res = [{'email': st[0], 'name' : st[1]} for st in students]
     return res
 
-@app.post('/invite_student', response_model=classes.Success)
+@app.post('/invite_student', response_model=json_classes.Success)
 async def invite_student(course_id : str, student_email : str, teacher_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -315,7 +312,7 @@ async def invite_student(course_id : str, student_email : str, teacher_email: st
 
     return {'success' : True}
 
-@app.post('/remove_student', response_model=classes.Success)
+@app.post('/remove_student', response_model=json_classes.Success)
 async def remove_student(course_id : str, student_email : str, teacher_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -348,7 +345,38 @@ async def remove_student(course_id : str, student_email : str, teacher_email: st
 
     return {"success" : True}
 
-@app.post('/invite_parent', response_model=classes.Success)
+@app.get('/get_students_parents', response_model=List[json_classes.User])
+async def get_students_parents(course_id: str, student_email : str, user_email: str = Depends(get_current_user)):
+
+    # connection to database
+    with get_db() as (db_conn, db_cursor):
+
+        # checking constrants  
+        check_user_exists(db_cursor, student_email)
+        check_course_exists(db_cursor, course_id)
+        check_course_access(db_cursor=db_cursor, user_email=user_email, course_id=course_id, is_teacher=True)
+
+        # check if the student enrolled to course
+        db_cursor.execute("SELECT EXISTS(SELECT 1 FROM student_at WHERE email = %s AND courseid = %s)", (student_email, course_id))
+        student_enrolled = db_cursor.fetchone()[0]
+        if not student_enrolled:
+            raise HTTPException(status_code=404, detail="Student is not enrolled to this course")
+
+        # finding student's parrents
+        db_cursor.execute("""
+            SELECT 
+                p.parentemail,
+                u.publicname
+            FROM parent_of_at_course p
+            JOIN users u ON p.parentemail = u.email
+            WHERE p.courseid = %s AND p.studentemail = %s
+        """, (course_id, student_email))
+        parents = db_cursor.fetchall()
+
+    res = [{'email': par[0], 'name' : par[1]} for par in parents]
+    return res
+
+@app.post('/invite_parent', response_model=json_classes.Success)
 async def invite_parent(course_id : str, student_email : str, parent_email : str, teacher_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -376,7 +404,7 @@ async def invite_parent(course_id : str, student_email : str, parent_email : str
 
     return {'success' : True}
 
-@app.post('/remove_parent', response_model=classes.Success)
+@app.post('/remove_parent', response_model=json_classes.Success)
 async def remove_parent(course_id : str, student_email : str, parent_email : str, teacher_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -403,7 +431,7 @@ async def remove_parent(course_id : str, student_email : str, parent_email : str
 
     return {"success" : True}
 
-@app.get('/get_course_teachers', response_model=List[classes.User])
+@app.get('/get_course_teachers', response_model=List[json_classes.User])
 async def get_course_teachers(course_id: str, user_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -428,7 +456,7 @@ async def get_course_teachers(course_id: str, user_email: str = Depends(get_curr
     res = [{'email': tch[0], 'name' : tch[1]} for tch in teachers]
     return res
 
-@app.post('/invite_teacher', response_model=classes.Success)
+@app.post('/invite_teacher', response_model=json_classes.Success)
 async def invite_teacher(course_id : str, new_teacher_email : str, teacher_email: str = Depends(get_current_user)):
 
     # connection to database
@@ -454,7 +482,7 @@ async def invite_teacher(course_id : str, new_teacher_email : str, teacher_email
 
     return {'success' : True}
 
-@app.post('/remove_teacher', response_model=classes.Success)
+@app.post('/remove_teacher', response_model=json_classes.Success)
 async def remove_teacher(course_id : str, removing_teacher_email : str, teacher_email: str = Depends(get_current_user)):
 
     # connection to database
