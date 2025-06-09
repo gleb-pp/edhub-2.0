@@ -176,12 +176,12 @@ async def get_course_info(course_id : str, user_email: str = Depends(get_current
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
     
-    res = [{
+    res = {
         "course_id": str(course[0]),
         "title": course[1],
         "creation_date": course[2].strftime("%m-%d-%Y %H:%M:%S"),
         "number_of_students" : course[3]
-    }]
+    }
     return res
 
 @app.get('/get_course_feed')
@@ -238,13 +238,13 @@ async def get_material(course_id : str, material_id : str, user_email: str = Dep
     if not material:
         raise HTTPException(status_code=404, detail="Material not found")
     
-    res = [{
+    res = {
         "course_id": str(material[0]),
         "material_id": material[1],
         "creation_date": material[2].strftime("%m-%d-%Y %H:%M:%S"),
         "title": material[3],
         "description": material[4]
-    }]
+    }
     return res
 
 @app.get('/get_enrolled_students')
