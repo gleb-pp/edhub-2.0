@@ -40,7 +40,7 @@ def check_material_exists(db_cursor, course_id: str, material_id : str):
         if not material_exists:
             raise HTTPException(status_code=404, detail="No material with provided ID in this course")
         return True
-    except:
+    except Exception:
         raise HTTPException(status_code=404, detail="Material ID should be integer")
 
 # checking whether the user has access to course in our LMS

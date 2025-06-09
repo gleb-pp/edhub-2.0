@@ -33,7 +33,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         user_email = payload.get("email")
         if user_email is None:
             raise HTTPException(status_code=401, detail="Invalid token")
-    except:
+    except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
     # checking whether such user exists
