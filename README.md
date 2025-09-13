@@ -16,7 +16,7 @@ EdHub is a Learning Management System designed to facilitate interaction among t
 Teachers can easily create a course by simply entering its title, invite students and their parents, upload learning materials, and create assignments.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/IU-Capstone-Project-2025/edhub/refs/heads/main/img/createcourse.gif" width="600"/>
+<img src="https://raw.githubusercontent.com/gleb-pp/edhub-2.0/refs/heads/main/img/createcourse.gif" width="600"/>
 </p>
 
 ### Student Assignment Submissions
@@ -24,13 +24,13 @@ Teachers can easily create a course by simply entering its title, invite student
 Students can access course materials, submit their solutions to assignments, and receive grades from the teacher.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/IU-Capstone-Project-2025/edhub/refs/heads/main/img/studentsubmits.gif" width="600"/>
+<img src="https://raw.githubusercontent.com/gleb-pp/edhub-2.0/refs/heads/main/img/studentsubmits.gif" width="600"/>
 </p>
 
 Teachers can review submitted work, evaluate solutions, and provide grades.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/IU-Capstone-Project-2025/edhub/refs/heads/main/img/teachergrades.gif" width="600"/>
+<img src="https://raw.githubusercontent.com/gleb-pp/edhub-2.0/refs/heads/main/img/teachergrades.gif" width="600"/>
 </p>
 
 ### Parental Access to Track Academic Progress
@@ -38,7 +38,7 @@ Teachers can review submitted work, evaluate solutions, and provide grades.
 Parents have a special role in EdHub. Once invited to a course, they can track their child's academic progress without having to ask for a student account or contact the teacher.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/IU-Capstone-Project-2025/edhub/refs/heads/main/img/parents.png" width="600"/>
+<img src="https://raw.githubusercontent.com/gleb-pp/edhub-2.0/refs/heads/main/img/parents.png" width="600"/>
 </p>
 
 ### Built With
@@ -60,7 +60,7 @@ These instructions will help you to download a copy of the project and run it on
 ### Quick Start
 ```bash
 # Clone repository
-git clone https://github.com/IU-Capstone-Project-2025/edhub.git
+git clone https://github.com/gleb-pp/edhub-2.0.git
 cd edhub
 
 # Build and start containers
@@ -97,18 +97,18 @@ docker compose logs -f
 # Rebuild from scratch
 docker compose down -v && docker compose up --build
 ```
-[contributors-shield]: https://img.shields.io/github/contributors/IU-Capstone-Project-2025/edhub.svg?style=for-the-badge
-[contributors-url]: https://github.com/IU-Capstone-Project-2025/edhub/graphs/contributors
-[stars-shield]: https://img.shields.io/github/stars/IU-Capstone-Project-2025/edhub.svg?style=for-the-badge
-[stars-url]: https://github.com/IU-Capstone-Project-2025/edhub/stargazers
-[forks-shield]: https://img.shields.io/github/forks/IU-Capstone-Project-2025/edhub.svg?style=for-the-badge
-[forks-url]: https://github.com/IU-Capstone-Project-2025/edhub/network/members
-[issues-shield]: https://img.shields.io/github/issues/IU-Capstone-Project-2025/edhub.svg?style=for-the-badge
-[issues-url]: https://github.com/IU-Capstone-Project-2025/edhub/issues
-[license-shield]: https://img.shields.io/github/license/IU-Capstone-Project-2025/edhub.svg?style=for-the-badge
-[license-url]: https://github.com/IU-Capstone-Project-2025/edhub/blob/main/LICENSE
-[prod-shield]: https://img.shields.io/github/actions/workflow/status/IU-Capstone-Project-2025/edhub/deploy-prod.yml?style=for-the-badge
-[prod-url]: https://github.com/IU-Capstone-Project-2025/edhub/actions
+[contributors-shield]: https://img.shields.io/github/contributors/gleb-pp/edhub-2.0.svg?style=for-the-badge
+[contributors-url]: https://github.com/gleb-pp/edhub-2.0/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/gleb-pp/edhub-2.0.svg?style=for-the-badge
+[stars-url]: https://github.com/gleb-pp/edhub-2.0/stargazers
+[forks-shield]: https://img.shields.io/github/forks/gleb-pp/edhub-2.0.svg?style=for-the-badge
+[forks-url]: https://github.com/gleb-pp/edhub-2.0/network/members
+[issues-shield]: https://img.shields.io/github/issues/gleb-pp/edhub-2.0.svg?style=for-the-badge
+[issues-url]: https://github.com/gleb-pp/edhub-2.0/issues
+[license-shield]: https://img.shields.io/github/license/gleb-pp/edhub-2.0.svg?style=for-the-badge
+[license-url]: https://github.com/gleb-pp/edhub-2.0/blob/main/LICENSE
+[prod-shield]: https://img.shields.io/github/actions/workflow/status/gleb-pp/edhub-2.0/deploy-prod.yml?style=for-the-badge
+[prod-url]: https://github.com/gleb-pp/edhub-2.0/actions
 
 [FastAPI]: https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi
 [FastAPI-url]: https://fastapi.tiangolo.com/
