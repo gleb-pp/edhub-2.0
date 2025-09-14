@@ -12,7 +12,7 @@ def check_user_exists(db_cursor, user_email: str) -> bool:
 def assert_user_exists(db_cursor, user_email: str):
     user_exists = check_user_exists(db_cursor, user_email)
     if not user_exists:
-        return HTTPException(status_code=404, detail="No user with provided email")
+        raise HTTPException(status_code=404, detail="No user with provided email")
 
 
 # checking whether the course exists in our LMS
@@ -24,7 +24,7 @@ def check_course_exists(db_cursor, course_id: str) -> bool:
 def assert_course_exists(db_cursor, course_id: str):
     course_exists = check_course_exists(db_cursor, course_id)
     if not course_exists:
-        return HTTPException(status_code=404, detail="No course with provided ID")
+        raise HTTPException(status_code=404, detail="No course with provided ID")
 
 
 # checking whether the material exists in the course
@@ -32,7 +32,7 @@ def check_material_exists(db_cursor, course_id: str, material_id: str) -> bool:
     try:
         material_id = int(material_id)
     except ValueError:
-        return HTTPException(status_code=400, detail="Material ID should be integer")
+        raise HTTPException(status_code=400, detail="Material ID should be integer")
 
     assert_course_exists(db_cursor, course_id)
     db_cursor.execute(
@@ -44,7 +44,7 @@ def check_material_exists(db_cursor, course_id: str, material_id: str) -> bool:
 def assert_material_exists(db_cursor, course_id: str, material_id: str):
     material_exists = check_material_exists(db_cursor, course_id, material_id)
     if not material_exists:
-        return HTTPException(status_code=404, detail="No material with provided ID in this course")
+        raise HTTPException(status_code=404, detail="No material with provided ID in this course")
 
 
 # checking whether the assignment exists in the course
@@ -52,7 +52,7 @@ def check_assignment_exists(db_cursor, course_id: str, assignment_id: str) -> bo
     try:
         assignment_id = int(assignment_id)
     except ValueError:
-        return HTTPException(status_code=400, detail="Assignment ID should be integer")
+        raise HTTPException(status_code=400, detail="Assignment ID should be integer")
 
     assert_course_exists(db_cursor, course_id)
     db_cursor.execute(
@@ -65,7 +65,7 @@ def check_assignment_exists(db_cursor, course_id: str, assignment_id: str) -> bo
 def assert_assignment_exists(db_cursor, course_id: str, assignment_id: str):
     assignment_exists = check_assignment_exists(db_cursor, course_id, assignment_id)
     if not assignment_exists:
-        return HTTPException(status_code=404, detail="No assignment with provided ID in this course")
+        raise HTTPException(status_code=404, detail="No assignment with provided ID in this course")
 
 
 # checking whether the user has general access to the course,
@@ -92,7 +92,7 @@ def check_course_access(db_cursor, user_email: str, course_id: str) -> bool:
 def assert_course_access(db_cursor, user_email: str, course_id: str):
     has_access = check_course_access(db_cursor, user_email, course_id)
     if not has_access:
-        return HTTPException(status_code=403, detail="User does not have access to this course")
+        raise HTTPException(status_code=403, detail="User does not have access to this course")
 
 
 # checking whether the user has teacher access to the course
@@ -115,7 +115,7 @@ def check_teacher_access(db_cursor, teacher_email: str, course_id: str) -> bool:
 def assert_teacher_access(db_cursor, teacher_email: str, course_id: str):
     has_access = check_teacher_access(db_cursor, teacher_email, course_id)
     if not has_access:
-        return HTTPException(status_code=403, detail="User has no teacher rights in this course")
+        raise HTTPException(status_code=403, detail="User has no teacher rights in this course")
 
 
 # checking whether the user has student access to the course
@@ -138,7 +138,7 @@ def check_student_access(db_cursor, student_email: str, course_id: str) -> bool:
 def assert_student_access(db_cursor, student_email: str, course_id: str):
     has_access = check_student_access(db_cursor, student_email, course_id)
     if not has_access:
-        return HTTPException(status_code=403, detail="User has no student rights in this course")
+        raise HTTPException(status_code=403, detail="User has no student rights in this course")
 
 
 # checking whether the user has parent access to the course
@@ -161,7 +161,7 @@ def check_parent_access(db_cursor, parent_email: str, course_id: str) -> bool:
 def assert_parent_access(db_cursor, parent_email: str, course_id: str):
     has_access = check_parent_access(db_cursor, parent_email, course_id)
     if not has_access:
-        return HTTPException(status_code=403, detail="User has no parental access in this course")
+        raise HTTPException(status_code=403, detail="User has no parental access in this course")
 
 
 # checking whether the user has parent access with the student in the course
@@ -185,7 +185,7 @@ def check_parent_student_access(db_cursor, parent_email: str, student_email: str
 def assert_parent_student_access(db_cursor, parent_email: str, student_email: str, course_id: str):
     has_access = check_parent_student_access(db_cursor, parent_email, student_email, course_id)
     if not has_access:
-        return HTTPException(status_code=403, detail="User has no parental access to this student's course")
+        raise HTTPException(status_code=403, detail="User has no parental access to this student's course")
 
 
 # checking if the submission exists
@@ -206,7 +206,7 @@ def check_submission_exists(db_cursor, course_id: str, assignment_id: str, stude
 def assert_submission_exists(db_cursor, course_id: str, assignment_id: str, student_email: str):
     submitted = check_submission_exists(db_cursor, course_id, assignment_id, student_email)
     if not submitted:
-        return HTTPException(status_code=404, detail="The given student has not made a submission to this assignment")
+        raise HTTPException(status_code=404, detail="The given student has not made a submission to this assignment")
 
 
 # checking whether the user has admin access
@@ -221,4 +221,4 @@ def check_admin_access(db_cursor, user_email: str) -> bool:
 def assert_admin_access(db_cursor, user_email: str):
     has_access = check_admin_access(db_cursor, user_email)
     if not has_access:
-        return HTTPException(status_code=403, detail="User has no admin rights")
+        raise HTTPException(status_code=403, detail="User has no admin rights")
