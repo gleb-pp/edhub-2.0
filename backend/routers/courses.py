@@ -5,7 +5,6 @@ from fastapi import responses
 from auth import get_current_user, get_db
 import json_classes
 import logic.courses
-import logic.students
 import logic.assignments
 
 router = APIRouter()
@@ -83,7 +82,7 @@ async def download_full_course_grade_table(course_id: str, user_email: str = Dep
 
     COLUMNS: student login, student display name, then assignment names
 
-    Teacher OR parent OR student role required.
+    Teacher OR Parent OR Student role required.
 
     Teachers receive grades of all students.
 
