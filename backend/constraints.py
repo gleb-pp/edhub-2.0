@@ -209,6 +209,26 @@ def assert_submission_exists(db_cursor, course_id: str, assignment_id: str, stud
         raise HTTPException(status_code=404, detail="The given student has not made a submission to this assignment")
 
 
+# checking whether the user is a parent of all of the provided students within the provided course
+def check_parent_of_all(db_cursor, parent_email: str, student_emails: list[str], course_id: str) -> bool:
+    assert_user_exists(db_cursor, parent_email)
+    assert_course_exists(db_cursor, course_id)
+    if check_admin_access(db_cursor, parent_email):
+        return True
+
+    for student in student_emails:
+        assert_user_exists(db_cursor, student)
+        student_is_child = repo.parents.sql_has_child_at_course(db_cursor, course_id, parent_email, student)
+        if not student_is_child:
+            return False
+    return True
+
+def assert_parent_of_all(db_cursor, parent_email: str, student_emails: list[str], course_id: str):
+    parent_of_all = check_parent_of_all(db_cursor, parent_email, student_emails, course_id)
+    if not parent_of_all:
+        raise HTTPException(403, "User has no parental access to some of the students")
+
+
 # checking whether the user has admin access
 def check_admin_access(db_cursor, user_email: str) -> bool:
     assert_user_exists(db_cursor, user_email)
