@@ -9,7 +9,7 @@ def check_user_exists(db_cursor, user_email: str) -> bool:
     user_exists = db_cursor.fetchone()[0]
     return user_exists
 
-def assert_user_exists(db_cursor, user_email: str):
+def assert_user_exists(db_cursor, user_email: str) -> None:
     user_exists = check_user_exists(db_cursor, user_email)
     if not user_exists:
         raise HTTPException(status_code=404, detail="No user with provided email")
@@ -21,7 +21,7 @@ def check_course_exists(db_cursor, course_id: str) -> bool:
     course_exists = db_cursor.fetchone()[0]
     return course_exists
 
-def assert_course_exists(db_cursor, course_id: str):
+def assert_course_exists(db_cursor, course_id: str) -> None:
     course_exists = check_course_exists(db_cursor, course_id)
     if not course_exists:
         raise HTTPException(status_code=404, detail="No course with provided ID")
@@ -41,7 +41,7 @@ def check_material_exists(db_cursor, course_id: str, material_id: str) -> bool:
     material_exists = db_cursor.fetchone()[0]
     return material_exists
 
-def assert_material_exists(db_cursor, course_id: str, material_id: str):
+def assert_material_exists(db_cursor, course_id: str, material_id: str) -> None:
     material_exists = check_material_exists(db_cursor, course_id, material_id)
     if not material_exists:
         raise HTTPException(status_code=404, detail="No material with provided ID in this course")
@@ -62,7 +62,7 @@ def check_assignment_exists(db_cursor, course_id: str, assignment_id: str) -> bo
     assignment_exists = db_cursor.fetchone()[0]
     return assignment_exists
 
-def assert_assignment_exists(db_cursor, course_id: str, assignment_id: str):
+def assert_assignment_exists(db_cursor, course_id: str, assignment_id: str) -> None:
     assignment_exists = check_assignment_exists(db_cursor, course_id, assignment_id)
     if not assignment_exists:
         raise HTTPException(status_code=404, detail="No assignment with provided ID in this course")
@@ -89,7 +89,7 @@ def check_course_access(db_cursor, user_email: str, course_id: str) -> bool:
     has_access = db_cursor.fetchone()[0]
     return has_access
 
-def assert_course_access(db_cursor, user_email: str, course_id: str):
+def assert_course_access(db_cursor, user_email: str, course_id: str) -> None:
     has_access = check_course_access(db_cursor, user_email, course_id)
     if not has_access:
         raise HTTPException(status_code=403, detail="User does not have access to this course")
@@ -112,7 +112,7 @@ def check_teacher_access(db_cursor, teacher_email: str, course_id: str) -> bool:
     has_access = db_cursor.fetchone()[0]
     return has_access
 
-def assert_teacher_access(db_cursor, teacher_email: str, course_id: str):
+def assert_teacher_access(db_cursor, teacher_email: str, course_id: str) -> None:
     has_access = check_teacher_access(db_cursor, teacher_email, course_id)
     if not has_access:
         raise HTTPException(status_code=403, detail="User has no teacher rights in this course")
@@ -135,7 +135,7 @@ def check_student_access(db_cursor, student_email: str, course_id: str) -> bool:
     has_access = db_cursor.fetchone()[0]
     return has_access
 
-def assert_student_access(db_cursor, student_email: str, course_id: str):
+def assert_student_access(db_cursor, student_email: str, course_id: str) -> None:
     has_access = check_student_access(db_cursor, student_email, course_id)
     if not has_access:
         raise HTTPException(status_code=403, detail="User has no student rights in this course")
@@ -158,7 +158,7 @@ def check_parent_access(db_cursor, parent_email: str, course_id: str) -> bool:
     has_access = db_cursor.fetchone()[0]
     return has_access
 
-def assert_parent_access(db_cursor, parent_email: str, course_id: str):
+def assert_parent_access(db_cursor, parent_email: str, course_id: str) -> None:
     has_access = check_parent_access(db_cursor, parent_email, course_id)
     if not has_access:
         raise HTTPException(status_code=403, detail="User has no parental access in this course")
@@ -182,7 +182,7 @@ def check_parent_student_access(db_cursor, parent_email: str, student_email: str
     has_access = db_cursor.fetchone()[0]
     return has_access
 
-def assert_parent_student_access(db_cursor, parent_email: str, student_email: str, course_id: str):
+def assert_parent_student_access(db_cursor, parent_email: str, student_email: str, course_id: str) -> None:
     has_access = check_parent_student_access(db_cursor, parent_email, student_email, course_id)
     if not has_access:
         raise HTTPException(status_code=403, detail="User has no parental access to this student's course")
@@ -203,7 +203,7 @@ def check_submission_exists(db_cursor, course_id: str, assignment_id: str, stude
     submitted = db_cursor.fetchone()[0]
     return submitted
 
-def assert_submission_exists(db_cursor, course_id: str, assignment_id: str, student_email: str):
+def assert_submission_exists(db_cursor, course_id: str, assignment_id: str, student_email: str) -> None:
     submitted = check_submission_exists(db_cursor, course_id, assignment_id, student_email)
     if not submitted:
         raise HTTPException(status_code=404, detail="The given student has not made a submission to this assignment")
@@ -223,7 +223,7 @@ def check_parent_of_all(db_cursor, parent_email: str, student_emails: list[str],
             return False
     return True
 
-def assert_parent_of_all(db_cursor, parent_email: str, student_emails: list[str], course_id: str):
+def assert_parent_of_all(db_cursor, parent_email: str, student_emails: list[str], course_id: str) -> None:
     parent_of_all = check_parent_of_all(db_cursor, parent_email, student_emails, course_id)
     if not parent_of_all:
         raise HTTPException(403, "User has no parental access to some of the students")
@@ -238,7 +238,7 @@ def check_admin_access(db_cursor, user_email: str) -> bool:
     has_access = db_cursor.fetchone()[0]
     return has_access
 
-def assert_admin_access(db_cursor, user_email: str):
+def assert_admin_access(db_cursor, user_email: str) -> None:
     has_access = check_admin_access(db_cursor, user_email)
     if not has_access:
         raise HTTPException(status_code=403, detail="User has no admin rights")
