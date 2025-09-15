@@ -26,6 +26,7 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
+      aria-busy={loading ? "true" : undefined}
       className={clsx(ButtonStyles["base"], ButtonStyles[variant], className)}
       {...props}
       disabled={props.disabled || loading}

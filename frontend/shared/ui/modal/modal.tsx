@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, FC, ReactNode } from "react";
+import React, { useState, useEffect, FC, useRef } from "react";
 import clsx from "clsx";
 import { Card } from "../card/card";
 import "./modal.css";
@@ -29,19 +29,53 @@ const ModalComponent: FC<ModalProps> = ({
   className,
 }) => {
   const [isVisible, setIsVisible] = useState(isOpen);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
     } else {
-      setTimeout(() => setIsVisible(false), 200); // fade-in, fade-out animation time 0.2s -> modal.css
+      let timer = setTimeout(() => setIsVisible(false), 200);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      modalRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Tab" && modalRef.current) {
+      const focusable = modalRef.current.querySelectorAll<
+        | HTMLButtonElement
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | HTMLAnchorElement
+      >(
+        'a[href], button:not([disabled]), textarea, input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (!first || !last) return;
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
 
   if (!isVisible) return null;
 
   return (
     <div
+      ref={modalRef}
       className={clsx(
         "fixed inset-0 flex items-center justify-center bg-black/50 z-50",
         isOpen ? "fade-in" : "fade-out"
@@ -49,6 +83,12 @@ const ModalComponent: FC<ModalProps> = ({
       onClick={onClose}
     >
       <Card
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        aria-describedby="modal-body"
+        tabIndex={-1}
+        onKeyDown={handleKeyDown}
         className={clsx(
           "flex flex-col",
           isOpen ? "scale-in" : "scale-out",
@@ -65,11 +105,15 @@ const ModalComponent: FC<ModalProps> = ({
 const Modal = ModalComponent as ModalType;
 
 Modal.Header = ({ className, children }) => (
-  <div className={className}>{children}</div>
+  <div id="modal-title" className={className}>
+    {children}
+  </div>
 );
 
 Modal.Body = ({ className, children }) => (
-  <div className={clsx("flex-1 overflow-auto", className)}>{children}</div>
+  <div id="modal-body" className={clsx("flex-1 overflow-auto", className)}>
+    {children}
+  </div>
 );
 
 Modal.Footer = ({ className, children }) => (

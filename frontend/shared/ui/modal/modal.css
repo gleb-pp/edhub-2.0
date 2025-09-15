@@ -35,17 +35,17 @@
 }
 
 .fade-in {
-  animation: fade-in 0.2s forwards;
+  animation: fade-in 200ms forwards;
 }
 
 .fade-out {
-  animation: fade-out 0.2s forwards;
+  animation: fade-out 200ms forwards;
 }
 
 .scale-in {
-  animation: scale-in 0.2s forwards;
+  animation: scale-in 200ms forwards;
 }
 
 .scale-out {
-  animation: scale-out 0.2s forwards;
+  animation: scale-out 200ms forwards;
 }
