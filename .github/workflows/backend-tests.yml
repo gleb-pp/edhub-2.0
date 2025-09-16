@@ -128,16 +128,18 @@ jobs:
             -e POSTGRES_DB=edhub_storage \
             -e PGDATA=/var/lib/postgresql/data \
             edhub-filestorage-db
-      
+    
       - name: Wait for system_db to be ready
         run: |
           until docker exec system_db pg_isready -U postgres; do
+            echo "Waiting for system_db..."
             sleep 1
           done
 
       - name: Wait for filestorage_db to be ready  
         run: |
           until docker exec filestorage_db pg_isready -U postgres; do
+            echo "Waiting for filestorage_db..."
             sleep 1
           done
           sleep 3
@@ -151,12 +153,17 @@ jobs:
             -e DATABASE_URL=postgresql://postgres:12345678@system_db:5432/edhub \
             edhub-backend
 
-      - name: Wait for services
-        run: sleep 20
+      - name: Wait for backend to be ready
+        run: |
+          until curl -s -f http://localhost:8000/openapi.json >/dev/null 2>&1; do
+            echo "Waiting for backend..."
+            sleep 1
+          done
 
       - name: Run curltests.sh
         run: |
           chmod +x ./backend/curltests.sh
+          sed -i 's|http://localhost/api|http://localhost:8000/api|' ./backend/curltests.sh
           ./backend/curltests.sh
 
       - name: Stop containers
