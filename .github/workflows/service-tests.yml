@@ -69,18 +69,18 @@ jobs:
           until docker compose -f docker-compose.prod.yml exec filestorage_db pg_isready -U postgres; do
             sleep 1
           done
-          sleep 3
+          sleep 10
 
       - name: Check backend health
         run: |
-          curl -f http://localhost/api/openapi.json || \
-          curl -f http://localhost/api/docs || \
-          curl -f http://localhost/api/health || \
+          curl -k -f https://localhost/api/openapi.json || \
+          curl -k -f https://localhost/api/docs || \
+          curl -k -f https://localhost/api/health || \
           (echo "Backend is not responsive" && docker compose -f docker-compose.prod.yml logs backend && exit 1)
 
       - name: Check frontend health
         run: |
-          curl -f http://localhost/ || \
+          curl -k -f https://localhost/ || \
           (echo "Frontend is not responsive" && docker compose -f docker-compose.prod.yml logs frontend nginx && exit 1)
 
       - name: Docker compose down
