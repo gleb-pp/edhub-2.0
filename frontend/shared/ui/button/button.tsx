@@ -11,9 +11,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const ButtonStyles: Record<ButtonTypes, string> = {
-  base: "flex items-center justify-center min-w-10 min-h-10 text-sm font-light rounded-md cursor-pointer transition-all duration-300 disabled:cursor-not-allowed",
+  base: "flex items-center justify-center cursor-pointer transition-all duration-300 disabled:cursor-not-allowed",
   primary: "text-white bg-dark hover:bg-dark/90",
-  outline: "text-dark bg-white border-2 border-outline hover:bg-bg-outline",
+  outline:
+    "text-dark bg-white border-[1.5px] border-outline shadow-md hover:bg-bg-outline",
   cancel: "text-white bg-ui-red hover:bg-ui-red/90",
 } as const;
 

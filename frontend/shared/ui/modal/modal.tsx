@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, useEffect, FC, useRef } from "react";
+import React, { useEffect, FC, useRef } from "react";
 import clsx from "clsx";
 import { Card } from "../card/card";
 import "./modal.css";
+import { useAnimatedPresence } from "@/shared/hooks/useAnimatedPresence";
 
 interface ModalProps {
   isOpen: boolean;
@@ -28,17 +29,9 @@ const ModalComponent: FC<ModalProps> = ({
   children,
   className,
 }) => {
-  const [isVisible, setIsVisible] = useState(isOpen);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      setIsVisible(true);
-    } else {
-      let timer = setTimeout(() => setIsVisible(false), 200);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
+  const isVisible = useAnimatedPresence(isOpen, 200); // modal.css -> animation: * 200ms *;
 
   useEffect(() => {
     if (isOpen && modalRef.current) {
@@ -109,15 +102,18 @@ Modal.Header = ({ className, children }) => (
     {children}
   </div>
 );
+Modal.Header.displayName = "Modal.Header";
 
 Modal.Body = ({ className, children }) => (
   <div id="modal-body" className={clsx("flex-1 overflow-auto", className)}>
     {children}
   </div>
 );
+Modal.Body.displayName = "Modal.Body";
 
 Modal.Footer = ({ className, children }) => (
   <div className={clsx("gap-2", className)}>{children}</div>
 );
+Modal.Footer.displayName = "Modal.Footer";
 
 export { Modal };
