@@ -1,4 +1,4 @@
-def sql_insert_material(db_cursor, course_id, title, description, user_email):
+def sql_insert_material(db_cursor, course_id: str, title: str, description: str, user_email: str):
     db_cursor.execute(
         "INSERT INTO course_materials (courseid, name, description, timeadded, author) VALUES (%s, %s, %s, now(), %s) RETURNING matid",
         (course_id, title, description, user_email),
@@ -6,14 +6,14 @@ def sql_insert_material(db_cursor, course_id, title, description, user_email):
     return db_cursor.fetchone()[0]
 
 
-def sql_delete_material(db_cursor, course_id, material_id):
+def sql_delete_material(db_cursor, course_id: str, material_id: str):
     db_cursor.execute(
         "DELETE FROM course_materials WHERE courseid = %s AND matid = %s",
         (course_id, material_id),
     )
 
 
-def sql_select_material(db_cursor, course_id, material_id):
+def sql_select_material(db_cursor, course_id: str, material_id: str):
     db_cursor.execute(
         """
         SELECT courseid, matid, timeadded, name, description, author
@@ -25,7 +25,7 @@ def sql_select_material(db_cursor, course_id, material_id):
     return db_cursor.fetchone()
 
 
-def sql_insert_material_attachment(db_cursor, storage_db_cursor, course_id, material_id, filename, contents):
+def sql_insert_material_attachment(db_cursor, storage_db_cursor, course_id: str, material_id: str, filename: str, contents: bytes):
     storage_db_cursor.execute(
         """
         INSERT INTO files 
@@ -49,7 +49,7 @@ def sql_insert_material_attachment(db_cursor, storage_db_cursor, course_id, mate
     return db_cursor.fetchone()
 
 
-def sql_select_material_attachments(db_cursor, course_id, material_id):
+def sql_select_material_attachments(db_cursor, course_id: str, material_id: str):
     db_cursor.execute(
         """
         SELECT fileid, filename, uploadtime

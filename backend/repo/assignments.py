@@ -1,4 +1,4 @@
-def sql_insert_assignment(db_cursor, course_id, title, description, user_email):
+def sql_insert_assignment(db_cursor, course_id: str, title: str, description: str, user_email: str) -> int:
     db_cursor.execute(
         "INSERT INTO course_assignments (courseid, name, description, timeadded, author) VALUES (%s, %s, %s, now(), %s) RETURNING assid",
         (course_id, title, description, user_email),
@@ -6,14 +6,14 @@ def sql_insert_assignment(db_cursor, course_id, title, description, user_email):
     return db_cursor.fetchone()[0]
 
 
-def sql_delete_assignment(db_cursor, course_id, assignment_id):
+def sql_delete_assignment(db_cursor, course_id: str, assignment_id: str) -> None:
     db_cursor.execute(
         "DELETE FROM course_assignments WHERE courseid = %s AND assid = %s",
         (course_id, assignment_id),
     )
 
 
-def sql_select_assignment(db_cursor, course_id, assignment_id):
+def sql_select_assignment(db_cursor, course_id: str, assignment_id: str):
     db_cursor.execute(
         """
         SELECT courseid, assid, timeadded, name, description, author
@@ -25,7 +25,7 @@ def sql_select_assignment(db_cursor, course_id, assignment_id):
     return db_cursor.fetchone()
 
 
-def sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id, assignment_id, filename, contents):
+def sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id: str, assignment_id: str, filename: str, contents: bytes):
     storage_db_cursor.execute(
         """
         INSERT INTO files 
@@ -49,7 +49,7 @@ def sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id, as
     return db_cursor.fetchone()
 
 
-def sql_select_assignment_attachments(db_cursor, course_id, assignment_id):
+def sql_select_assignment_attachments(db_cursor, course_id: str, assignment_id: str):
     db_cursor.execute(
         """
         SELECT fileid, filename, uploadtime

@@ -1,9 +1,9 @@
-def sql_download_attachment(storage_db_cursor, file_id):
+def sql_download_attachment(storage_db_cursor, file_id: str):
     storage_db_cursor.execute("SELECT content FROM files WHERE id = %s", (file_id, ))
     return storage_db_cursor.fetchone()[0]
 
 
-def sql_select_attachment_metadata(db_cursor, file_id):
+def sql_select_attachment_metadata(db_cursor, file_id: str):
     db_cursor.execute("""
                       (SELECT fileid, filename, uploadtime FROM material_files WHERE fileid = %s)
                       UNION
