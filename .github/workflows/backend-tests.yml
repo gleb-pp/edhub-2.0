@@ -128,7 +128,7 @@ jobs:
             -e POSTGRES_DB=edhub_storage \
             -e PGDATA=/var/lib/postgresql/data \
             edhub-filestorage-db
-    
+
       - name: Wait for system_db to be ready
         run: |
           until docker exec system_db pg_isready -U postgres; do
@@ -160,15 +160,17 @@ jobs:
             sleep 1
           done
 
+          sleep 5
+
       - name: Run curltests.sh
         run: |
           chmod +x ./backend/curltests.sh
-          sed -i 's|http://localhost/api|http://localhost:8000/api|' ./backend/curltests.sh
+          sed -i 's|API_URL="http://localhost/api"|API_URL="http://localhost:8000"|' ./backend/curltests.sh
           ./backend/curltests.sh
 
       - name: Stop containers
         if: always()
         run: |
-          docker stop backend system_db filestorage_db
-          docker rm backend system_db filestorage_db
-          docker network rm edhub-network
+          docker stop backend system_db filestorage_db || true
+          docker rm backend system_db filestorage_db || true
+          docker network rm edhub-network || true
