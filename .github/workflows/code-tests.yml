@@ -1,4 +1,4 @@
-name: Check TODO
+name: Code style tests
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 jobs:
   check_todo:
     runs-on: ubuntu-latest
+    name: Check for TODO comments in code
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
