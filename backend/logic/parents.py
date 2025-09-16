@@ -6,12 +6,15 @@ import logic.logging as logger
 
 def get_students_parents(db_cursor, course_id: str, student_email: str, user_email: str):
 
-    # checking constraints
-    constraints.assert_teacher_access(db_cursor, user_email, course_id)
-
     # check if the student is enrolled to course
     if not constraints.check_student_access(db_cursor, student_email, course_id):
         raise HTTPException(status_code=404, detail="Provided user in not a student at this course")
+
+    # checking constraints
+    if not (constraints.check_teacher_access(db_cursor, user_email, course_id) or
+            constraints.check_parent_student_access(db_cursor, user_email, student_email, course_id) or
+            (constraints.check_student_access(db_cursor, user_email, course_id) and student_email == user_email)):
+        raise HTTPException(status_code=403, detail="User has no rights to see the list of parents for this student")
 
     # finding student's parents
     parents = repo_parents.sql_select_students_parents(db_cursor, course_id, student_email)
