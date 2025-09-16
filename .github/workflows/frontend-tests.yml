@@ -1,4 +1,4 @@
-name: Frontend Smoke Test
+name: Frontend tests
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: Backend + DB Integration Test
+name: Backend tests
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   backend-db-test:
     runs-on: ubuntu-latest
-    name: Backend Smoke Test
+    name: Backend + DB Integration Test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -71,3 +71,30 @@ jobs:
           docker stop backend system_db filestorage_db
           docker rm backend system_db filestorage_db
           docker network rm edhub-network
+
+  docker-compose-curltests:
+    runs-on: ubuntu-latest
+    name: Checking logic with curl tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker compose up
+        run: |
+          docker compose up -d --build
+
+      - name: Wait for services
+        run: |
+          sleep 10
+
+      - name: Run curltests.sh
+        run: |
+          chmod +x ./backend/curltests.sh
+          ./backend/curltests.sh
+
+      - name: Docker compose down
+        if: always()
+        run: docker compose down -v
