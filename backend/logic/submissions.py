@@ -28,7 +28,7 @@ def submit_assignment(
         db_conn.commit()
 
     # updating submission if not graded
-    elif submission and submission[0] in (None, "null"):
+    elif submission[0] is None:
         repo_submit.sql_update_submission_comment(db_cursor, comment, course_id, assignment_id, student_email)
         db_conn.commit()
 

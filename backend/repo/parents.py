@@ -1,4 +1,6 @@
-def sql_select_students_parents(db_cursor, course_id, student_email):
+from typing import List, Tuple
+
+def sql_select_students_parents(db_cursor, course_id: str, student_email: str) -> List[Tuple[str, str]]:
     db_cursor.execute(
         """
         SELECT
@@ -13,21 +15,21 @@ def sql_select_students_parents(db_cursor, course_id, student_email):
     return db_cursor.fetchall()
 
 
-def sql_insert_parent_of_at_course(db_cursor, parent_email, student_email, course_id):
+def sql_insert_parent_of_at_course(db_cursor, parent_email: str, student_email: str, course_id: str) -> None:
     db_cursor.execute(
         "INSERT INTO parent_of_at_course (parentemail, studentemail, courseid) VALUES (%s, %s, %s)",
         (parent_email, student_email, course_id),
     )
 
 
-def sql_delete_parent_of_at_course(db_cursor, course_id, student_email, parent_email):
+def sql_delete_parent_of_at_course(db_cursor, course_id: str, student_email: str, parent_email: str) -> None:
     db_cursor.execute(
         "DELETE FROM parent_of_at_course WHERE courseid = %s AND studentemail = %s AND parentemail = %s",
         (course_id, student_email, parent_email),
     )
 
 
-def sql_select_parents_children(db_cursor, course_id, parent_email):
+def sql_select_parents_children(db_cursor, course_id: str, parent_email: str) -> List[Tuple[str, str]]:
     db_cursor.execute(
         """
         SELECT

@@ -72,14 +72,13 @@ def create_user(db_conn, db_cursor, user):
 
 def login(db_cursor, user):
 
-    result = repo_users.sql_select_passwordhash(db_cursor, user.email)
+    hashed_password = repo_users.sql_select_passwordhash(db_cursor, user.email)
 
     # checking whether such user exists
-    if not result:
+    if not hashed_password:
         raise HTTPException(status_code=401, detail="Invalid user email")
 
     # checking password
-    hashed_password = result[0]
     if not pwd_hasher.verify(user.password, hashed_password):
         raise HTTPException(status_code=401, detail="Invalid password")
 
@@ -95,14 +94,13 @@ def login(db_cursor, user):
 
 def change_password(db_conn, db_cursor, user):
 
-    result = repo_users.sql_select_passwordhash(db_cursor, user.email)
+    hashed_password = repo_users.sql_select_passwordhash(db_cursor, user.email)
 
     # checking whether such user exists
-    if not result:
+    if not hashed_password:
         raise HTTPException(status_code=401, detail="Invalid user email")
 
     # checking password
-    hashed_password = result[0]
     if not pwd_hasher.verify(user.password, hashed_password):
         raise HTTPException(status_code=401, detail="Invalid password")
 

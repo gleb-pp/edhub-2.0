@@ -1,7 +1,7 @@
 import repo.logging as repo_log
 
 
-def log(db_conn, tag, msg):
+def log(db_conn, tag: str, msg: str):
     with db_conn.cursor() as db_cursor:
         repo_log.sql_insert_log(db_cursor, tag, msg)
         db_conn.commit()

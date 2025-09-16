@@ -13,7 +13,7 @@ import itertools
 
 def available_courses(db_cursor, user_email: str):
     courses = repo.courses.sql_select_available_courses(db_cursor, user_email)
-    result = [{"course_id": crs[0]} for crs in courses]
+    result = [{"course_id": crs} for crs in courses]
     return result
 
 

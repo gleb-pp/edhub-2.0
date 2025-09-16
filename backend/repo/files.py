@@ -1,9 +1,14 @@
-def sql_download_attachment(storage_db_cursor, file_id):
+from typing import Tuple, Optional
+from uuid import UUID
+from datetime import datetime
+
+def sql_download_attachment(storage_db_cursor, file_id: str) -> Optional[bytes]:
     storage_db_cursor.execute("SELECT content FROM files WHERE id = %s", (file_id, ))
-    return storage_db_cursor.fetchone()[0]
+    row = storage_db_cursor.fetchone()
+    return row[0] if row else None
 
 
-def sql_select_attachment_metadata(db_cursor, file_id):
+def sql_select_attachment_metadata(db_cursor, file_id: str) -> Optional[Tuple[UUID, str, datetime]]:
     db_cursor.execute("""
                       (SELECT fileid, filename, uploadtime FROM material_files WHERE fileid = %s)
                       UNION
