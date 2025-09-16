@@ -85,9 +85,9 @@ jobs:
           docker rm backend system_db filestorage_db
           docker network rm edhub-network
 
-  docker-compose-curltests:
+  curltests:
     runs-on: ubuntu-latest
-    name: Checking logic with curl tests
+    name: Logical curl tests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -95,19 +95,73 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Docker compose up
+      - name: Create Docker network
+        run: docker network create edhub-network
+
+      - name: Build system_db
+        run: docker build -t edhub-system-db ./database/system
+
+      - name: Build filestorage_db
+        run: docker build -t edhub-filestorage-db ./database/filestorage
+
+      - name: Build backend
+        run: docker build -t edhub-backend ./backend
+
+      - name: Run system_db container
         run: |
-          docker compose up -d --build
+          docker run -d \
+            --name system_db \
+            --network edhub-network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=12345678 \
+            -e POSTGRES_DB=edhub \
+            -e PGDATA=/var/lib/postgresql/data \
+            edhub-system-db
+
+      - name: Run filestorage_db container
+        run: |
+          docker run -d \
+            --name filestorage_db \
+            --network edhub-network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=12345678 \
+            -e POSTGRES_DB=edhub_storage \
+            -e PGDATA=/var/lib/postgresql/data \
+            edhub-filestorage-db
+      
+      - name: Wait for system_db to be ready
+        run: |
+          until docker exec system_db pg_isready -U postgres; do
+            sleep 1
+          done
+
+      - name: Wait for filestorage_db to be ready  
+        run: |
+          until docker exec filestorage_db pg_isready -U postgres; do
+            sleep 1
+          done
+          sleep 3
+
+      - name: Run backend container
+        run: |
+          docker run -d \
+            --name backend \
+            --network edhub-network \
+            -p 8000:8000 \
+            -e DATABASE_URL=postgresql://postgres:12345678@system_db:5432/edhub \
+            edhub-backend
 
       - name: Wait for services
-        run: |
-          sleep 10
+        run: sleep 20
 
       - name: Run curltests.sh
         run: |
           chmod +x ./backend/curltests.sh
           ./backend/curltests.sh
 
-      - name: Docker compose down
+      - name: Stop containers
         if: always()
-        run: docker compose down -v
+        run: |
+          docker stop backend system_db filestorage_db
+          docker rm backend system_db filestorage_db
+          docker network rm edhub-network
