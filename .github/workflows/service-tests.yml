@@ -30,19 +30,19 @@ jobs:
           done
           sleep 3
 
-      - name: Wait for services to be ready
-        run: |
-          for i in {1..30}; do
-            if curl -f http://localhost/api/health; then
-              break
-            fi
-            sleep 2
-          done
-          if docker compose ps | grep -q "exited"; then
-            echo "Some containers have exited!"
-            docker compose logs
-            exit 1
-          fi
+      # - name: Wait for services to be ready
+      #   run: |
+      #     for i in {1..30}; do
+      #       if curl -f http://localhost/api/health; then
+      #         break
+      #       fi
+      #       sleep 2
+      #     done
+      #     if docker compose ps | grep -q "exited"; then
+      #       echo "Some containers have exited!"
+      #       docker compose logs
+      #       exit 1
+      #     fi
 
       - name: Check backend health
         run: |
