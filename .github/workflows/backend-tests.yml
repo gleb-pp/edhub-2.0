@@ -49,6 +49,19 @@ jobs:
             -e POSTGRES_DB=edhub_storage \
             -e PGDATA=/var/lib/postgresql/data \
             edhub-filestorage-db
+      
+      - name: Wait for system_db to be ready
+        run: |
+          until docker exec system_db pg_isready -U postgres; do
+            sleep 1
+          done
+
+      - name: Wait for filestorage_db to be ready  
+        run: |
+          until docker exec filestorage_db pg_isready -U postgres; do
+            sleep 1
+          done
+          sleep 3
 
       - name: Run backend container
         run: |
