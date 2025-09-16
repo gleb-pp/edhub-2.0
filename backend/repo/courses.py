@@ -1,7 +1,8 @@
-from typing import Union
+from typing import List, Tuple, Optional
+from uuid import UUID
+from datetime import datetime
 
-
-def sql_select_available_courses(db_cursor, user_email: str):
+def sql_select_available_courses(db_cursor, user_email: str) -> List[UUID]:
     db_cursor.execute(
         """
         SELECT courseid AS cid FROM teaches WHERE email = %s
@@ -12,15 +13,15 @@ def sql_select_available_courses(db_cursor, user_email: str):
         """,
         (user_email, user_email, user_email),
     )
-    return db_cursor.fetchall()
+    return [i[0] for i in db_cursor.fetchall()]
 
 
-def sql_select_all_courses(db_cursor):
+def sql_select_all_courses(db_cursor) -> List[UUID]:
     db_cursor.execute("SELECT courseid FROM courses")
-    return db_cursor.fetchall()
+    return [i[0] for i in db_cursor.fetchall()]
 
 
-def sql_insert_course(db_cursor, title: str):
+def sql_insert_course(db_cursor, title: str) -> UUID:
     db_cursor.execute(
         "INSERT INTO courses (courseid, name, timecreated) VALUES (gen_random_uuid(), %s, now()) RETURNING courseid",
         (title,),
@@ -28,11 +29,11 @@ def sql_insert_course(db_cursor, title: str):
     return db_cursor.fetchone()[0]
 
 
-def sql_delete_course(db_cursor, course_id: str):
+def sql_delete_course(db_cursor, course_id: str) -> None:
     db_cursor.execute("DELETE FROM courses WHERE courseid = %s", (course_id,))
 
 
-def sql_select_course_info(db_cursor, course_id: str):
+def sql_select_course_info(db_cursor, course_id: str) -> Optional[Tuple[UUID, str, datetime, int]]:
     db_cursor.execute(
         """
         SELECT c.courseid, c.name, c.timecreated, COUNT(sa.email) AS student_count
@@ -46,7 +47,7 @@ def sql_select_course_info(db_cursor, course_id: str):
     return db_cursor.fetchone()
 
 
-def sql_select_course_feed(db_cursor, course_id: str):
+def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, int, str, datetime, Optional[str]]]:
     db_cursor.execute(
         """
         SELECT courseid AS cid, matid as postid, 'mat' as type, timeadded, author
@@ -67,8 +68,8 @@ def sql_select_course_feed(db_cursor, course_id: str):
 
 
 def sql_select_grades_in_course(db_cursor, course_id: str,
-                                students: Union[list[str], None] = None,
-                                assignments: Union[list[int], None] = None) -> list[tuple[str, int, Union[int, None]]]:
+                                students: Optional[List[str]] = None,
+                                assignments: Optional[List[int]] = None) -> List[Tuple[str, int, Optional[int]]]:
     if students is not None and len(students) == 0:
         return []
     if assignments is not None and len(assignments) == 0:

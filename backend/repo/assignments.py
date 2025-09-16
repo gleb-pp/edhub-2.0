@@ -1,3 +1,7 @@
+from typing import List, Tuple, Optional
+from uuid import UUID
+from datetime import datetime
+
 def sql_insert_assignment(db_cursor, course_id: str, title: str, description: str, user_email: str) -> int:
     db_cursor.execute(
         "INSERT INTO course_assignments (courseid, name, description, timeadded, author) VALUES (%s, %s, %s, now(), %s) RETURNING assid",
@@ -13,7 +17,7 @@ def sql_delete_assignment(db_cursor, course_id: str, assignment_id: str) -> None
     )
 
 
-def sql_select_assignment(db_cursor, course_id: str, assignment_id: str):
+def sql_select_assignment(db_cursor, course_id: str, assignment_id: str) -> Optional[Tuple[UUID, int, datetime, str, str, Optional[str]]]:
     db_cursor.execute(
         """
         SELECT courseid, assid, timeadded, name, description, author
@@ -25,7 +29,7 @@ def sql_select_assignment(db_cursor, course_id: str, assignment_id: str):
     return db_cursor.fetchone()
 
 
-def sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id: str, assignment_id: str, filename: str, contents: bytes):
+def sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id: str, assignment_id: str, filename: str, contents: bytes) -> Tuple[UUID, datetime]:
     storage_db_cursor.execute(
         """
         INSERT INTO files 
@@ -49,7 +53,7 @@ def sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id: st
     return db_cursor.fetchone()
 
 
-def sql_select_assignment_attachments(db_cursor, course_id: str, assignment_id: str):
+def sql_select_assignment_attachments(db_cursor, course_id: str, assignment_id: str) -> List[Tuple[UUID, str, datetime]]:
     db_cursor.execute(
         """
         SELECT fileid, filename, uploadtime
@@ -61,7 +65,6 @@ def sql_select_assignment_attachments(db_cursor, course_id: str, assignment_id: 
     return db_cursor.fetchall()
 
 
-def sql_get_all_assignments(db_cursor, course_id: str) -> list[int]:
-    db_cursor.execute("SELECT assid FROM course_assignments WHERE courseid = %s",
-                      (course_id,))
+def sql_get_all_assignments(db_cursor, course_id: str) -> List[int]:
+    db_cursor.execute("SELECT assid FROM course_assignments WHERE courseid = %s", (course_id,))
     return [i[0] for i in db_cursor.fetchall()]

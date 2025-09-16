@@ -1,4 +1,8 @@
-def sql_select_submission_grade(db_cursor, course_id: str, assignment_id: str, student_email: str):
+from typing import List, Tuple, Optional
+from uuid import UUID
+from datetime import datetime
+
+def sql_select_submission_grade(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Optional[Tuple[int]]:
     db_cursor.execute(
         "SELECT grade FROM course_assignments_submissions WHERE courseid = %s AND assid = %s AND email = %s",
         (course_id, assignment_id, student_email),
@@ -6,14 +10,14 @@ def sql_select_submission_grade(db_cursor, course_id: str, assignment_id: str, s
     return db_cursor.fetchone()
 
 
-def sql_insert_submission(db_cursor, course_id: str, assignment_id: str, student_email: str, comment: str):
+def sql_insert_submission(db_cursor, course_id: str, assignment_id: str, student_email: str, comment: str) -> None:
     db_cursor.execute(
         "INSERT INTO course_assignments_submissions (courseid, assid, email, timeadded, timemodified, comment, grade, gradedby) VALUES (%s, %s, %s, now(), now(), %s, null, null)",
         (course_id, assignment_id, student_email, comment),
     )
 
 
-def sql_insert_submission_attachment(db_cursor, storage_db_cursor, course_id: str, assignment_id: str, student_email: str, filename: str, contents: bytes):
+def sql_insert_submission_attachment(db_cursor, storage_db_cursor, course_id: str, assignment_id: str, student_email: str, filename: str, contents: bytes) -> Tuple[UUID, datetime]:
     storage_db_cursor.execute(
         """
         INSERT INTO files 
@@ -37,7 +41,7 @@ def sql_insert_submission_attachment(db_cursor, storage_db_cursor, course_id: st
     return db_cursor.fetchone()
 
 
-def sql_select_submission_attachments(db_cursor, course_id: str, assignment_id: str, student_email: str):
+def sql_select_submission_attachments(db_cursor, course_id: str, assignment_id: str, student_email: str) -> List[Tuple[UUID, str, datetime]]:
     db_cursor.execute(
         """
         SELECT fileid, filename, uploadtime
@@ -49,7 +53,7 @@ def sql_select_submission_attachments(db_cursor, course_id: str, assignment_id: 
     return db_cursor.fetchall()
 
 
-def sql_update_submission_comment(db_cursor, comment: str, course_id: str, assignment_id: str, student_email: str):
+def sql_update_submission_comment(db_cursor, comment: str, course_id: str, assignment_id: str, student_email: str) -> None:
     db_cursor.execute(
         """
         UPDATE course_assignments_submissions
@@ -60,7 +64,7 @@ def sql_update_submission_comment(db_cursor, comment: str, course_id: str, assig
     )
 
 
-def sql_select_submissions(db_cursor, course_id: str, assignment_id: str):
+def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> List[Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str]]]:
     db_cursor.execute(
         """
         SELECT
@@ -81,7 +85,7 @@ def sql_select_submissions(db_cursor, course_id: str, assignment_id: str):
     return db_cursor.fetchall()
 
 
-def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, student_email: str):
+def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str]]:
     db_cursor.execute(
         """
         SELECT
@@ -101,7 +105,7 @@ def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, 
     return db_cursor.fetchone()
 
 
-def sql_update_submission_grade(db_cursor, grade: str | int, user_email: str, course_id: str, assignment_id: str, student_email: str):
+def sql_update_submission_grade(db_cursor, grade: str | int, user_email: str, course_id: str, assignment_id: str, student_email: str) -> None:
     db_cursor.execute(
         """
         UPDATE course_assignments_submissions
