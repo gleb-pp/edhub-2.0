@@ -35,7 +35,7 @@ jobs:
         run: |
           docker run -d -p 8000:8000 \
             --name backend \
-            --env DATABASE_URL=postgresql://postgres:12345678@host.docker.internal:5432/edhub \
+            --env DATABASE_URL=postgresql://postgres:12345678@postgres:5432/edhub \
             edhub-backend
 
       - name: Wait for backend
