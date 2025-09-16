@@ -1,0 +1,49 @@
+name: Backend + DB Integration Test
+
+on:
+  push:
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  backend-db-test:
+    runs-on: ubuntu-latest
+    name: Backend Smoke Test
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 12345678
+          POSTGRES_DB: edhub
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build backend
+        run: docker build -t edhub-backend ./backend
+
+      - name: Run backend container
+        run: |
+          docker run -d -p 8000:8000 \
+            --name backend \
+            --env DATABASE_URL=postgresql://postgres:12345678@host.docker.internal:5432/edhub \
+            edhub-backend
+
+      - name: Wait for backend
+        run: sleep 10
+
+      - name: Check backend API
+        run: curl -f http://localhost:8000/openapi.json || (docker logs backend && exit 1)
+
+      - name: Stop container
+        if: always()
+        run: docker stop backend && docker rm backend
