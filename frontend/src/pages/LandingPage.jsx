@@ -123,8 +123,8 @@ export default function LandingPage() {
   <div style={{ marginTop: 12, fontSize: "1rem" }}>
     <span>
       Project GitHub:{" "}
-      <a href="https://github.com/gleb-pp/edhub-2.0" target="_blank" rel="noopener noreferrer">
-        github.com/gleb-pp/edhub-2.0
+      <a href="https://github.com/gleb-pp/edhub" target="_blank" rel="noopener noreferrer">
+        github.com/gleb-pp/edhub
       </a>
     </span>
   </div>
