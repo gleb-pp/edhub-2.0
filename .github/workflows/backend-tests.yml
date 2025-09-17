@@ -83,6 +83,7 @@ jobs:
             --network edhub-network \
             -p 8000:8000 \
             -e DATABASE_URL=postgresql://postgres:12345678@system_db:5432/edhub \
+            -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
             edhub-backend
 
       - name: Wait for backend to be ready
@@ -204,11 +205,20 @@ jobs:
           echo "Backend failed to start"
           exit 1
 
+      - name: Debug JWT_SECRET_KEY
+        run: |
+          if [ -z "${{ secrets.JWT_SECRET_KEY }}" ]; then
+            echo "JWT_SECRET_KEY is empty or not set"
+            exit 1
+          else
+            echo "JWT_SECRET_KEY is set"
+          fi
+
       - name: Run curltests.sh
         run: |
           chmod +x ./backend/curltests.sh
           sed -i 's|API_URL="http://localhost/api"|API_URL="http://localhost:8000"|' ./backend/curltests.sh
-          ./backend/curltests.sh
+          ./backend/curltests.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
 
       - name: Stop containers
         if: always()
@@ -216,3 +226,4 @@ jobs:
           docker stop backend system_db filestorage_db || true
           docker rm backend system_db filestorage_db || true
           docker network rm edhub-network || true
+  
