@@ -1,7 +1,6 @@
 name: Code style tests
 
 on:
-  push:
   pull_request:
     branches: [ main, dev ]
 

@@ -2,8 +2,6 @@ name: Backend tests
 
 on:
   push:
-  pull_request:
-    branches: [ main, dev ]
 
 jobs:
   backend-db-test:
@@ -52,16 +50,31 @@ jobs:
       
       - name: Wait for system_db to be ready
         run: |
-          until docker exec system_db pg_isready -U postgres; do
-            sleep 1
+          echo "Waiting for system_db to be ready..."
+          for i in {1..30}; do
+            if docker exec system_db pg_isready -U postgres; then
+              echo "system_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for system_db... ($i/30)"
+            sleep 2
           done
+          echo "system_db failed to start"
+          exit 1
 
       - name: Wait for filestorage_db to be ready  
         run: |
-          until docker exec filestorage_db pg_isready -U postgres; do
-            sleep 1
+          echo "Waiting for filestorage_db to be ready..."
+          for i in {1..30}; do
+            if docker exec filestorage_db pg_isready -U postgres; then
+              echo "filestorage_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for filestorage_db... ($i/30)"
+            sleep 2
           done
-          sleep 3
+          echo "filestorage_db failed to start"
+          exit 1
 
       - name: Run backend container
         run: |
@@ -72,8 +85,19 @@ jobs:
             -e DATABASE_URL=postgresql://postgres:12345678@system_db:5432/edhub \
             edhub-backend
 
-      - name: Wait for services
-        run: sleep 20
+      - name: Wait for backend to be ready
+        run: |
+          echo "Waiting for backend to be ready..."
+          for i in {1..30}; do
+            if curl -s -f http://localhost:8000/openapi.json >/dev/null; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+          echo "Backend failed to start"
+          exit 1
 
       - name: Check backend API
         run: curl -f http://localhost:8000/openapi.json || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
@@ -85,9 +109,9 @@ jobs:
           docker rm backend system_db filestorage_db
           docker network rm edhub-network
 
-  docker-compose-curltests:
+  curltests:
     runs-on: ubuntu-latest
-    name: Checking logic with curl tests
+    name: Logical curl tests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -95,19 +119,99 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Docker compose up
-        run: |
-          docker compose up -d --build
+      - name: Create Docker network
+        run: docker network create edhub-network
 
-      - name: Wait for services
+      - name: Build system_db
+        run: docker build -t edhub-system-db ./database/system
+
+      - name: Build filestorage_db
+        run: docker build -t edhub-filestorage-db ./database/filestorage
+
+      - name: Build backend
+        run: docker build -t edhub-backend ./backend
+
+      - name: Run system_db container
         run: |
-          sleep 10
+          docker run -d \
+            --name system_db \
+            --network edhub-network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=12345678 \
+            -e POSTGRES_DB=edhub \
+            -e PGDATA=/var/lib/postgresql/data \
+            edhub-system-db
+
+      - name: Run filestorage_db container
+        run: |
+          docker run -d \
+            --name filestorage_db \
+            --network edhub-network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=12345678 \
+            -e POSTGRES_DB=edhub_storage \
+            -e PGDATA=/var/lib/postgresql/data \
+            edhub-filestorage-db
+
+      - name: Wait for system_db to be ready
+        run: |
+          echo "Waiting for system_db to be ready..."
+          for i in {1..30}; do
+            if docker exec system_db pg_isready -U postgres; then
+              echo "system_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for system_db... ($i/30)"
+            sleep 2
+          done
+          echo "system_db failed to start"
+          exit 1
+
+      - name: Wait for filestorage_db to be ready  
+        run: |
+          echo "Waiting for filestorage_db to be ready..."
+          for i in {1..30}; do
+            if docker exec filestorage_db pg_isready -U postgres; then
+              echo "filestorage_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for filestorage_db... ($i/30)"
+            sleep 2
+          done
+          echo "filestorage_db failed to start"
+          exit 1
+
+      - name: Run backend container
+        run: |
+          docker run -d \
+            --name backend \
+            --network edhub-network \
+            -p 8000:8000 \
+            -e DATABASE_URL=postgresql://postgres:12345678@system_db:5432/edhub \
+            edhub-backend
+      
+      - name: Wait for backend to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s -f http://localhost:8000/openapi.json >/dev/null; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+          echo "Backend failed to start"
+          exit 1
 
       - name: Run curltests.sh
         run: |
           chmod +x ./backend/curltests.sh
+          sed -i 's|API_URL="http://localhost/api"|API_URL="http://localhost:8000"|' ./backend/curltests.sh
           ./backend/curltests.sh
 
-      - name: Docker compose down
+      - name: Stop containers
         if: always()
-        run: docker compose down -v
+        run: |
+          docker stop backend system_db filestorage_db || true
+          docker rm backend system_db filestorage_db || true
+          docker network rm edhub-network || true
