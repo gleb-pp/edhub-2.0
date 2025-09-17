@@ -4,6 +4,7 @@ from jose import jwt
 import constraints
 from auth import pwd_hasher, ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SECRET_KEY, ALGORITHM
 import repo.users as repo_users
+import repo.courses as repo_courses
 from regex import match, search
 import logic.logging as logger
 
@@ -124,7 +125,7 @@ def remove_user(db_conn, db_cursor, user_email: str):
     # remove teacher role preparation: find courses with 1 teacher left
     single_teacher_courses = repo_users.sql_select_single_teacher_courses(db_cursor, user_email)
     for course_id_to_delete in single_teacher_courses:
-        repo_users.sql_delete_course(db_cursor, course_id_to_delete)
+        repo_courses.sql_delete_course(db_cursor, course_id_to_delete)
 
     # remove user
     repo_users.sql_delete_user(db_cursor, user_email)

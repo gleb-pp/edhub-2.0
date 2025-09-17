@@ -25,7 +25,7 @@ def get_all_courses(db_cursor, user_email: str):
 
 
 def create_course(db_conn, db_cursor, title: str, user_email: str, organization: Optional[str] = None):
-    course_id = repo.courses.sql_insert_course(db_cursor, title)
+    course_id = repo.courses.sql_insert_course(db_cursor, title, organization)
     repo.teachers.sql_insert_teacher(db_cursor, user_email, course_id)
     db_conn.commit()
 
