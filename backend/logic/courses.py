@@ -1,3 +1,5 @@
+from typing import Union
+import itertools
 from fastapi import HTTPException
 from constants import TIME_FORMAT
 import constraints
@@ -7,8 +9,6 @@ import repo.users
 import logic.logging as logger
 import logic.users
 import logic.csvtables
-from typing import Union
-import itertools
 
 
 def available_courses(db_cursor, user_email: str):
@@ -136,7 +136,6 @@ def get_students_accessible_by(db_cursor, course_id: str, user_email: str) -> li
         return [email for email, name in repo.students.sql_select_enrolled_students(db_cursor, course_id)]
     if role["is_parent"]:
         return [email for email, name in repo.parents.sql_select_parents_children(db_cursor, course_id, user_email)]
-    elif role["is_student"]:
+    if role["is_student"]:
         return [user_email]
-    else:
-        return []
+    return []

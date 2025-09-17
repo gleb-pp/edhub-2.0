@@ -28,7 +28,7 @@ def sql_insert_submission_attachment(db_cursor, storage_db_cursor, course_id: st
         (contents, )
     )
     fileid = storage_db_cursor.fetchone()[0]
-    
+
     db_cursor.execute(
         """
         INSERT INTO submissions_files 

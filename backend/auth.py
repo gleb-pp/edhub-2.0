@@ -1,11 +1,10 @@
+from contextlib import contextmanager
+from os import environ
+from datetime import datetime
 from fastapi import HTTPException, Depends, APIRouter
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from contextlib import contextmanager
-from os import environ
 from jose import jwt, JWTError
-from datetime import datetime
-
 from psycopg2.pool import PoolError
 from psycopg2.pool import ThreadedConnectionPool
 
@@ -22,8 +21,8 @@ def mk_database(dbname, user, password, host, port):
             conn = conn_pool.getconn()
             with conn.cursor() as cursor:
                 yield conn, cursor
-        except PoolError:
-            raise HTTPException(status_code=503, detail="All database connections are busy")
+        except PoolError as exc:
+            raise HTTPException(status_code=503, detail="All database connections are busy") from exc
         finally:
             if conn is not None:
                 conn.commit()
@@ -59,14 +58,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         # checking the fields
         if expire_timestamp is None or user_email is None:
             raise ValueError("Invalid token structure")
-        
+
         # checking token expiration time
         if datetime.utcnow() > datetime.fromtimestamp(expire_timestamp):
             raise ValueError("Token expired")
 
     except (JWTError, ValueError) as e:
         detail = str(e) if str(e) else "Invalid token"
-        raise HTTPException(status_code=401, detail=detail)
+        raise HTTPException(status_code=401, detail=detail) from e
 
     # checking whether such user exists
     with get_db() as (db_conn, db_cursor):

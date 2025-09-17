@@ -100,7 +100,7 @@ def get_assignment_attachments(db_cursor, course_id: str, assignment_id: str, us
         "filename": file[1],
         "upload_time": file[2].strftime(TIME_FORMAT)
     } for file in files]
- 
+
     return res
 
 

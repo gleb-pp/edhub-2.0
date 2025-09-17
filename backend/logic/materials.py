@@ -91,7 +91,7 @@ def get_material_attachments(db_cursor, course_id: str, material_id: str, user_e
         "filename": file[1],
         "upload_time": file[2].strftime(TIME_FORMAT)
     } for file in files]
- 
+
     return res
 
 

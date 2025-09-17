@@ -1,5 +1,5 @@
-from fastapi import HTTPException
 from datetime import datetime, timedelta
+from fastapi import HTTPException
 from jose import jwt
 import constraints
 from auth import pwd_hasher, ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SECRET_KEY, ALGORITHM
@@ -181,4 +181,4 @@ async def create_admin_account_if_not_exists(db_conn, db_cursor):
     if repo_users.sql_admins_exist(db_cursor):
         return
     create_admin_account(db_conn, db_cursor)
-    print(f"\nAdmin account created\nlogin: admin\npassword: admin\n")
+    print("\nAdmin account created\nlogin: admin\npassword: admin\n")

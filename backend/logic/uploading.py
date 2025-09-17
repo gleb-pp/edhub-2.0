@@ -10,7 +10,7 @@ async def careful_upload(file: UploadFile):
         chunk = await file.read(CHUNK_SIZE)
         if not chunk:
             break
-        
+
         total_size += len(chunk)
         if total_size > MAX_SIZE:
             raise HTTPException(

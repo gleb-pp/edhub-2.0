@@ -30,8 +30,8 @@ def assert_course_exists(db_cursor, course_id: str) -> None:
 def check_material_exists(db_cursor, course_id: str, material_id: str) -> bool:
     try:
         material_id = int(material_id)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Material ID should be integer")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Material ID should be integer") from exc
 
     assert_course_exists(db_cursor, course_id)
     db_cursor.execute(
@@ -50,8 +50,8 @@ def assert_material_exists(db_cursor, course_id: str, material_id: str) -> None:
 def check_assignment_exists(db_cursor, course_id: str, assignment_id: str) -> bool:
     try:
         assignment_id = int(assignment_id)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Assignment ID should be integer")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Assignment ID should be integer") from exc
 
     assert_course_exists(db_cursor, course_id)
     db_cursor.execute(
