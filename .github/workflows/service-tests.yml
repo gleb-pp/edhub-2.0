@@ -48,30 +48,29 @@ jobs:
           echo "filestorage_db failed to start"
           exit 1
 
-      - name: Wait for backend to be ready
+      - name: Check backend health
         run: |
           for i in {1..30}; do
-            if curl -s -f http://localhost:8000/openapi.json >/dev/null; then
+            if curl -s -f http://localhost/api/openapi.json >/dev/null; then
               echo "Backend is ready!"
               exit 0
             fi
             echo "Waiting for backend... ($i/30)"
             sleep 2
           done
-          echo "Backend failed to start"
-          exit 1
-
-      - name: Check backend health
-        run: |
-          curl -f http://localhost/api/openapi.json || \
-          curl -f http://localhost/api/docs || \
-          curl -f http://localhost/api/health || \
           (echo "Backend is not responsive" && docker compose logs backend && exit 1)
 
       - name: Check frontend health
         run: |
-          curl -f http://localhost/ || \
-          (echo "Frontend is not responsive" && docker compose logs frontend nginx && exit 1)
+          for i in {1..30}; do
+            if curl -s -f http://localhost/ >/dev/null; then
+              echo "Frontend is ready!"
+              exit 0
+            fi
+            echo "Waiting for frontend... ($i/30)"
+            sleep 2
+          done
+          (echo "Frontend is not responsive" && docker compose logs frontend && exit 1)
 
       - name: Docker compose down
         if: always()
