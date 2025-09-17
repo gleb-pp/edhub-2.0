@@ -20,15 +20,33 @@ jobs:
         run: |
           docker compose up -d --build
 
-      - name: Wait for database to be ready
+      - name: Wait for system_db to be ready
         run: |
-          until docker compose exec system_db pg_isready -U postgres; do
-            sleep 1
+          echo "Waiting for system_db to be ready..."
+          for i in {1..30}; do
+            if docker exec system_db pg_isready -U postgres; then
+              echo "system_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for system_db... ($i/30)"
+            sleep 2
           done
-          until docker compose exec filestorage_db pg_isready -U postgres; do
-            sleep 1
+          echo "system_db failed to start"
+          exit 1
+
+      - name: Wait for filestorage_db to be ready  
+        run: |
+          echo "Waiting for filestorage_db to be ready..."
+          for i in {1..30}; do
+            if docker exec filestorage_db pg_isready -U postgres; then
+              echo "filestorage_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for filestorage_db... ($i/30)"
+            sleep 2
           done
-          sleep 3
+          echo "filestorage_db failed to start"
+          exit 1
 
       - name: Check backend health
         run: |
