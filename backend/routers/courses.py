@@ -34,6 +34,8 @@ async def get_all_courses(user_email: str = Depends(get_current_user)):
 async def create_course(title: str, organization: Optional[str] = None, user_email: str = Depends(get_current_user)):
     """
     Create the course with provided title and become a teacher in it.
+
+    Organization parameter is optional / can be None.
     """
     with get_db() as (db_conn, db_cursor):
         return logic.courses.create_course(db_conn, db_cursor, title, user_email, organization)
@@ -57,6 +59,8 @@ async def remove_course(course_id: str, user_email: str = Depends(get_current_us
 async def get_course_info(course_id: str, user_email: str = Depends(get_current_user)):
     """
     Get information about the course: course_id, title, organization, creation date, and number of enrolled students.
+
+    Organization can be None.
     """
     with get_db() as (db_conn, db_cursor):
         return logic.courses.get_course_info(db_cursor, course_id, user_email)
