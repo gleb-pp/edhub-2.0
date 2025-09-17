@@ -25,4 +25,6 @@ jobs:
 
       - name: Stop container
         if: always()
-        run: docker stop frontend && docker rm frontend
+        run:
+          docker stop frontend || true
+          docker rm frontend || true

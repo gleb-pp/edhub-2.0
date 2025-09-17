@@ -105,9 +105,9 @@ jobs:
       - name: Stop containers
         if: always()
         run: |
-          docker stop backend system_db filestorage_db
-          docker rm backend system_db filestorage_db
-          docker network rm edhub-network
+          docker stop backend system_db filestorage_db || true
+          docker rm backend system_db filestorage_db || true
+          docker network rm edhub-network || true
 
   curltests:
     runs-on: ubuntu-latest
