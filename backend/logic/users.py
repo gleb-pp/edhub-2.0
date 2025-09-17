@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from datetime import datetime, timedelta
 from jose import jwt
 import constraints
-from auth import pwd_hasher, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from auth import pwd_hasher, ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SECRET_KEY, ALGORITHM
 import repo.users as repo_users
 from regex import match, search
 import logic.logging as logger
