@@ -48,6 +48,19 @@ jobs:
           echo "filestorage_db failed to start"
           exit 1
 
+      - name: Wait for backend to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s -f http://localhost:8000/openapi.json >/dev/null; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+          echo "Backend failed to start"
+          exit 1
+
       - name: Check backend health
         run: |
           curl -f http://localhost/api/openapi.json || \
