@@ -20,7 +20,7 @@ jobs:
         run: |
           docker compose up -d --build
       
-      - name: Wait for system_db to be ready
+      - name: Check system_db health
         run: |
           echo "Waiting for system_db to be ready..."
           for i in {1..30}; do
@@ -34,7 +34,7 @@ jobs:
           echo "system_db failed to start"
           exit 1
 
-      - name: Wait for filestorage_db to be ready  
+      - name: Check filestorage_db health  
         run: |
           echo "Waiting for filestorage_db to be ready..."
           for i in {1..30}; do
@@ -76,3 +76,74 @@ jobs:
         if: always()
         run: |
           docker compose down -v
+
+  docker-compose-prod:
+    runs-on: ubuntu-latest
+    name: Test docker compose (production)
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker compose up
+        run: |
+          docker compose -f docker-compose.prod.yml up -d --build
+      
+      - name: Check system_db health
+        run: |
+          echo "Waiting for system_db to be ready..."
+          for i in {1..30}; do
+            if docker compose -f docker-compose.prod.yml exec system_db pg_isready -U postgres; then
+              echo "system_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for system_db... ($i/30)"
+            sleep 2
+          done
+          echo "system_db failed to start"
+          exit 1
+
+      - name: Check filestorage_db health  
+        run: |
+          echo "Waiting for filestorage_db to be ready..."
+          for i in {1..30}; do
+            if docker compose -f docker-compose.prod.yml exec filestorage_db pg_isready -U postgres; then
+              echo "filestorage_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for filestorage_db... ($i/30)"
+            sleep 2
+          done
+          echo "filestorage_db failed to start"
+          exit 1
+
+      - name: Check backend health
+        run: |
+          for i in {1..30}; do
+            if curl -s -f http://localhost/api/openapi.json >/dev/null; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+          (echo "Backend is not responsive" && docker compose -f docker-compose.prod.yml logs backend && exit 1)
+
+      - name: Check frontend health
+        run: |
+          for i in {1..30}; do
+            if curl -s -f http://localhost/ >/dev/null; then
+              echo "Frontend is ready!"
+              exit 0
+            fi
+            echo "Waiting for frontend... ($i/30)"
+            sleep 2
+          done
+          (echo "Frontend is not responsive" && docker compose -f docker-compose.prod.yml logs frontend && exit 1)
+
+      - name: Docker compose down
+        if: always()
+        run: |
+          docker compose -f docker-compose.prod.yml down -v
