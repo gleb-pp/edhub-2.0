@@ -24,6 +24,7 @@ services:
     restart: always
     environment:
       - DATABASE_URL=postgresql://postgres:12345678@system_db:5432/edhub
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     depends_on:
       - system_db
       - filestorage_db

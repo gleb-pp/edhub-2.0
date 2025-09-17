@@ -25,3 +25,5 @@ jobs:
       - name: Build and start containers
         run: |
           docker compose -f docker-compose.prod.yml up --build -d
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
