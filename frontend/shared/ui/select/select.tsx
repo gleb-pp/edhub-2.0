@@ -12,8 +12,8 @@ import {
 import { Button } from "../button/button";
 import { useAnimatedPresence } from "@/shared/hooks/useAnimatedPresence";
 import { ChevronDown } from "lucide-react";
-import "./select.css";
 import { useClickOutside } from "@/shared/hooks/useClickOutside";
+import "./select.css";
 
 interface SelectContextType {
   isOpen: boolean;
@@ -33,9 +33,8 @@ interface SelectListElementType {
 }
 
 interface SelectProps extends SelectComponentType {
-  value?: string | null;
-  onChange?: (value: string | null) => void;
-  defaultValue?: string | null;
+  value: string | null;
+  onChange: (value: string | null) => void;
 }
 
 interface SelectType {
@@ -44,25 +43,15 @@ interface SelectType {
   ListElement: typeof ListElement;
 }
 
-const SelectContext = createContext<SelectContextType>({
-  isOpen: false,
-  toggle: () => {},
-  select: () => {},
-  selected: null,
-  triggerWidth: 0,
-});
+const SelectContext = createContext<SelectContextType | null>(null);
 
 export const Select: FC<SelectProps> & SelectType = ({
   className,
   children,
   value,
   onChange,
-  defaultValue = null,
 }) => {
   const [isOpen, setOpen] = useState(false);
-  const [internalSelected, setInternalSelected] = useState<string | null>(
-    defaultValue
-  );
   const [triggerWidth, setTriggerWidth] = useState<number>(0);
 
   const selectRef = useRef<HTMLDivElement>(null);
@@ -70,18 +59,9 @@ export const Select: FC<SelectProps> & SelectType = ({
   const toggleOff = () => setOpen(false);
   const toggle = () => setOpen((prev) => !prev);
 
-  const selected = value !== undefined ? value : internalSelected;
-
   const select = (val: string) => {
-    const newValue = selected === val ? null : val;
-
-    if (value !== undefined) {
-      onChange?.(newValue);
-    } else {
-      setInternalSelected(newValue);
-      onChange?.(newValue);
-    }
-
+    const newValue = value === val ? null : val;
+    onChange(newValue);
     setOpen(false);
   };
 
@@ -95,7 +75,7 @@ export const Select: FC<SelectProps> & SelectType = ({
 
   return (
     <SelectContext.Provider
-      value={{ isOpen, toggle, select, selected, triggerWidth }}
+      value={{ isOpen, toggle, select, selected: value, triggerWidth }}
     >
       <div
         ref={selectRef}
@@ -113,7 +93,11 @@ export const Select: FC<SelectProps> & SelectType = ({
 };
 
 const Trigger: FC<SelectComponentType> = ({ className, children }) => {
-  const { toggle, selected, isOpen } = useContext(SelectContext);
+  const ctx = useContext(SelectContext);
+  if (!ctx) throw new Error("Select.Trigger must be used within <Select>");
+
+  const { toggle, selected, isOpen } = ctx;
+
   return (
     <Button
       variant="outline"
@@ -136,11 +120,13 @@ const Trigger: FC<SelectComponentType> = ({ className, children }) => {
 };
 
 const List: FC<SelectComponentType> = ({ className, children }) => {
-  const { isOpen, triggerWidth } = useContext(SelectContext);
+  const ctx = useContext(SelectContext);
+  if (!ctx) throw new Error("Select.List must be used within <Select>");
 
+  const { isOpen, triggerWidth } = ctx;
   const isVisible = useAnimatedPresence(isOpen, 200); // select.css -> animate: * 200ms *
 
-  if (!isVisible) return;
+  if (!isVisible) return null;
 
   return (
     <ul
@@ -164,17 +150,16 @@ const ListElement: FC<SelectComponentType & SelectListElementType> = ({
   children,
   value,
 }) => {
-  const { select, selected } = useContext(SelectContext);
+  const ctx = useContext(SelectContext);
+  if (!ctx) throw new Error("Select.ListElement must be used within <Select>");
 
-  function handleSelectValue() {
-    select(value);
-  }
+  const { select, selected } = ctx;
 
   return (
     <li
       role="option"
       aria-selected={selected === value}
-      onClick={handleSelectValue}
+      onClick={() => select(value)}
       className={clsx(
         "rounded-md transition-all duration-300 hover:bg-bg-outline/80 cursor-pointer",
         selected === value ? "bg-bg-outline" : "bg-white",

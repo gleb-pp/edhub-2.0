@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React, { ButtonHTMLAttributes } from "react";
 
-type ButtonTypesParams = "primary" | "outline" | "cancel";
+type ButtonTypesParams = "primary" | "outline" | "cancel" | "clean";
 type ButtonTypes = ButtonTypesParams | "base";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -16,6 +16,7 @@ const ButtonStyles: Record<ButtonTypes, string> = {
   outline:
     "text-dark bg-white border-[1.5px] border-outline shadow-md hover:bg-bg-outline",
   cancel: "text-white bg-ui-red hover:bg-ui-red/90",
+  clean: "text-dark hover:underline",
 } as const;
 
 export const Button: React.FC<ButtonProps> = ({
