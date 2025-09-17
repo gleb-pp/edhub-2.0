@@ -52,16 +52,31 @@ jobs:
       
       - name: Wait for system_db to be ready
         run: |
-          until docker exec system_db pg_isready -U postgres; do
-            sleep 1
+          echo "Waiting for system_db to be ready..."
+          for i in {1..30}; do
+            if docker exec system_db pg_isready -U postgres; then
+              echo "system_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for system_db... ($i/30)"
+            sleep 2
           done
+          echo "system_db failed to start"
+          exit 1
 
       - name: Wait for filestorage_db to be ready  
         run: |
-          until docker exec filestorage_db pg_isready -U postgres; do
-            sleep 1
+          echo "Waiting for filestorage_db to be ready..."
+          for i in {1..30}; do
+            if docker exec filestorage_db pg_isready -U postgres; then
+              echo "filestorage_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for filestorage_db... ($i/30)"
+            sleep 2
           done
-          sleep 3
+          echo "filestorage_db failed to start"
+          exit 1
 
       - name: Run backend container
         run: |
@@ -72,8 +87,19 @@ jobs:
             -e DATABASE_URL=postgresql://postgres:12345678@system_db:5432/edhub \
             edhub-backend
 
-      - name: Wait for services
-        run: sleep 20
+      - name: Wait for backend to be ready
+        run: |
+          echo "Waiting for backend to be ready..."
+          for i in {1..30}; do
+            if curl -s -f http://localhost:8000/openapi.json >/dev/null; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+          echo "Backend failed to start"
+          exit 1
 
       - name: Check backend API
         run: curl -f http://localhost:8000/openapi.json || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
@@ -131,18 +157,31 @@ jobs:
 
       - name: Wait for system_db to be ready
         run: |
-          until docker exec system_db pg_isready -U postgres; do
-            echo "Waiting for system_db..."
-            sleep 1
+          echo "Waiting for system_db to be ready..."
+          for i in {1..30}; do
+            if docker exec system_db pg_isready -U postgres; then
+              echo "system_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for system_db... ($i/30)"
+            sleep 2
           done
+          echo "system_db failed to start"
+          exit 1
 
       - name: Wait for filestorage_db to be ready  
         run: |
-          until docker exec filestorage_db pg_isready -U postgres; do
-            echo "Waiting for filestorage_db..."
-            sleep 1
+          echo "Waiting for filestorage_db to be ready..."
+          for i in {1..30}; do
+            if docker exec filestorage_db pg_isready -U postgres; then
+              echo "filestorage_db is ready!"
+              exit 0
+            fi
+            echo "Waiting for filestorage_db... ($i/30)"
+            sleep 2
           done
-          sleep 3
+          echo "filestorage_db failed to start"
+          exit 1
 
       - name: Run backend container
         run: |
@@ -152,15 +191,19 @@ jobs:
             -p 8000:8000 \
             -e DATABASE_URL=postgresql://postgres:12345678@system_db:5432/edhub \
             edhub-backend
-
+      
       - name: Wait for backend to be ready
         run: |
-          until curl -s -f http://localhost:8000/openapi.json >/dev/null 2>&1; do
-            echo "Waiting for backend..."
-            sleep 1
+          for i in {1..30}; do
+            if curl -s -f http://localhost:8000/openapi.json >/dev/null; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
           done
-
-          sleep 5
+          echo "Backend failed to start"
+          exit 1
 
       - name: Run curltests.sh
         run: |
