@@ -217,4 +217,3 @@ jobs:
           docker stop backend system_db filestorage_db || true
           docker rm backend system_db filestorage_db || true
           docker network rm edhub-network || true
-  
