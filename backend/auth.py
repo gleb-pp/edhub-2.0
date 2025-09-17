@@ -2,7 +2,7 @@ from fastapi import HTTPException, Depends, APIRouter
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from contextlib import contextmanager
-from secrets import token_hex
+from os import environ
 from jose import jwt, JWTError
 from datetime import datetime
 
@@ -43,7 +43,7 @@ get_storage_db = mk_database(
 router = APIRouter()
 
 # setting for JWT and autorization
-SECRET_KEY = token_hex(32)
+JWT_SECRET_KEY = environ.get('JWT_SECRET_KEY')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -52,7 +52,7 @@ pwd_hasher = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
         expire_timestamp = payload.get("exp")
         user_email = payload.get("email")
 

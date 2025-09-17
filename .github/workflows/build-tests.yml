@@ -66,6 +66,8 @@ jobs:
             exit 1
           fi
           echo "Docker compose build and start succeeded"
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
 
       - name: Docker compose down
         if: always()

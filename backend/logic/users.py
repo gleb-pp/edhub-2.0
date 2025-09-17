@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from datetime import datetime, timedelta
 from jose import jwt
 import constraints
-from auth import pwd_hasher, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from auth import pwd_hasher, ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SECRET_KEY, ALGORITHM
 import repo.users as repo_users
 from regex import match, search
 import logic.logging as logger
@@ -63,7 +63,7 @@ def create_user(db_conn, db_cursor, user):
         "email": user.email,
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     }
-    access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    access_token = jwt.encode(data, JWT_SECRET_KEY, algorithm=ALGORITHM)
 
     logger.log(db_conn, logger.TAG_USER_ADD, f"Created new user: {user.email}")
 
@@ -87,7 +87,7 @@ def login(db_cursor, user):
         "email": user.email,
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     }
-    access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    access_token = jwt.encode(data, JWT_SECRET_KEY, algorithm=ALGORITHM)
 
     return {"email": user.email, "access_token": access_token}
 
