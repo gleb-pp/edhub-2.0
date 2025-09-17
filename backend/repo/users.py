@@ -37,10 +37,6 @@ def sql_select_single_teacher_courses(db_cursor, user_email: str) -> List[UUID]:
     return [row[0] for row in db_cursor.fetchall()]
 
 
-def sql_delete_course(db_cursor, course_id: str) -> None:
-    db_cursor.execute("DELETE FROM courses WHERE courseid = %s", (course_id,))
-
-
 def sql_delete_user(db_cursor, user_email: str) -> None:
     db_cursor.execute("DELETE FROM users WHERE email = %s", (user_email,))
 

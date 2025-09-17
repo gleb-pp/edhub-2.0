@@ -12,6 +12,7 @@ CREATE TABLE users(
 CREATE TABLE courses(
     courseid uuid PRIMARY KEY,
     name text NOT NULL CHECK (length(name) <= 128),
+    organization text CHECK (length(organization) <= 128),
     timecreated timestamp NOT NULL
 );
 

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 import itertools
 from fastapi import HTTPException
 from constants import TIME_FORMAT
@@ -24,8 +24,8 @@ def get_all_courses(db_cursor, user_email: str):
     return result
 
 
-def create_course(db_conn, db_cursor, title: str, user_email: str):
-    course_id = repo.courses.sql_insert_course(db_cursor, title)
+def create_course(db_conn, db_cursor, title: str, user_email: str, organization: Optional[str] = None):
+    course_id = repo.courses.sql_insert_course(db_cursor, title, organization)
     repo.teachers.sql_insert_teacher(db_cursor, user_email, course_id)
     db_conn.commit()
 
@@ -52,8 +52,9 @@ def get_course_info(db_cursor, course_id: str, user_email: str):
     res = {
         "course_id": str(course[0]),
         "title": course[1],
-        "creation_time": course[2].strftime(TIME_FORMAT),
-        "number_of_students": course[3],
+        "organization": course[2],
+        "creation_time": course[3].strftime(TIME_FORMAT),
+        "number_of_students": course[4],
     }
     return res
 
