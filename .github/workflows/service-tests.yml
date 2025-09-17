@@ -19,12 +19,12 @@ jobs:
       - name: Docker compose up
         run: |
           docker compose up -d --build
-
+      
       - name: Wait for system_db to be ready
         run: |
           echo "Waiting for system_db to be ready..."
           for i in {1..30}; do
-            if docker exec system_db pg_isready -U postgres; then
+            if docker compose exec system_db pg_isready -U postgres; then
               echo "system_db is ready!"
               exit 0
             fi
@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "Waiting for filestorage_db to be ready..."
           for i in {1..30}; do
-            if docker exec filestorage_db pg_isready -U postgres; then
+            if docker compose exec filestorage_db pg_isready -U postgres; then
               echo "filestorage_db is ready!"
               exit 0
             fi
