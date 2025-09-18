@@ -76,13 +76,15 @@ async def remove_user(user_email: str = Depends(get_current_user)):
     """
     Delete user account from the system.
 
-    The user will be removed from courses where they were a Parent.
-
-    The user will be removed from courses where they were a Student.
+    The user will be removed from courses where they were a Parent, Student, or Teacher.
+    
+    Courses where the user is the Primary Instructor will be deleted.
 
     The user's assignment submissions will be removed.
 
-    Courses where the user is the only Teacher will be deleted.
+    The user's materials and assignments will be left but with NULL author.
+
+    User CAN NOT be deleted if they are the only platform administrator.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_remove_user(db_conn, db_cursor, user_email)
