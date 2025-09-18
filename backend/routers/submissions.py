@@ -41,7 +41,7 @@ async def get_assignment_submissions(course_id: str, assignment_id: str, user_em
     """
     Get the list of students submissions of provided assignments.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
 
     Submissions are ordered by submission_time, the first submissions are new.
 
@@ -67,7 +67,7 @@ async def get_submission(
     """
     Get the student submission of assignment by course_id, assignment_id and student_email.
 
-    - Teacher can get all submissions of the course
+    - Teacher AND Primary Instructor can get all submissions of the course
     - Parent can get the submission of their student
     - Stuent can get their submissions
 
@@ -94,7 +94,7 @@ async def grade_submission(
     """
     Allows teacher to grade student's submission.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
     """
 
     # connection to database
@@ -136,6 +136,10 @@ async def get_submission_attachments(course_id: str, assignment_id: str, student
     """
     Get the list of attachments to the course assignment submission by provided course_id, assignment_id, student_email.
 
+    - Teacher AND Primary Instructor can get all submission attachments of the course
+    - Parent can get the submission attachments of their student
+    - Stuent can get their submission attachments
+    
     Returns list of attachments metadata (course_id, assignment_id, student_email, file_id, filename, upload_time).
 
     The format of upload_time is TIME_FORMAT.
