@@ -21,8 +21,8 @@ def create_material(db_conn, db_cursor, course_id: str, title: str, description:
 
 def remove_material(db_conn, db_cursor, course_id: str, material_id: str, user_email: str):
     # checking constraints
-    constraints.assert_material_exists(db_cursor, course_id, material_id)
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
+    constraints.assert_material_exists(db_cursor, course_id, material_id)
 
     # remove material
     repo_mat.sql_delete_material(db_cursor, course_id, material_id)
@@ -55,8 +55,8 @@ def get_material(db_cursor, course_id: str, material_id: str, user_email: str):
 
 async def create_material_attachment(db_conn, db_cursor, storage_db_conn, storage_db_cursor, course_id: str, material_id: str, file: UploadFile, user_email: str):
     # checking constraints
-    constraints.assert_material_exists(db_cursor, course_id, material_id)
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
+    constraints.assert_material_exists(db_cursor, course_id, material_id)
 
     # read the file
     contents = await careful_upload(file)
@@ -78,8 +78,8 @@ async def create_material_attachment(db_conn, db_cursor, storage_db_conn, storag
 
 def get_material_attachments(db_cursor, course_id: str, material_id: str, user_email: str):
     # checking constraints
-    constraints.assert_material_exists(db_cursor, course_id, material_id)
     constraints.assert_course_access(db_cursor, user_email, course_id)
+    constraints.assert_material_exists(db_cursor, course_id, material_id)
 
     # searching for material attachments
     files = repo_mat.sql_select_material_attachments(db_cursor, course_id, material_id)
@@ -97,8 +97,8 @@ def get_material_attachments(db_cursor, course_id: str, material_id: str, user_e
 
 def download_material_attachment(db_cursor, storage_db_cursor, course_id: str, material_id: str, file_id: str, user_email: str):
     # checking constraints
-    constraints.assert_material_exists(db_cursor, course_id, material_id)
     constraints.assert_course_access(db_cursor, user_email, course_id)
+    constraints.assert_material_exists(db_cursor, course_id, material_id)
 
     # searching for material attachment
     file = repo_files.sql_download_attachment(storage_db_cursor, file_id)

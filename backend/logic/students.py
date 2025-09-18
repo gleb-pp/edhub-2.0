@@ -17,15 +17,12 @@ def get_enrolled_students(db_cursor, course_id: str, user_email: str):
 
 def invite_student(db_conn, db_cursor, course_id: str, student_email: str, teacher_email: str):
     # checking constraints
-    constraints.assert_user_exists(db_cursor, student_email)
     constraints.assert_teacher_access(db_cursor, teacher_email, course_id)
+    constraints.assert_user_exists(db_cursor, student_email)
 
     # check if the student already enrolled to course
     if constraints.check_student_access(db_cursor, student_email, course_id):
-        raise HTTPException(
-            status_code=403,
-            detail="The invited user already has student rights in this course",
-        )
+        raise HTTPException(status_code=403, detail="The invited user already has student rights in this course")
 
     # check if the potential student already has teacher rights at this course
     if constraints.check_teacher_access(db_cursor, student_email, course_id):

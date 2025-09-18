@@ -15,10 +15,9 @@ def submit_assignment(
     comment: str,
     student_email: str,
 ):
-
     # checking constraints
-    constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
     constraints.assert_student_access(db_cursor, student_email, course_id)
+    constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
 
     submission = repo_submit.sql_select_submission_grade(db_cursor, course_id, assignment_id, student_email)
 
@@ -42,8 +41,8 @@ def submit_assignment(
 
 def get_assignment_submissions(db_cursor, course_id: str, assignment_id: str, user_email: str):
     # checking constraints
-    constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
+    constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
 
     # finding students' submissions
     submissions = repo_submit.sql_select_submissions(db_cursor, course_id, assignment_id)
@@ -73,14 +72,15 @@ def get_submission(
     user_email: str,
 ):
     # checking constraints
-    constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
-    constraints.assert_student_access(db_cursor, student_email, course_id)
     if not (
         constraints.check_teacher_access(db_cursor, user_email, course_id)
         or constraints.check_parent_student_access(db_cursor, user_email, student_email, course_id)
         or student_email == user_email
     ):
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
+    
+    constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
+    constraints.assert_student_access(db_cursor, student_email, course_id)
 
     # finding student's submission
     submission = repo_submit.sql_select_single_submission(db_cursor, course_id, assignment_id, student_email)
@@ -124,9 +124,10 @@ def grade_submission(
 
 async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, storage_db_cursor, course_id: str, assignment_id: str, student_email: str, file: UploadFile, user_email: str):
     # checking constraints
-    constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
     if student_email != user_email:
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
+    
+    constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
 
     # read the file
     contents = await careful_upload(file)
@@ -149,13 +150,14 @@ async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, stor
 
 def get_submission_attachments(db_cursor, course_id: str, assignment_id: str, student_email: str, user_email: str):
     # checking constraints
-    constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
     if not (
         constraints.check_teacher_access(db_cursor, user_email, course_id)
         or constraints.check_parent_student_access(db_cursor, user_email, student_email, course_id)
         or student_email == user_email
     ):
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
+    
+    constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
 
     # searching for submission attachments
     files = repo_submit.sql_select_submission_attachments(db_cursor, course_id, assignment_id, student_email)
@@ -174,13 +176,14 @@ def get_submission_attachments(db_cursor, course_id: str, assignment_id: str, st
 
 def download_submission_attachment(db_cursor, storage_db_cursor, course_id: str, assignment_id: str, student_email: str, file_id: str, user_email: str):
     # checking constraints
-    constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
     if not (
         constraints.check_teacher_access(db_cursor, user_email, course_id)
         or constraints.check_parent_student_access(db_cursor, user_email, student_email, course_id)
         or student_email == user_email
     ):
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
+    
+    constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
 
     # searching for submission attachment
     file = repo_files.sql_download_attachment(storage_db_cursor, file_id)

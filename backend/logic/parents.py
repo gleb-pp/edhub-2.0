@@ -6,15 +6,15 @@ import logic.logging as logger
 
 def get_students_parents(db_cursor, course_id: str, student_email: str, user_email: str):
 
-    # check if the student is enrolled to course
-    if not constraints.check_student_access(db_cursor, student_email, course_id):
-        raise HTTPException(status_code=404, detail="Provided user in not a student at this course")
-
     # checking constraints
     if not (constraints.check_teacher_access(db_cursor, user_email, course_id) or
             constraints.check_parent_student_access(db_cursor, user_email, student_email, course_id) or
             student_email == user_email):
         raise HTTPException(status_code=403, detail="User has no rights to see the list of parents for this student")
+
+    # check if the student is enrolled to course
+    if not constraints.check_student_access(db_cursor, student_email, course_id):
+        raise HTTPException(status_code=404, detail="Provided user in not a student at this course")
 
     # finding student's parents
     parents = repo_parents.sql_select_students_parents(db_cursor, course_id, student_email)
@@ -74,7 +74,8 @@ def remove_parent(
         raise HTTPException(status_code=403, detail="User does not have permissions to delete this parent")
 
     # check if the parent assigned to the course with the student
-    constraints.assert_parent_student_access(db_cursor, parent_email, student_email, course_id)
+    if not constraints.check_parent_student_access(db_cursor, parent_email, student_email, course_id):
+        raise HTTPException(status_code=404, detail="User to remove is not a parent of this student at this course")
 
     # remove parent
     repo_parents.sql_delete_parent_of_at_course(db_cursor, course_id, student_email, parent_email)
