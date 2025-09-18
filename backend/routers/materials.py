@@ -2,14 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends, UploadFile, File
 from auth import get_current_user, get_db, get_storage_db
 import json_classes
-from logic.materials import (
-    create_material as logic_create_material,
-    remove_material as logic_remove_material,
-    get_material as logic_get_material,
-    create_material_attachment as logic_create_material_attachment,
-    get_material_attachments as logic_get_material_attachments,
-    download_material_attachment as logic_download_material_attachment
-)
+import logic.materials
+
 
 router = APIRouter()
 
@@ -29,7 +23,7 @@ async def create_material(
     Returns the (course_id, material_id) for the new material in case of success.
     """
     with get_db() as (db_conn, db_cursor):
-        return logic_create_material(db_conn, db_cursor, course_id, title, description, user_email)
+        return logic.materials.create_material(db_conn, db_cursor, course_id, title, description, user_email)
 
 
 @router.post("/remove_material", response_model=json_classes.Success, tags=["Materials"])
@@ -40,7 +34,7 @@ async def remove_material(course_id: str, material_id: str, user_email: str = De
     Teacher OR Primary Instructor role required.
     """
     with get_db() as (db_conn, db_cursor):
-        return logic_remove_material(db_conn, db_cursor, course_id, material_id, user_email)
+        return logic.materials.remove_material(db_conn, db_cursor, course_id, material_id, user_email)
 
 
 @router.get("/get_material", response_model=json_classes.Material, tags=["Materials"])
@@ -57,7 +51,7 @@ async def get_material(course_id: str, material_id: str, user_email: str = Depen
     Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor):
-        return logic_get_material(db_cursor, course_id, material_id, user_email)
+        return logic.materials.get_material(db_cursor, course_id, material_id, user_email)
 
 
 @router.post("/create_material_attachment", response_model=json_classes.MaterialAttachmentMetadata, tags=["Materials"])
@@ -77,7 +71,7 @@ async def create_material_attachment(
     The format of upload_time is TIME_FORMAT.
     """
     with get_db() as (db_conn, db_cursor), get_storage_db() as (storage_db_conn, storage_db_cursor):
-        return await logic_create_material_attachment(db_conn, db_cursor, storage_db_conn, storage_db_cursor, course_id, material_id, file, user_email)
+        return await logic.materials.create_material_attachment(db_conn, db_cursor, storage_db_conn, storage_db_cursor, course_id, material_id, file, user_email)
 
 
 @router.get("/get_material_attachments", response_model=List[json_classes.MaterialAttachmentMetadata], tags=["Materials"])
@@ -92,7 +86,7 @@ async def get_material_attachments(course_id: str, material_id: str, user_email:
     Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor):
-        return logic_get_material_attachments(db_cursor, course_id, material_id, user_email)
+        return logic.materials.get_material_attachments(db_cursor, course_id, material_id, user_email)
 
 
 @router.get("/download_material_attachment", tags=["Materials"])
@@ -103,4 +97,4 @@ async def download_material_attachment(course_id: str, material_id: str, file_id
     Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor), get_storage_db() as (storage_db_conn, storage_db_cursor):
-        return logic_download_material_attachment(db_cursor, storage_db_cursor, course_id, material_id, file_id, user_email)
+        return logic.materials.download_material_attachment(db_cursor, storage_db_cursor, course_id, material_id, file_id, user_email)

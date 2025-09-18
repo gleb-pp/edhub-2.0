@@ -2,15 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, UploadFile, File
 from auth import get_current_user, get_db, get_storage_db
 import json_classes
-from logic.submissions import (
-    submit_assignment as logic_submit_assignment,
-    get_assignment_submissions as logic_get_assignment_submissions,
-    get_submission as logic_get_submission,
-    grade_submission as logic_grade_submission,
-    create_submission_attachment as logic_create_submission_attachment,
-    get_submission_attachments as logic_get_submission_attachments,
-    download_submission_attachment as logic_download_submission_attachment,
-)
+import logic.submissions
 
 
 router = APIRouter()
@@ -33,7 +25,7 @@ async def submit_assignment(
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_submit_assignment(db_conn, db_cursor, course_id, assignment_id, comment, student_email)
+        return logic.submissions.submit_assignment(db_conn, db_cursor, course_id, assignment_id, comment, student_email)
 
 
 @router.get("/get_assignment_submissions", response_model=List[json_classes.Submission], tags=["Submissions"])
@@ -54,7 +46,7 @@ async def get_assignment_submissions(course_id: str, assignment_id: str, user_em
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_get_assignment_submissions(db_cursor, course_id, assignment_id, user_email)
+        return logic.submissions.get_assignment_submissions(db_cursor, course_id, assignment_id, user_email)
 
 
 @router.get("/get_submission", response_model=json_classes.Submission, tags=["Submissions"])
@@ -80,7 +72,7 @@ async def get_submission(
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_get_submission(db_cursor, course_id, assignment_id, student_email, user_email)
+        return logic.submissions.get_submission(db_cursor, course_id, assignment_id, student_email, user_email)
 
 
 @router.post("/grade_submission", response_model=json_classes.Success, tags=["Submissions"])
@@ -99,7 +91,7 @@ async def grade_submission(
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_grade_submission(
+        return logic.submissions.grade_submission(
             db_conn,
             db_cursor,
             course_id,
@@ -128,7 +120,7 @@ async def create_submission_attachment(
     The format of upload_time is TIME_FORMAT.
     """
     with get_db() as (db_conn, db_cursor), get_storage_db() as (storage_db_conn, storage_db_cursor):
-        return await logic_create_submission_attachment(db_conn, db_cursor, storage_db_conn, storage_db_cursor, course_id, assignment_id, student_email, file, user_email)
+        return await logic.submissions.create_submission_attachment(db_conn, db_cursor, storage_db_conn, storage_db_cursor, course_id, assignment_id, student_email, file, user_email)
 
 
 @router.get("/get_submission_attachments", response_model=List[json_classes.SubmissionAttachmentMetadata], tags=["Submissions"])
@@ -145,7 +137,7 @@ async def get_submission_attachments(course_id: str, assignment_id: str, student
     The format of upload_time is TIME_FORMAT.
     """
     with get_db() as (db_conn, db_cursor):
-        return logic_get_submission_attachments(db_cursor, course_id, assignment_id, student_email, user_email)
+        return logic.submissions.get_submission_attachments(db_cursor, course_id, assignment_id, student_email, user_email)
 
 
 @router.get("/download_submission_attachment", tags=["Submissions"])
@@ -154,4 +146,4 @@ async def download_submission_attachment(course_id: str, assignment_id: str, stu
     Download the attachment to the course assignment submission by provided course_id, assignment_id, student_email, file_id.
     """
     with get_db() as (db_conn, db_cursor), get_storage_db() as (storage_db_conn, storage_db_cursor):
-        return logic_download_submission_attachment(db_cursor, storage_db_cursor, course_id, assignment_id, student_email, file_id, user_email)
+        return logic.submissions.download_submission_attachment(db_cursor, storage_db_cursor, course_id, assignment_id, student_email, file_id, user_email)

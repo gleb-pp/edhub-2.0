@@ -1,14 +1,9 @@
 from typing import List
 from fastapi import APIRouter, Depends
-
 from auth import get_current_user, get_db
-from logic.parents import (
-    get_students_parents as logic_get_students_parents,
-    invite_parent as logic_invite_parent,
-    remove_parent as logic_remove_parent,
-    get_parents_children as logic_get_parents_children,
-)
+import logic.parents
 import json_classes
+
 
 router = APIRouter()
 
@@ -23,7 +18,7 @@ async def get_students_parents(course_id: str, student_email: str, user_email: s
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_get_students_parents(db_cursor, course_id, student_email, user_email)
+        return logic.parents.get_students_parents(db_cursor, course_id, student_email, user_email)
 
 
 @router.post("/invite_parent", response_model=json_classes.Success, tags=["Parents"])
@@ -41,7 +36,7 @@ async def invite_parent(
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_invite_parent(db_conn, db_cursor, course_id, student_email, parent_email, teacher_email)
+        return logic.parents.invite_parent(db_conn, db_cursor, course_id, student_email, parent_email, teacher_email)
 
 
 @router.post("/remove_parent", response_model=json_classes.Success, tags=["Parents"])
@@ -61,7 +56,7 @@ async def remove_parent(
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_remove_parent(db_conn, db_cursor, course_id, student_email, parent_email, user_email)
+        return logic.parents.remove_parent(db_conn, db_cursor, course_id, student_email, parent_email, user_email)
 
 
 @router.get("/get_parents_children", response_model=List[json_classes.User], tags=["Parents"])
@@ -76,4 +71,4 @@ async def get_parents_children(course_id: str, parent_email: str, user_email: st
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_get_parents_children(db_cursor, course_id, parent_email, user_email)
+        return logic.parents.get_parents_children(db_cursor, course_id, parent_email, user_email)
