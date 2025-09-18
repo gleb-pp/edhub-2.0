@@ -29,6 +29,14 @@ def sql_update_password(db_cursor, email: str, hashed_new_password: str) -> None
     db_cursor.execute("UPDATE users SET passwordhash = %s WHERE email = %s", (hashed_new_password, email))
 
 
+def sql_select_instructor_courses(db_cursor, user_email: str) -> List[UUID]:
+    db_cursor.execute(
+        "SELECT courseid FROM courses WHERE instructor = %s",
+        (user_email,),
+    )
+    return [row[0] for row in db_cursor.fetchall()]
+
+
 def sql_delete_user(db_cursor, user_email: str) -> None:
     db_cursor.execute("DELETE FROM users WHERE email = %s", (user_email,))
 

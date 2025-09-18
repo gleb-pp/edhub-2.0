@@ -116,6 +116,12 @@ def change_password(db_conn, db_cursor, user):
     return {"success": True}
 
 
+def get_instructor_courses(db_cursor, user_email: str):
+    courses = repo_users.sql_select_instructor_courses(db_cursor, user_email)
+    result = [{"course_id": crs} for crs in courses]
+    return result
+
+
 def remove_user(db_conn, db_cursor, user_email: str):
 
     # checking constraints
