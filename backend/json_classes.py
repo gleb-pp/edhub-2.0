@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 from pydantic import BaseModel
 
 
@@ -24,6 +24,8 @@ class CourseId(BaseModel):
 
 class Course(CourseId):
     title: str
+    instructor: str
+    organization: Optional[str]
     creation_time: str
     number_of_students: int
 
@@ -45,6 +47,7 @@ class Material(MaterialID):
     creation_time: str
     title: str
     description: str
+    author: Optional[str]
 
 
 class MaterialAttachmentMetadata(BaseModel):
@@ -64,7 +67,7 @@ class Assignment(AssignmentID):
     creation_time: str
     title: str
     description: str
-    author: str
+    author: Optional[str]
 
 
 class AssignmentAttachmentMetadata(BaseModel):
