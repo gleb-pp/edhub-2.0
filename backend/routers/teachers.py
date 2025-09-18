@@ -45,11 +45,9 @@ async def remove_teacher(
     """
     Remove the teacher with removing_teacher_email from the course with provided course_id.
 
-    Teacher role required.
+    Primary Instructor role required.
 
-    Teacher can remove themself.
-
-    At least one teacher should stay in the course.
+    Primary Instructor can't remove themself until they are Primary Instructor.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_remove_teacher(db_conn, db_cursor, course_id, removing_teacher_email, teacher_email)
