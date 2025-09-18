@@ -40,7 +40,7 @@ def sql_select_course_info(db_cursor, course_id: str) -> Optional[Tuple[UUID, st
         """
         SELECT courseid, name, instructor, organization, timecreated
         FROM courses
-        WHERE c.courseid = %s
+        WHERE courseid = %s
         """,
         (course_id,),
     )
