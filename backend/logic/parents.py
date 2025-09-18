@@ -13,7 +13,7 @@ def get_students_parents(db_cursor, course_id: str, student_email: str, user_ema
     # checking constraints
     if not (constraints.check_teacher_access(db_cursor, user_email, course_id) or
             constraints.check_parent_student_access(db_cursor, user_email, student_email, course_id) or
-            (constraints.check_student_access(db_cursor, user_email, course_id) and student_email == user_email)):
+            student_email == user_email):
         raise HTTPException(status_code=403, detail="User has no rights to see the list of parents for this student")
 
     # finding student's parents
@@ -52,7 +52,7 @@ def invite_parent(
     repo_parents.sql_insert_parent_of_at_course(db_cursor, parent_email, student_email, course_id)
     db_conn.commit()
 
-    logger.log(db_conn, logger.TAG_PARENT_ADD, f"Teacher {teacher_email} invited a parent {parent_email} for student {student_email}")
+    logger.log(db_conn, logger.TAG_PARENT_ADD, f"Teacher {teacher_email} invited a parent {parent_email} for student {student_email} at the course {course_id}")
 
     return {"success": True}
 
@@ -85,12 +85,20 @@ def remove_parent(
     return {"success": True}
 
 
-def get_parents_children(db_cursor, course_id: str, user_email: str):
+def get_parents_children(db_cursor, course_id: str, parent_email, user_email: str):
 
     # checking constraints
-    constraints.assert_course_exists(db_cursor, course_id)
+    if not (
+        constraints.check_teacher_access(db_cursor, user_email, course_id)
+        or (constraints.check_parent_access(db_cursor, user_email, course_id) and parent_email == user_email)
+    ):
+        raise HTTPException(status_code=403, detail="User does not have permissions to see the children of this parent")
 
-    parents_children = repo_parents.sql_select_parents_children(db_cursor, course_id, user_email)
+    # check if the user is parent already has teacher rights at this course
+    if constraints.check_parent_access(db_cursor, parent_email, course_id):
+        raise HTTPException(status_code=403, detail="Provided user in not a parent at this course")
+
+    parents_children = repo_parents.sql_select_parents_children(db_cursor, course_id, parent_email)
 
     res = [{"email": child[0], "name": child[1]} for child in parents_children]
     return res
