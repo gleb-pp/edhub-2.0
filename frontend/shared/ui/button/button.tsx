@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { ButtonHTMLAttributes } from "react";
+import React, { ButtonHTMLAttributes, memo } from "react";
 
 type ButtonTypesParams = "primary" | "outline" | "cancel" | "clean";
 type ButtonTypes = ButtonTypesParams | "base";
@@ -19,19 +19,22 @@ const ButtonStyles: Record<ButtonTypes, string> = {
   clean: "text-dark hover:underline",
 } as const;
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button = memo(function Button({
   className,
   variant = "primary",
   loading = false,
   children,
+  type,
   ...props
-}) => {
+}: ButtonProps) {
   return (
     <button
+      type={type ?? "button"}
       aria-busy={loading ? "true" : undefined}
+      aria-disabled={props.disabled || loading ? true : undefined}
       className={clsx(ButtonStyles["base"], ButtonStyles[variant], className)}
-      {...props}
       disabled={props.disabled || loading}
+      {...props}
     >
       {loading ? (
         <span
@@ -45,4 +48,4 @@ export const Button: React.FC<ButtonProps> = ({
       )}
     </button>
   );
-};
+});

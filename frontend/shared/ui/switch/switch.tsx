@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect, useState, FC } from "react";
+import React, { useRef, useLayoutEffect, useState, FC } from "react";
 import clsx from "clsx";
 
 interface SwitchProps {
@@ -8,12 +8,12 @@ interface SwitchProps {
   className?: string;
 }
 
-export const Switch: FC<SwitchProps> = ({
+export const Switch: FC<SwitchProps> = React.memo(function Switch({
   checked,
   onClick,
   disabled,
   className,
-}) => {
+}) {
   const btnRef = useRef<HTMLButtonElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);
@@ -29,7 +29,7 @@ export const Switch: FC<SwitchProps> = ({
       const available = btn.clientWidth - thumb.offsetWidth - paddings;
       setOffset(available);
     }
-  }, [btnRef, thumbRef]);
+  }, []);
 
   return (
     <button
@@ -37,6 +37,7 @@ export const Switch: FC<SwitchProps> = ({
       type="button"
       role="switch"
       aria-checked={checked}
+      aria-disabled={disabled ? true : undefined}
       onClick={() => !disabled && onClick(!checked)}
       disabled={disabled}
       className={clsx(
@@ -52,4 +53,4 @@ export const Switch: FC<SwitchProps> = ({
       />
     </button>
   );
-};
+});

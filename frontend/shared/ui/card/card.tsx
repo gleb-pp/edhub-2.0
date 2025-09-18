@@ -1,25 +1,29 @@
 import clsx from "clsx";
-import React, { HTMLAttributes } from "react";
+import React, { forwardRef, HTMLAttributes, memo } from "react";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export const Card: React.FC<CardProps> = ({
-  className,
-  children,
-  ...props
-}) => {
-  return (
-    <div
-      role="group"
-      className={clsx(
-        "bg-white border border-outline rounded-xl shadow-md",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+export const Card = memo(
+  forwardRef<HTMLDivElement, CardProps>(function Card(
+    { className, children, ...props },
+    ref
+  ) {
+    return (
+      <div
+        ref={ref}
+        role="group"
+        className={clsx(
+          "bg-white border border-outline rounded-xl shadow-md",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  })
+);
+
+Card.displayName = "Card";

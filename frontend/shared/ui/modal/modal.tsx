@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, FC, useRef } from "react";
+import React, { useEffect, FC, useRef, useCallback, useId } from "react";
 import clsx from "clsx";
 import { Card } from "../card/card";
 import "./modal.css";
@@ -23,52 +23,36 @@ interface ModalType extends FC<ModalProps> {
   Footer: FC<ModalElementProps>;
 }
 
+//
+// ЕСЛИ МОДАЛОК НЕСКОЛЬКО, ДОБАВИТЬ УНИКАЛЬНЫЕ id ДЛЯ ЭЛЕМЕНТОВ МОДАЛКИ
+//
+
 const ModalComponent: FC<ModalProps> = ({
   isOpen,
   onClose,
   children,
   className,
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedElement = useRef<HTMLElement | null>(null);
 
-  const isVisible = useAnimatedPresence(isOpen, 200); // modal.css -> animation: * 200ms *;
+  const isVisible = useAnimatedPresence(isOpen, 200); // modal.css -> animation: * 200ms *
 
   useEffect(() => {
-    if (isOpen && modalRef.current) {
-      modalRef.current.focus();
+    if (isOpen) {
+      previouslyFocusedElement.current = document.activeElement as HTMLElement;
+      dialogRef.current?.focus();
+    } else {
+      previouslyFocusedElement.current?.focus();
     }
   }, [isOpen]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Tab" && modalRef.current) {
-      const focusable = modalRef.current.querySelectorAll<
-        | HTMLButtonElement
-        | HTMLInputElement
-        | HTMLTextAreaElement
-        | HTMLAnchorElement
-      >(
-        'a[href], button:not([disabled]), textarea, input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-
-      if (!first || !last) return;
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-  };
 
   if (!isVisible) return null;
 
   return (
     <div
-      ref={modalRef}
+      ref={overlayRef}
       className={clsx(
         "fixed inset-0 flex items-center justify-center bg-black/50 z-50",
         isOpen ? "fade-in" : "fade-out"
@@ -81,13 +65,13 @@ const ModalComponent: FC<ModalProps> = ({
         aria-labelledby="modal-title"
         aria-describedby="modal-body"
         tabIndex={-1}
-        onKeyDown={handleKeyDown}
         className={clsx(
           "flex flex-col",
           isOpen ? "scale-in" : "scale-out",
           className
         )}
         onClick={(e) => e.stopPropagation()}
+        ref={dialogRef}
       >
         {children}
       </Card>
@@ -98,7 +82,7 @@ const ModalComponent: FC<ModalProps> = ({
 const Modal = ModalComponent as ModalType;
 
 Modal.Header = ({ className, children }) => (
-  <div id="modal-title" className={className}>
+  <div id={`modal-title`} className={className}>
     {children}
   </div>
 );
