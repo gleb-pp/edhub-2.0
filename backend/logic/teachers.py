@@ -44,13 +44,16 @@ def invite_teacher(db_conn, db_cursor, course_id: str, new_teacher_email: str, i
     return {"success": True}
 
 
-def remove_teacher(db_conn, db_cursor, course_id: str, removing_teacher_email: str, instructor_email: str):
+def remove_teacher(db_conn, db_cursor, course_id: str, removing_teacher_email: str, user_email: str):
     # checking constraints
     constraints.assert_user_exists(db_cursor, removing_teacher_email)
-    constraints.assert_instructor_access(db_cursor, instructor_email, course_id)
+    if not (constraints.check_instructor_access(db_cursor, user_email, course_id) or
+            (constraints.check_teacher_access(db_cursor, user_email, course_id) and removing_teacher_email == user_email)
+    ):
+        raise HTTPException(status_code=403, detail="User does not have permissions to delete this teacher")
 
-    if instructor_email == removing_teacher_email:
-        raise HTTPException(status_code=403, detail="Primary Instructor can't remove themselves")
+    if constraints.check_instructor_access(db_cursor, removing_teacher_email, course_id):
+        raise HTTPException(status_code=403, detail="Impossible to remove Primary Instructor")
 
     # check if the teacher assigned to the course
     if not constraints.check_teacher_access(db_cursor, removing_teacher_email, course_id):
@@ -60,6 +63,6 @@ def remove_teacher(db_conn, db_cursor, course_id: str, removing_teacher_email: s
     repo_teachers.sql_delete_teacher(db_cursor, course_id, removing_teacher_email)
     db_conn.commit()
 
-    logger.log(db_conn, logger.TAG_TEACHER_DEL, f"Teacher {instructor_email} removed a teacher {removing_teacher_email} from course {course_id}")
+    logger.log(db_conn, logger.TAG_TEACHER_DEL, f"Teacher {user_email} removed a teacher {removing_teacher_email} from course {course_id}")
 
     return {"success": True}

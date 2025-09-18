@@ -47,7 +47,7 @@ async def remove_teacher(
     """
     Remove the teacher with removing_teacher_email from the course with provided course_id.
 
-    Primary Instructor role required.
+    Primary Instructor OR Teacher role required.
 
     Primary Instructor can't remove themself until they are Primary Instructor.
     """
