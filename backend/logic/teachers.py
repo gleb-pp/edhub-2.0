@@ -78,6 +78,6 @@ def change_course_instructor(db_conn, db_cursor, course_id: str, teacher_email: 
     repo_teachers.sql_update_instructor(db_cursor, course_id, teacher_email)
     db_conn.commit()
 
-    logger.log(db_conn, logger.TAG_INSTRUCTOR_EDIT, f"Course {course_id} now have new instructor {instructor_email}")
+    logger.log(db_conn, logger.TAG_INSTRUCTOR_EDIT, f"Course {course_id} now have new instructor {teacher_email}")
 
     return {"success": True}
