@@ -7,6 +7,7 @@ from logic.teachers import (
     get_course_teachers as logic_get_course_teachers,
     invite_teacher as logic_invite_teacher,
     remove_teacher as logic_remove_teacher,
+    change_course_instructor as logic_change_course_instructor
 )
 
 router = APIRouter()
@@ -53,3 +54,14 @@ async def remove_teacher(
     """
     with get_db() as (db_conn, db_cursor):
         return logic_remove_teacher(db_conn, db_cursor, course_id, removing_teacher_email, teacher_email)
+
+
+@router.post("/change_course_instructor", response_model=json_classes.Success, tags=["Courses"])
+async def change_course_instructor(course_id: str, teacher_email: str, instructor_email: str = Depends(get_current_user)):
+    """
+    Transfer the course ownership (Primary Instructor role) to other Teacher within the course.
+
+    Primary Instructor role required.
+    """
+    with get_db() as (db_conn, db_cursor):
+        return logic_change_course_instructor(db_conn, db_cursor, course_id, teacher_email: str, instructor_email: str)

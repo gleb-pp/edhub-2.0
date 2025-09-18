@@ -25,3 +25,10 @@ def sql_delete_teacher(db_cursor, course_id: str, removing_teacher_email: str) -
         "DELETE FROM teaches WHERE courseid = %s AND email = %s",
         (course_id, removing_teacher_email),
     )
+
+
+def sql_update_instructor(db_cursor, course_id: str, new_instructor: str) -> None:
+    db_cursor.execute(
+        "UPDATE courses SET instructor = %s WHERE course_id = %s",
+        (new_instructor, course_id),
+    )
