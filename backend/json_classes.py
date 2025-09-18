@@ -12,6 +12,7 @@ class User(BaseModel):
 
 
 class CourseRole(BaseModel):
+    is_instructor: bool
     is_teacher: bool
     is_student: bool
     is_parent: bool
@@ -118,12 +119,3 @@ class UserNewPassword(BaseModel):
     email: str
     password: str
     new_password: str
-
-
-class GradeRow(BaseModel):
-    email: str
-    grades: list[Union[int, None]]
-
-
-class GradeTable(BaseModel):
-    rows: list[GradeRow]
