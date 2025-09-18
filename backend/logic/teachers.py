@@ -36,7 +36,7 @@ def invite_teacher(db_conn, db_cursor, course_id: str, new_teacher_email: str, i
         raise HTTPException(status_code=403, detail="Can't invite parent as a teacher")
 
     # invite teacher
-    repo_teachers.sql_insert_teacher(db_cursor, new_teacher_email, course_id)
+    repo_teachers.sql_insert_teacher(db_cursor, course_id, new_teacher_email)
     db_conn.commit()
 
     logger.log(db_conn, logger.TAG_TEACHER_ADD, f"Instructor {instructor_email} invited a teacher {new_teacher_email} to course {course_id}")
@@ -73,8 +73,8 @@ def change_course_instructor(db_conn, db_cursor, course_id: str, teacher_email: 
     constraints.assert_instructor_access(db_cursor, instructor_email, course_id)
     constraints.assert_teacher_access(db_cursor, teacher_email, course_id)
 
-    repo_teachers.sql_delete_teacher(db_cursor, teacher_email)
-    repo_teachers.sql_insert_teacher(db_cursor, instructor_email)
+    repo_teachers.sql_delete_teacher(db_cursor, course_id, teacher_email)
+    repo_teachers.sql_insert_teacher(db_cursor, course_id, instructor_email)
     repo_teachers.sql_update_instructor(db_cursor, course_id, teacher_email)
     db_conn.commit()
 

@@ -13,7 +13,7 @@ def sql_select_course_teachers(db_cursor, course_id: str) -> List[Tuple[str, str
     return db_cursor.fetchall()
 
 
-def sql_insert_teacher(db_cursor, new_teacher_email: str, course_id: str) -> None:
+def sql_insert_teacher(db_cursor, course_id: str, new_teacher_email: str) -> None:
     db_cursor.execute(
         "INSERT INTO teaches (email, courseid) VALUES (%s, %s)",
         (new_teacher_email, course_id),
