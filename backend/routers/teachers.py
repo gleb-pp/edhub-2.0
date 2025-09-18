@@ -64,4 +64,4 @@ async def change_course_instructor(course_id: str, teacher_email: str, instructo
     Primary Instructor role required.
     """
     with get_db() as (db_conn, db_cursor):
-        return logic_change_course_instructor(db_conn, db_cursor, course_id, teacher_email: str, instructor_email: str)
+        return logic_change_course_instructor(db_conn, db_cursor, course_id, teacher_email, instructor_email)
