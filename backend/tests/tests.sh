@@ -40,6 +40,8 @@ bash ./backend/tests/admin.sh || exit 1
 
 echo "== Registering users =="
 curl -s --fail -X POST $API_URL/create_user -H "Content-Type: application/json" \
+    -d "{\"email\":\"$USER_EMAIL\",\"password\":\"$USER_PASS\",\"name\":\"$USER_NAME\"}" > /dev/null
+curl -s --fail -X POST $API_URL/create_user -H "Content-Type: application/json" \
     -d "{\"email\":\"$STUDENT_EMAIL\",\"password\":\"$STUDENT_PASS\",\"name\":\"$STUDENT_NAME\"}" > /dev/null
 curl -s --fail -X POST $API_URL/create_user -H "Content-Type: application/json" \
     -d "{\"email\":\"$PARENT_EMAIL\",\"password\":\"$PARENT_PASS\",\"name\":\"$PARENT_NAME\"}" > /dev/null
