@@ -15,10 +15,10 @@ def get_course_teachers(db_cursor, course_id: str, user_email: str):
     return res
 
 
-def invite_teacher(db_conn, db_cursor, course_id: str, new_teacher_email: str, teacher_email: str):
+def invite_teacher(db_conn, db_cursor, course_id: str, new_teacher_email: str, instructor_email: str):
     # checking constraints
     constraints.assert_user_exists(db_cursor, new_teacher_email)
-    constraints.assert_teacher_access(db_cursor, teacher_email, course_id)
+    constraints.assert_instructor_access(db_cursor, instructor_email, course_id)
 
     # check if the teacher already assigned to course
     if constraints.check_teacher_access(db_cursor, new_teacher_email, course_id):
@@ -39,7 +39,7 @@ def invite_teacher(db_conn, db_cursor, course_id: str, new_teacher_email: str, t
     repo_teachers.sql_insert_teacher(db_cursor, new_teacher_email, course_id)
     db_conn.commit()
 
-    logger.log(db_conn, logger.TAG_TEACHER_ADD, f"Teacher {teacher_email} invited a teacher {new_teacher_email}")
+    logger.log(db_conn, logger.TAG_TEACHER_ADD, f"Instructor {instructor_email} invited a teacher {new_teacher_email} to course {course_id}")
 
     return {"success": True}
 

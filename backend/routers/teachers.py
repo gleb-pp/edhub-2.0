@@ -30,7 +30,7 @@ async def invite_teacher(
     """
     Add the user with provided new_teacher_email as a teacher to the course with provided course_id.
 
-    Teacher role required.
+    Primary Instructor role required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_invite_teacher(db_conn, db_cursor, course_id, new_teacher_email, teacher_email)
