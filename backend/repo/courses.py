@@ -35,7 +35,7 @@ def sql_delete_course(db_cursor, course_id: str) -> None:
     db_cursor.execute("DELETE FROM courses WHERE courseid = %s", (course_id,))
 
 
-def sql_select_course_info(db_cursor, course_id: str) -> Optional[Tuple[UUID, str, str, Optional[str], datetime, int]]:
+def sql_select_course_info(db_cursor, course_id: str) -> Optional[Tuple[UUID, str, str, Optional[str], datetime]]:
     db_cursor.execute(
         """
         SELECT courseid, name, instructor, organization, timecreated
