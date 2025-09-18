@@ -74,6 +74,8 @@ def check_course_access(db_cursor, user_email: str, course_id: str) -> bool:
     db_cursor.execute(
         """
         SELECT EXISTS(
+            SELECT 1 FROM courses WHERE instructor = %s AND courseid = %s
+            UNION
             SELECT 1 FROM teaches WHERE email = %s AND courseid = %s
             UNION
             SELECT 1 FROM student_at WHERE email = %s AND courseid = %s
@@ -83,7 +85,7 @@ def check_course_access(db_cursor, user_email: str, course_id: str) -> bool:
             SELECT 1 FROM users WHERE email = %s AND isadmin
         )
     """,
-        (user_email, course_id, user_email, course_id, user_email, course_id, user_email),
+        (user_email, course_id, user_email, course_id, user_email, course_id, user_email, course_id, user_email),
     )
     has_access = db_cursor.fetchone()[0]
     return has_access
@@ -101,12 +103,14 @@ def check_teacher_access(db_cursor, teacher_email: str, course_id: str) -> bool:
     db_cursor.execute(
         """
         SELECT EXISTS(
+            SELECT 1 FROM courses WHERE instructor = %s AND courseid = %s
+            UNION
             SELECT 1 FROM teaches WHERE email = %s AND courseid = %s
             UNION
             SELECT 1 FROM users WHERE email = %s AND isadmin
         )
     """,
-        (teacher_email, course_id, teacher_email),
+        (teacher_email, course_id, teacher_email, course_id, teacher_email),
     )
     has_access = db_cursor.fetchone()[0]
     return has_access
@@ -115,6 +119,29 @@ def assert_teacher_access(db_cursor, teacher_email: str, course_id: str) -> None
     has_access = check_teacher_access(db_cursor, teacher_email, course_id)
     if not has_access:
         raise HTTPException(status_code=403, detail="User has no teacher rights in this course")
+
+
+# checking whether the user has primary instructor access to the course
+def check_instructor_access(db_cursor, user_email: str, course_id: str) -> bool:
+    assert_user_exists(db_cursor, user_email)
+    assert_course_exists(db_cursor, course_id)
+    db_cursor.execute(
+        """
+        SELECT EXISTS(
+            SELECT 1 FROM courses WHERE instructor = %s AND courseid = %s
+            UNION
+            SELECT 1 FROM users WHERE email = %s AND isadmin
+        )
+    """,
+        (user_email, course_id, user_email),
+    )
+    has_access = db_cursor.fetchone()[0]
+    return has_access
+
+def assert_instructor_access(db_cursor, user_email: str, course_id: str) -> None:
+    has_access = check_instructor_access(db_cursor, user_email, course_id)
+    if not has_access:
+        raise HTTPException(status_code=403, detail="User has no primary instructor rights in this course")
 
 
 # checking whether the user has student access to the course
