@@ -25,8 +25,7 @@ def get_all_courses(db_cursor, user_email: str):
 
 
 def create_course(db_conn, db_cursor, title: str, user_email: str, organization: Optional[str] = None):
-    course_id = repo.courses.sql_insert_course(db_cursor, title, organization)
-    repo.teachers.sql_insert_teacher(db_cursor, user_email, course_id)
+    course_id = repo.courses.sql_insert_course(db_cursor, title, user_email, organization)
     db_conn.commit()
 
     logger.log(db_conn, logger.TAG_COURSE_ADD, f"User {user_email} created course {course_id}")
@@ -35,7 +34,7 @@ def create_course(db_conn, db_cursor, title: str, user_email: str, organization:
 
 
 def remove_course(db_conn, db_cursor, course_id: str, user_email: str):
-    constraints.assert_teacher_access(db_cursor, user_email, course_id)
+    constraints.assert_instructor_access(db_cursor, user_email, course_id)
     repo.courses.sql_delete_course(db_cursor, course_id)
     db_conn.commit()
 
@@ -133,7 +132,7 @@ def get_students_accessible_by(db_cursor, course_id: str, user_email: str) -> li
     In particular, returns an empty list if the user is not associated with the given course.
     """
     role = logic.users.get_user_role(db_cursor, course_id, user_email)
-    if role["is_teacher"] or role["is_admin"]:
+    if role["is_teacher"] or role["is_instructor"] or role["is_admin"]:
         return [email for email, name in repo.students.sql_select_enrolled_students(db_cursor, course_id)]
     if role["is_parent"]:
         return [email for email, name in repo.parents.sql_select_parents_children(db_cursor, course_id, user_email)]

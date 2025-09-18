@@ -5,13 +5,15 @@ from datetime import datetime
 def sql_select_available_courses(db_cursor, user_email: str) -> List[UUID]:
     db_cursor.execute(
         """
+        SELECT courseid AS cid FROM courses WHERE instructor = %s
+        UNION
         SELECT courseid AS cid FROM teaches WHERE email = %s
         UNION
         SELECT courseid AS cid FROM student_at WHERE email = %s
         UNION
         SELECT courseid AS cid FROM parent_of_at_course WHERE parentemail = %s
         """,
-        (user_email, user_email, user_email),
+        (user_email, user_email, user_email, user_email),
     )
     return [i[0] for i in db_cursor.fetchall()]
 
@@ -21,10 +23,10 @@ def sql_select_all_courses(db_cursor) -> List[UUID]:
     return [i[0] for i in db_cursor.fetchall()]
 
 
-def sql_insert_course(db_cursor, title: str, organization: Optional[str] = None) -> UUID:
+def sql_insert_course(db_cursor, title: str, instructor: str, organization: Optional[str] = None) -> UUID:
     db_cursor.execute(
-        "INSERT INTO courses (courseid, name, organization, timecreated) VALUES (gen_random_uuid(), %s, %s, now()) RETURNING courseid",
-        (title, organization),
+        "INSERT INTO courses (courseid, name, organization, instructor, timecreated) VALUES (gen_random_uuid(), %s, %s, %s, now()) RETURNING courseid",
+        (title, organization, instructor),
     )
     return db_cursor.fetchone()[0]
 
