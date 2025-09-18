@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends
 from auth import get_current_user, get_db
 import json_classes
 import logic.courses
-import logic.assignments
 
 router = APIRouter()
 
