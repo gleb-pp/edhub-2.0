@@ -7,6 +7,7 @@ from logic.teachers import (
     get_course_teachers as logic_get_course_teachers,
     invite_teacher as logic_invite_teacher,
     remove_teacher as logic_remove_teacher,
+    change_course_instructor as logic_change_course_instructor
 )
 
 router = APIRouter()
@@ -16,6 +17,8 @@ router = APIRouter()
 async def get_course_teachers(course_id: str, user_email: str = Depends(get_current_user)):
     """
     Get the list of teachers teaching the course with the provided course_id.
+
+    Does not return the Primary Instructor.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_get_course_teachers(db_cursor, course_id, user_email)
@@ -30,7 +33,7 @@ async def invite_teacher(
     """
     Add the user with provided new_teacher_email as a teacher to the course with provided course_id.
 
-    Teacher role required.
+    Primary Instructor role required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_invite_teacher(db_conn, db_cursor, course_id, new_teacher_email, teacher_email)
@@ -45,11 +48,20 @@ async def remove_teacher(
     """
     Remove the teacher with removing_teacher_email from the course with provided course_id.
 
-    Teacher role required.
+    Primary Instructor OR Teacher role required.
 
-    Teacher can remove themself.
-
-    At least one teacher should stay in the course.
+    Primary Instructor can't remove themself until they are Primary Instructor.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_remove_teacher(db_conn, db_cursor, course_id, removing_teacher_email, teacher_email)
+
+
+@router.post("/change_course_instructor", response_model=json_classes.Success, tags=["Courses"])
+async def change_course_instructor(course_id: str, teacher_email: str, instructor_email: str = Depends(get_current_user)):
+    """
+    Transfer the course ownership (Primary Instructor role) to other Teacher within the course.
+
+    Primary Instructor role required.
+    """
+    with get_db() as (db_conn, db_cursor):
+        return logic_change_course_instructor(db_conn, db_cursor, course_id, teacher_email, instructor_email)

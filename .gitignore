@@ -5,3 +5,4 @@ myenv
 tempCodeRunnerFile.py
 database.py
 secrets.env
+.pylintrc

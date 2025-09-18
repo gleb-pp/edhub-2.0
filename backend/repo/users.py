@@ -29,9 +29,9 @@ def sql_update_password(db_cursor, email: str, hashed_new_password: str) -> None
     db_cursor.execute("UPDATE users SET passwordhash = %s WHERE email = %s", (hashed_new_password, email))
 
 
-def sql_select_single_teacher_courses(db_cursor, user_email: str) -> List[UUID]:
+def sql_select_instructor_courses(db_cursor, user_email: str) -> List[UUID]:
     db_cursor.execute(
-        "SELECT t.courseid FROM teaches t WHERE t.email = %s AND (SELECT COUNT(*) FROM teaches WHERE courseid = t.courseid) = 1",
+        "SELECT courseid FROM courses WHERE instructor = %s",
         (user_email,),
     )
     return [row[0] for row in db_cursor.fetchall()]

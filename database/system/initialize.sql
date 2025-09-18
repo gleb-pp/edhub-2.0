@@ -12,7 +12,8 @@ CREATE TABLE users(
 CREATE TABLE courses(
     courseid uuid PRIMARY KEY,
     name text NOT NULL CHECK (length(name) <= 128),
-    organization text CHECK (length(organization) <= 128),
+    organization text NULL CHECK (length(organization) <= 128),
+    instructor text NOT NULL REFERENCES users(email) ON DELETE CASCADE,
     timecreated timestamp NOT NULL
 );
 

@@ -4,7 +4,6 @@ from jose import jwt
 import constraints
 from auth import pwd_hasher, ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SECRET_KEY, ALGORITHM
 import repo.users as repo_users
-import repo.courses as repo_courses
 from regex import match, search
 import logic.logging as logger
 
@@ -19,6 +18,7 @@ def get_user_info(db_cursor, user_email: str):
 def get_user_role(db_cursor, course_id: str, user_email: str):
     # getting info about the roles
     res = {
+        "is_instructor": constraints.check_instructor_access(db_cursor, user_email, course_id),
         "is_teacher": constraints.check_teacher_access(db_cursor, user_email, course_id),
         "is_student": constraints.check_student_access(db_cursor, user_email, course_id),
         "is_parent": constraints.check_parent_access(db_cursor, user_email, course_id),
@@ -115,17 +115,18 @@ def change_password(db_conn, db_cursor, user):
     return {"success": True}
 
 
+def get_instructor_courses(db_cursor, user_email: str):
+    courses = repo_users.sql_select_instructor_courses(db_cursor, user_email)
+    result = [{"course_id": crs} for crs in courses]
+    return result
+
+
 def remove_user(db_conn, db_cursor, user_email: str):
 
     # checking constraints
     constraints.assert_user_exists(db_cursor, user_email)
     if constraints.check_admin_access(db_cursor, user_email) and repo_users.sql_count_admins(db_cursor) == 1:
         raise HTTPException(status_code=403, detail="Cannot remove the last administrator")
-
-    # remove teacher role preparation: find courses with 1 teacher left
-    single_teacher_courses = repo_users.sql_select_single_teacher_courses(db_cursor, user_email)
-    for course_id_to_delete in single_teacher_courses:
-        repo_courses.sql_delete_course(db_cursor, course_id_to_delete)
 
     # remove user
     repo_users.sql_delete_user(db_cursor, user_email)

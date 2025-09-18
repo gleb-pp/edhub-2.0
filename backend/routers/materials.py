@@ -24,7 +24,7 @@ async def create_material(
     """
     Create the material with provided title and description in the course with provided course_id.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
 
     Returns the (course_id, material_id) for the new material in case of success.
     """
@@ -37,7 +37,7 @@ async def remove_material(course_id: str, material_id: str, user_email: str = De
     """
     Remove the material by the provided course_id and material_id.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_remove_material(db_conn, db_cursor, course_id, material_id, user_email)
@@ -50,9 +50,11 @@ async def get_material(course_id: str, material_id: str, user_email: str = Depen
 
     Returns course_id, material_id, creation_time, title, description, and email of the author.
 
-    Author can be 'null' if the author deleted their account.
+    Author can be NULL if the author deleted their account.
 
     The format of creation time is TIME_FORMAT.
+
+    Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_get_material(db_cursor, course_id, material_id, user_email)
@@ -68,7 +70,7 @@ async def create_material_attachment(
     """
     Attach the provided file to provided course material.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
 
     Returns the (course_id, material_id, file_id, filename, upload_time) for the new attachment in case of success.
 
@@ -86,6 +88,8 @@ async def get_material_attachments(course_id: str, material_id: str, user_email:
     Returns list of attachments metadata (course_id, material_id, file_id, filename, upload_time).
 
     The format of upload_time is TIME_FORMAT.
+
+    Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_get_material_attachments(db_cursor, course_id, material_id, user_email)
@@ -95,6 +99,8 @@ async def get_material_attachments(course_id: str, material_id: str, user_email:
 async def download_material_attachment(course_id: str, material_id: str, file_id: str, user_email: str = Depends(get_current_user)):
     """
     Download the course material attachment by provided course_id, material_id, file_id.
+
+    Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor), get_storage_db() as (storage_db_conn, storage_db_cursor):
         return logic_download_material_attachment(db_cursor, storage_db_cursor, course_id, material_id, file_id, user_email)

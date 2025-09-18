@@ -121,16 +121,6 @@ curl -s --fail -X POST "$API_URL/grade_submission?course_id=$COURSE_ID&assignmen
     -H "Authorization: Bearer $TOKEN"
 echo
 
-echo "== Grade report =="
-curl -s --fail -X GET "$API_URL/download_full_course_grade_table?course_id=$COURSE_ID" \
-    -H "Authorization: Bearer $TOKEN"
-echo
-
-echo "== Grade report (json) =="
-curl -s --fail -X GET "$API_URL/get_full_course_grade_table_json?course_id=$COURSE_ID" \
-    -H "Authorization: Bearer $TOKEN"
-echo
-
 echo "== Admin login =="
 TOKEN=$(curl -s --fail -X POST $API_URL/login -H "Content-Type: application/json" \
     -d "{\"email\":\"admin\",\"password\":\"admin\"}" | extract_token)

@@ -18,7 +18,7 @@ async def get_students_parents(course_id: str, student_email: str, user_email: s
     """
     Get the list of parents observing the student with provided email on course with provided course_id.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
     """
 
     # connection to database
@@ -36,7 +36,7 @@ async def invite_parent(
     """
     Invite the user with provided parent_email to become a parent of the student with provided student_email on course with provided course_id.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
     """
 
     # connection to database
@@ -54,7 +54,7 @@ async def remove_parent(
     """
     Remove the parent identified by parent_email from the tracking of student with provided student_email on course with provided course_id.
 
-    Teacher OR Parent role required.
+    Teacher OR Primary Instructor OR Parent role required.
 
     Parent can only remove themselves.
     """
@@ -65,13 +65,15 @@ async def remove_parent(
 
 
 @router.get("/get_parents_children", response_model=List[json_classes.User], tags=["Parents"])
-async def get_parents_children(course_id: str, user_email: str = Depends(get_current_user)):
+async def get_parents_children(course_id: str, parent_email: str, user_email: str = Depends(get_current_user)):
     """
     Get the list of students for the parent with provided email on course with provided course_id.
 
-    Parent role required.
+    Returns email and name for each child.
+
+    Teacher OR Primary Instructor OR Parent role required.
     """
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic_get_parents_children(db_cursor, course_id, user_email)
+        return logic_get_parents_children(db_cursor, course_id, parent_email, user_email)
