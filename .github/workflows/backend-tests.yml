@@ -97,7 +97,7 @@ jobs:
             echo "Waiting for backend... ($i/30)"
             sleep 2
           done
-          echo "Backend failed to start"
+          (echo "Backend failed to start" && docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
           exit 1
 
       - name: Check backend API
@@ -202,7 +202,7 @@ jobs:
             echo "Waiting for backend... ($i/30)"
             sleep 2
           done
-          echo "Backend failed to start"
+          (echo "Backend failed to start" && docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
           exit 1
 
       - name: Run curltests.sh
