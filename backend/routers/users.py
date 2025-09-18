@@ -71,7 +71,7 @@ async def get_instructor_courses(user_email: str = Depends(get_current_user)):
 
 
 @router.post("/remove_user", response_model=json_classes.Success, tags=["Users"])
-async def remove_user(user_email: str = Depends(get_current_user)):
+async def remove_user(deleted_user_email: str, user_email: str = Depends(get_current_user)):
     """
     Delete user account from the system.
 
@@ -84,9 +84,11 @@ async def remove_user(user_email: str = Depends(get_current_user)):
     The user's materials and assignments will be left but with NULL author.
 
     User CAN NOT be deleted if they are the only platform administrator.
+
+    Admin can remove other users
     """
     with get_db() as (db_conn, db_cursor):
-        return logic.users.remove_user(db_conn, db_cursor, user_email)
+        return logic.users.remove_user(db_conn, db_cursor, deleted_user_email, user_email)
 
 
 @router.post("/give_admin_permissions", response_model=json_classes.Success, tags=["Users"])

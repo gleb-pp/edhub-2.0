@@ -121,19 +121,23 @@ def get_instructor_courses(db_cursor, user_email: str):
     return result
 
 
-def remove_user(db_conn, db_cursor, user_email: str):
+def remove_user(db_conn, db_cursor, deleted_user_email: str, user_email: str):
 
     # checking constraints
-    constraints.assert_user_exists(db_cursor, user_email)
-    if constraints.check_admin_access(db_cursor, user_email) and repo_users.sql_count_admins(db_cursor) == 1:
+    if not (constraints.check_admin_access(db_cursor, user_email) or
+            user_email == deleted_user_email):
+        raise HTTPException(status_code=403, detail="User has no right to remove this user")
+
+    constraints.assert_user_exists(db_cursor, deleted_user_email)
+    if constraints.check_admin_access(db_cursor, deleted_user_email) and repo_users.sql_count_admins(db_cursor) == 1:
         raise HTTPException(status_code=403, detail="Cannot remove the last administrator")
 
     # remove user
-    repo_users.sql_delete_user(db_cursor, user_email)
+    repo_users.sql_delete_user(db_cursor, deleted_user_email)
 
     db_conn.commit()
 
-    logger.log(db_conn, logger.TAG_USER_DEL, f"Removed user {user_email} from the system")
+    logger.log(db_conn, logger.TAG_USER_DEL, f"Removed user {deleted_user_email} from the system")
 
     return {"success": True}
 
