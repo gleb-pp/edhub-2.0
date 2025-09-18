@@ -25,7 +25,7 @@ async def create_assignment(
     """
     Create the assignment with provided title and description in the course with provided course_id.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
 
     Returns the (course_id, assignment_id) for the new assignment in case of success.
     """
@@ -40,7 +40,7 @@ async def remove_assignment(course_id: str, assignment_id: str, user_email: str 
     """
     Remove the assignment by the provided course_id and assignment_id.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
     """
 
     # connection to database
@@ -55,9 +55,11 @@ async def get_assignment(course_id: str, assignment_id: str, user_email: str = D
 
     Returns course_id, assignment_id, creation_time, title, description, and email of the author.
 
-    Author can be 'null' if the author deleted their account.
+    Author can be NULL if the author deleted their account.
 
     The format of creation time is TIME_FORMAT.
+
+    Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
 
     # connection to database
@@ -75,7 +77,7 @@ async def create_assignment_attachment(
     """
     Attach the provided file to provided course assignment.
 
-    Teacher role required.
+    Teacher OR Primary Instructor role required.
 
     Returns the (course_id, assignment_id, file_id, filename, upload_time) for the new attachment in case of success.
 
@@ -93,6 +95,8 @@ async def get_assignment_attachments(course_id: str, assignment_id: str, user_em
     Returns list of attachments metadata (course_id, assignment_id, file_id, filename, upload_time).
 
     The format of upload_time is TIME_FORMAT.
+
+    Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic_get_assignment_attachments(db_cursor, course_id, assignment_id, user_email)
@@ -102,6 +106,8 @@ async def get_assignment_attachments(course_id: str, assignment_id: str, user_em
 async def download_assignment_attachment(course_id: str, assignment_id: str, file_id: str, user_email: str = Depends(get_current_user)):
     """
     Download the course assignment attachment by provided course_id, assignment_id, file_id.
+
+    Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor), get_storage_db() as (storage_db_conn, storage_db_cursor):
         return logic_download_assignment_attachment(db_cursor, storage_db_cursor, course_id, assignment_id, file_id, user_email)
