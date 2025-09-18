@@ -39,7 +39,6 @@ async def create_course(title: str, organization: Optional[str] = None, user_ema
         return logic.courses.create_course(db_conn, db_cursor, title, user_email, organization)
 
 
-# WARNING: update if new elements appear
 @router.post("/remove_course", response_model=json_classes.Success, tags=["Courses"])
 async def remove_course(course_id: str, user_email: str = Depends(get_current_user)):
     """
