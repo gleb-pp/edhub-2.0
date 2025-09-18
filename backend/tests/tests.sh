@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-API_URL="http://localhost/api"
+API_URL="http://localhost:8000"
 
 USER_EMAIL="alice@example.com"
-USER_PASS="alicePass123!"
+USER_PASS="AlicePass123!"
 USER_NAME="Alice"
 STUDENT_EMAIL="student@example.com"
 STUDENT_PASS="studentPass123!"
@@ -29,9 +29,10 @@ extract_assignment_id() {
     python3 -c "import sys, json; print(json.load(sys.stdin)['assignment_id'])"
 }
 
+# checking registration, login, and changing password
+bash ./backend/tests/authorization.sh || exit 1
+
 echo "== Registering users =="
-curl -s --fail -X POST $API_URL/create_user -H "Content-Type: application/json" \
-    -d "{\"email\":\"$USER_EMAIL\",\"password\":\"$USER_PASS\",\"name\":\"$USER_NAME\"}" > /dev/null
 curl -s --fail -X POST $API_URL/create_user -H "Content-Type: application/json" \
     -d "{\"email\":\"$STUDENT_EMAIL\",\"password\":\"$STUDENT_PASS\",\"name\":\"$STUDENT_NAME\"}" > /dev/null
 curl -s --fail -X POST $API_URL/create_user -H "Content-Type: application/json" \

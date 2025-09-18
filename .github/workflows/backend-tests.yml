@@ -202,11 +202,10 @@ jobs:
           (echo "Backend failed to start" && docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
           exit 1
 
-      - name: Run curltests.sh
+      - name: Run tests.sh
         run: |
-          chmod +x ./backend/curltests.sh
-          sed -i 's|API_URL="http://localhost/api"|API_URL="http://localhost:8000"|' ./backend/curltests.sh
-          ./backend/curltests.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+          chmod +x ./backend/tests/*.sh
+          ./backend/tests/tests.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
 
       - name: Stop containers
         if: always()
