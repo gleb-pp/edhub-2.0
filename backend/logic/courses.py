@@ -48,8 +48,7 @@ def get_course_info(db_cursor, course_id: str, user_email: str):
         "title": course[1],
         "instructor": course[2],
         "organization": course[3],
-        "creation_time": course[4].strftime(TIME_FORMAT),
-        "number_of_students": course[5],
+        "creation_time": course[4].strftime(TIME_FORMAT)
     }
     return res
 
