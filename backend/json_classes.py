@@ -27,7 +27,6 @@ class Course(CourseId):
     instructor: str
     organization: Optional[str]
     creation_time: str
-    number_of_students: int
 
 
 class CoursePost(BaseModel):
