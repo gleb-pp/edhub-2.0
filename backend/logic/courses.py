@@ -51,9 +51,10 @@ def get_course_info(db_cursor, course_id: str, user_email: str):
     res = {
         "course_id": str(course[0]),
         "title": course[1],
-        "organization": course[2],
-        "creation_time": course[3].strftime(TIME_FORMAT),
-        "number_of_students": course[4],
+        "instructor": course[2],
+        "organization": course[3],
+        "creation_time": course[4].strftime(TIME_FORMAT),
+        "number_of_students": course[5],
     }
     return res
 

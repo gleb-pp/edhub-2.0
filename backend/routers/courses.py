@@ -58,7 +58,7 @@ async def remove_course(course_id: str, user_email: str = Depends(get_current_us
 @router.get("/get_course_info", response_model=json_classes.Course, tags=["Courses"])
 async def get_course_info(course_id: str, user_email: str = Depends(get_current_user)):
     """
-    Get information about the course: course_id, title, organization, creation date, and number of enrolled students.
+    Get information about the course: course_id, title, primary instructor, organization, and creation date.
 
     Organization can be None.
 
