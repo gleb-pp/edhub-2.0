@@ -95,7 +95,7 @@ def get_parents_children(db_cursor, course_id: str, parent_email, user_email: st
         raise HTTPException(status_code=403, detail="User does not have permissions to see the children of this parent")
 
     # check if the user is parent already has teacher rights at this course
-    if constraints.check_parent_access(db_cursor, parent_email, course_id):
+    if not constraints.check_parent_access(db_cursor, parent_email, course_id):
         raise HTTPException(status_code=403, detail="Provided user in not a parent at this course")
 
     parents_children = repo_parents.sql_select_parents_children(db_cursor, course_id, parent_email)
