@@ -6,6 +6,7 @@ API_URL="http://localhost:8000"
 USER_EMAIL="alice@example.com"
 USER_PASS="AlicePass123!"
 USER_NAME="Alice"
+
 STUDENT_EMAIL="student@example.com"
 STUDENT_PASS="studentPass123!"
 STUDENT_NAME="Student"
@@ -29,8 +30,13 @@ extract_assignment_id() {
     python3 -c "import sys, json; print(json.load(sys.stdin)['assignment_id'])"
 }
 
-# checking registration, login, and changing password
+# checking registration, login, changing password, and removing account
+echo -e "====== Authorization ======"
 bash ./backend/tests/authorization.sh || exit 1
+
+# checking admin functionalities
+echo -e "========== Admin =========="
+bash ./backend/tests/admin.sh || exit 1
 
 echo "== Registering users =="
 curl -s --fail -X POST $API_URL/create_user -H "Content-Type: application/json" \

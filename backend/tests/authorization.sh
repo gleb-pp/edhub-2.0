@@ -3,10 +3,6 @@ set -o pipefail
 
 API_URL="http://localhost:8000"
 
-extract_token() {
-    python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])"
-}
-
 get_http_code() {
     curl -s -o /dev/null -w "%{http_code}" "$@"
 }
@@ -89,7 +85,7 @@ fail_test "Login with incorrect password" \
     -H "Content-Type: application/json" \
     -d "{\"email\":\"alice@example.com\",\"password\":\"Password123!\"}"
 
-login_and_get_token "Correct login" \
+login_and_get_token "Correct login as Alice" \
     -X POST $API_URL/login \
     -H "Content-Type: application/json" \
     -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\"}"
@@ -105,3 +101,25 @@ success_test "Correct changing password" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
     -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\",\"new_password\":\"AlicePass123!\"}"
+
+success_test "Correct registration of Bob" \
+    -X POST $API_URL/create_user \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\",\"name\":\"Bob\"}"
+
+fail_test "Removing Bob account from Alice" \
+    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+success_test "Removing Alice account from Alice" \
+    -X POST "$API_URL/remove_user?deleted_user_email=alice@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+login_and_get_token "Correct login as Bob" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\"}"
+
+success_test "Removing Bob account from Bob" \
+    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
