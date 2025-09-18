@@ -63,8 +63,3 @@ def sql_select_assignment_attachments(db_cursor, course_id: str, assignment_id: 
         (course_id, assignment_id),
     )
     return db_cursor.fetchall()
-
-
-def sql_get_all_assignments(db_cursor, course_id: str) -> List[int]:
-    db_cursor.execute("SELECT assid FROM course_assignments WHERE courseid = %s", (course_id,))
-    return [i[0] for i in db_cursor.fetchall()]
