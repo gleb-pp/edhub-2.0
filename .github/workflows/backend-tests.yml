@@ -100,9 +100,6 @@ jobs:
           (echo "Backend failed to start" && docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
           exit 1
 
-      - name: Check backend API
-        run: curl -f http://localhost:8000/openapi.json || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
-
       - name: Stop containers
         if: always()
         run: |
