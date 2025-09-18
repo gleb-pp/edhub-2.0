@@ -20,11 +20,6 @@ def sql_insert_teacher(db_cursor, new_teacher_email: str, course_id: str) -> Non
     )
 
 
-def sql_count_teachers(db_cursor, course_id: str) -> int:
-    db_cursor.execute("SELECT COUNT(*) FROM teaches WHERE courseid = %s", (course_id,))
-    return db_cursor.fetchone()[0]
-
-
 def sql_delete_teacher(db_cursor, course_id: str, removing_teacher_email: str) -> None:
     db_cursor.execute(
         "DELETE FROM teaches WHERE courseid = %s AND email = %s",
