@@ -8,7 +8,6 @@ import repo.teachers
 import repo.users
 import logic.logging as logger
 import logic.users
-import logic.csvtables
 
 
 def available_courses(db_cursor, user_email: str):
