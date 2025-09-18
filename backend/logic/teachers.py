@@ -49,7 +49,7 @@ def remove_teacher(db_conn, db_cursor, course_id: str, removing_teacher_email: s
     constraints.assert_user_exists(db_cursor, removing_teacher_email)
     constraints.assert_instructor_access(db_cursor, instructor_email, course_id)
 
-    if (instructor_email == removing_teacher_email):
+    if instructor_email == removing_teacher_email:
         raise HTTPException(status_code=403, detail="Primary Instructor can't remove themselves")
 
     # check if the teacher assigned to the course

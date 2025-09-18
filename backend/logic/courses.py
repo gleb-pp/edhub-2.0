@@ -1,13 +1,9 @@
-from typing import Union, Optional
-import itertools
+from typing import Optional
 from fastapi import HTTPException
 from constants import TIME_FORMAT
 import constraints
 import repo.courses
-import repo.teachers
-import repo.users
 import logic.logging as logger
-import logic.users
 
 
 def available_courses(db_cursor, user_email: str):

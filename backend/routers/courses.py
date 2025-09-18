@@ -1,6 +1,5 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends
-from fastapi import responses
 
 from auth import get_current_user, get_db
 import json_classes
