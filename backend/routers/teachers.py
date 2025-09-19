@@ -14,6 +14,8 @@ async def get_course_teachers(course_id: str, user_email: str = Depends(get_curr
     Get the list of teachers teaching the course with the provided course_id.
 
     Does not return the Primary Instructor.
+
+    Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic.teachers.get_course_teachers(db_cursor, course_id, user_email)
