@@ -36,6 +36,18 @@ mathcourseid=$(curl -s -X POST \
 
 info=$(curl -s -X GET \
   -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_user_role?course_id=$mathcourseid")
+
+expected='
+  {"is_instructor":true,"is_teacher":false,"is_student":false,"is_parent":false,"is_admin":false}
+'
+
+json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" "is_instructor"
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
   "$API_URL/get_course_info?course_id=$mathcourseid")
 
 expected='[
@@ -152,6 +164,18 @@ engcourseid=$(curl -s -X POST \
 
 # --------------------------------------------------------------------
 
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_user_role?course_id=$engcourseid")
+
+expected='
+  {"is_instructor":true,"is_teacher":false,"is_student":false,"is_parent":false,"is_admin":false}
+'
+
+json_exact_match_test "Get the Bob's role in course English" "$info" "$expected" "is_instructor"
+
+# --------------------------------------------------------------------
+
 success_test "Invite Alice to Bob's course" \
     -X POST "$API_URL/invite_student?course_id=$engcourseid&student_email=alice@example.com" \
     -H "Authorization: Bearer $TOKEN" \
@@ -174,6 +198,18 @@ login_and_get_token "Login as Alice" \
     -X POST $API_URL/login \
     -H "Content-Type: application/json" \
     -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\"}"
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_user_role?course_id=$engcourseid")
+
+expected='
+  {"is_instructor":false,"is_teacher":false,"is_student":true,"is_parent":false,"is_admin":false}
+'
+
+json_exact_match_test "Get the Alice's role in course English" "$info" "$expected" "is_instructor"
 
 # --------------------------------------------------------------------
 
