@@ -316,7 +316,7 @@ engcourseid=$(curl -s -X POST \
 # --------------------------------------------------------------------
 
 success_test "Invite Alice to Bob's course" \
-    -X GET "$API_URL/invite_student?course_id=$engcourseid&student_email=alice@example.com" \
+    -X POST "$API_URL/invite_student?course_id=$engcourseid&student_email=alice@example.com" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
@@ -403,7 +403,7 @@ json_partial_match_test "Request the assignment info from Alice" "$info" "$expec
 # --------------------------------------------------------------------
 
 fail_test "Request to delete Bob's course from Alice" \
-    -X GET "$API_URL/remove_course?course_id=$engcourseid" \
+    -X POST "$API_URL/remove_course?course_id=$engcourseid" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
@@ -416,7 +416,7 @@ login_and_get_token "Login as Bob" \
 # --------------------------------------------------------------------
 
 success_test "Delete Bob's course" \
-    -X GET "$API_URL/remove_course?course_id=$engcourseid" \
+    -X POST "$API_URL/remove_course?course_id=$engcourseid" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
