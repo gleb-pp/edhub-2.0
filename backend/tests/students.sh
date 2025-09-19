@@ -67,10 +67,10 @@ info=$(curl -s -X GET \
   -H "Authorization: Bearer $TOKEN" \
   "$API_URL/get_enrolled_students?course_id=$engcourseid")
 
-expected='
+expected='[
   {"email":"bob@example.com","name":"Bob"},
   {"email":"charlie@example.com","name":"Charlie"}
-'
+]'
 
 json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
 
@@ -111,10 +111,10 @@ info=$(curl -s -X GET \
   -H "Authorization: Bearer $TOKEN" \
   "$API_URL/get_enrolled_students?course_id=$engcourseid")
 
-expected='
+expected='[
   {"email":"bob@example.com","name":"Bob"},
   {"email":"charlie@example.com","name":"Charlie"}
-'
+]'
 
 json_exact_match_test "Get students enrolled into Math course by Bob" "$info" "$expected" "email"
 
@@ -165,11 +165,79 @@ success_test "Request to remove Charlie from Math course by Alice" \
     -X POST "$API_URL/remove_student?course_id=$engcourseid&student_email=charlie@example.com" \
     -H "Authorization: Bearer $TOKEN" \
 
+# --------------------------------------------------------------------
+
 info=$(curl -s -X GET \
   -H "Authorization: Bearer $TOKEN" \
   "$API_URL/get_enrolled_students?course_id=$engcourseid")
 
-expected='
+expected='[
+]
 '
 
 json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
+
+# --------------------------------------------------------------------
+
+success_test "Invite Charlie to Alice's course" \
+    -X POST "$API_URL/invite_student?course_id=$engcourseid&student_email=charlie@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_enrolled_students?course_id=$engcourseid")
+
+expected='[
+  {"email":"charlie@example.com","name":"Charlie"}
+]'
+
+json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Charlie" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"charlie@example.com\",\"password\":\"charliePass123!\"}"
+
+success_test "Removing Charlie's account from Charlie" \
+    -X POST "$API_URL/remove_user?deleted_user_email=charlie@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Alice" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\"}"
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_enrolled_students?course_id=$engcourseid")
+
+expected='[
+]
+'
+
+json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
+
+# --------------------------------------------------------------------
+
+success_test "Removing Alice's account from Alice" \
+    -X POST "$API_URL/remove_user?deleted_user_email=alice@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Bob" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\"}"
+
+success_test "Removing Bob's account from Bob" \
+    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
+    -H "Authorization: Bearer $TOKEN" \

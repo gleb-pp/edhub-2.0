@@ -378,6 +378,12 @@ fail_test "Request to get the feed of the removed course by Bob" \
 
 # --------------------------------------------------------------------
 
+success_test "Removing Bob's account from Bob" \
+    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
 login_and_get_token "Login as Alice" \
     -X POST $API_URL/login \
     -H "Content-Type: application/json" \
@@ -399,4 +405,16 @@ json_exact_match_test "Request the list of available courses from Alice" "$cours
 
 fail_test "Request to get the feed of the removed course" \
     -X GET "$API_URL/get_course_feed?course_id=$engcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+success_test "Delete Alice's course" \
+    -X POST "$API_URL/remove_course?course_id=$mathcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+success_test "Removing Alice's account from Alice" \
+    -X POST "$API_URL/remove_user?deleted_user_email=alice@example.com" \
     -H "Authorization: Bearer $TOKEN" \
