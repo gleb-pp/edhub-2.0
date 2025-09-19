@@ -220,6 +220,10 @@ jobs:
       - name: Course tests
         run: |
           ./backend/tests/courses.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+      
+      - name: Students tests
+        run: |
+          ./backend/tests/students.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
 
       - name: Stop containers
         if: always()
