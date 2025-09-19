@@ -122,7 +122,7 @@ expected='[
 
 json_partial_match_test "Request the list of material attachments from Alice" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download material attachment by Alice" "$APIURL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download material attachment by Alice" "$API_URL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -147,7 +147,7 @@ expected='[
 
 json_partial_match_test "Request the list of assignment attachments from Alice" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download assignment attachment by Alice" "$APIURL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download assignment attachment by Alice" "$API_URL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$fileassignmentid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -168,7 +168,7 @@ expected='[
 
 json_partial_match_test "Request the list of material attachments from Bob" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download material attachment by Bob" "$APIURL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download material attachment by Bob" "$API_URL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -182,7 +182,7 @@ expected='[
 
 json_partial_match_test "Request the list of assignment attachments from Bob" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download assignment attachment by Bob" "$APIURL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download assignment attachment by Bob" "$API_URL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$fileassignmentid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -207,7 +207,7 @@ expected='[
 
 json_partial_match_test "Request the list of submission attachments from Bob" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download submission attachment by Bob" "$APIURL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download submission attachment by Bob" "$API_URL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filesubmissionid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -228,7 +228,7 @@ expected='[
 
 json_partial_match_test "Request the list of material attachments from Charlie" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download material attachment by Charlie" "$APIURL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download material attachment by Charlie" "$API_URL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -242,7 +242,7 @@ expected='[
 
 json_partial_match_test "Request the list of assignment attachments from Charlie" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download assignment attachment by Charlie" "$APIURL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download assignment attachment by Charlie" "$API_URL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$fileassignmentid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -256,7 +256,7 @@ expected='[
 
 json_partial_match_test "Request the list of submission attachments from Charlie" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download submission attachment by Charlie" "$APIURL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download submission attachment by Charlie" "$API_URL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filesubmissionid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -277,7 +277,7 @@ expected='[
 
 json_partial_match_test "Request the list of submission attachments from Alice" "$info" "$expected" "filename" "upload_time"
 
-download_file_test "Download submission attachment by Alice" "$APIURL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" "attachments.sh"
+download_file_test "Download submission attachment by Alice" "$API_URL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filesubmissionid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
