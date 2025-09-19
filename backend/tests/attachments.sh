@@ -140,7 +140,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission_attachments?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Bob" "$info" "$expected" "filename" "upload_time"
@@ -183,7 +183,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission_attachments?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Charlie" "$info" "$expected" "filename" "upload_time"
@@ -202,7 +202,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission_attachments?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Alice" "$info" "$expected" "filename" "upload_time"
