@@ -35,7 +35,7 @@ class CoursePost(BaseModel):
     post_id: int
     type: str
     timeadded: str
-    author: str
+    author: Optional[str]
 
 
 class MaterialID(BaseModel):

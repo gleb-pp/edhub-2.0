@@ -78,7 +78,7 @@ def get_submission(
         or student_email == user_email
     ):
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
-    
+
     constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
     constraints.assert_student_access(db_cursor, student_email, course_id)
 
@@ -126,7 +126,7 @@ async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, stor
     # checking constraints
     if student_email != user_email:
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
-    
+
     constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
 
     # read the file
@@ -156,7 +156,7 @@ def get_submission_attachments(db_cursor, course_id: str, assignment_id: str, st
         or student_email == user_email
     ):
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
-    
+
     constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
 
     # searching for submission attachments
@@ -182,7 +182,7 @@ def download_submission_attachment(db_cursor, storage_db_cursor, course_id: str,
         or student_email == user_email
     ):
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
-    
+
     constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
 
     # searching for submission attachment
