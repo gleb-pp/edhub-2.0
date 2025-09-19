@@ -131,7 +131,7 @@ success_test "Submit assignment as Bob" \
 filesubmissionid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
     -F "file=@./backend/tests/attachments.sh" \
-    "$API_URL/create_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid" | extract_field file_id)
+    "$API_URL/create_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com" | extract_field file_id)
 
 # --------------------------------------------------------------------
 
@@ -186,7 +186,26 @@ expected='[
     {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
 ]'
 
-json_partial_match_test "Request the list of submission attachments from Bob" "$info" "$expected" "filename" "upload_time"
+json_partial_match_test "Request the list of submission attachments from Charlie" "$info" "$expected" "filename" "upload_time"
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Alice" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\"}"
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_submission_attachments?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
+
+expected='[
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
+]'
+
+json_partial_match_test "Request the list of submission attachments from Alice" "$info" "$expected" "filename" "upload_time"
 
 # --------------------------------------------------------------------
 
