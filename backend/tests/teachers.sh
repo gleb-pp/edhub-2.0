@@ -46,7 +46,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_user_role?course_id=$mathcourseid")
 
 expected='
-  {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
+    {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
 '
 
 json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" "is_instructor"
@@ -54,7 +54,7 @@ json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" 
 # --------------------------------------------------------------------
 
 success_test "Invite Bob to Alice's course as a teacher" \
-    -X POST "$API_URL/invite_teacher?course_id=$mathcourseid&student_email=bob@example.com" \
+    -X POST "$API_URL/invite_teacher?course_id=$mathcourseid&new_teacher_email=bob@example.com" \
     -H "Authorization: Bearer $TOKEN" \
 
 success_test "Invite Charlie to Alice's course as a student" \
