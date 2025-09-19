@@ -164,3 +164,49 @@ extract_field() {
     local field="$1"
     python3 -c "import sys, json; print(json.load(sys.stdin).get('$field', ''))"
 }
+
+download_file_test() {
+    local description="$1"
+    local url="$2"
+    local expected_filename="$3"
+    local tmp_file="/tmp/test_download_$$"
+    
+    local response_code
+    response_code=$(curl -s -w "%{http_code}" \
+        -H "Authorization: Bearer $TOKEN" \
+        -o "$tmp_file" \
+        "$url")
+    
+    if [ "$response_code" != "200" ]; then
+        echo "ERROR: $description failed with HTTP $response_code"
+        rm -f "$tmp_file"
+        return 1
+    fi
+    
+    if [ ! -s "$tmp_file" ]; then
+        echo "ERROR: $description failed: downloaded file is empty"
+        rm -f "$tmp_file"
+        return 1
+    fi
+    
+    echo "✓ Successful $description"
+    rm -f "$tmp_file"
+}
+
+fail_download_test() {
+    local description="$1"
+    local url="$2"
+    
+    local response_code
+    response_code=$(curl -s -w "%{http_code}" \
+        -H "Authorization: Bearer $TOKEN" \
+        -o /dev/null \
+        "$url")
+    
+    if [ "$response_code" == "200" ]; then
+        echo "ERROR: $description expected to fail, but got HTTP $response_code"
+        return 1
+    fi
+    
+    echo "✓ Successfully rejected $description"
+}
