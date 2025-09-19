@@ -1,0 +1,175 @@
+#!/bin/bash
+set -euo pipefail
+
+API_URL="http://localhost:8000"
+
+source ./backend/tests/common_functions.sh
+
+# --------------------------------------------------------------------
+
+success_test "Registration of Alice" \
+    -X POST $API_URL/create_user \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\",\"name\":\"Alice\"}"
+
+# --------------------------------------------------------------------
+
+success_test "Registration of Bob" \
+    -X POST $API_URL/create_user \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\",\"name\":\"Bob\"}"
+
+# --------------------------------------------------------------------
+
+success_test "Registration of Charlie" \
+    -X POST $API_URL/create_user \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"charlie@example.com\",\"password\":\"charliePass123!\",\"name\":\"Charlie\"}"
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Alice" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\"}"
+
+# --------------------------------------------------------------------
+
+mathcourseid=$(curl -s -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/create_course?title=Math&organization=Innopolis%20University" | extract_field course_id)
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_user_role?course_id=$mathcourseid")
+
+expected='
+  {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
+'
+
+json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" "is_instructor"
+
+# --------------------------------------------------------------------
+
+success_test "Invite Bob to Alice's course" \
+    -X POST "$API_URL/invite_student?course_id=$engcourseid&student_email=bob@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+success_test "Invite Charlie to Alice's course" \
+    -X POST "$API_URL/invite_student?course_id=$engcourseid&student_email=charlie@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_enrolled_students?course_id=$engcourseid")
+
+expected='
+  {"email":"bob@example.com","name":"Bob"},
+  {"email":"charlie@example.com","name":"Charlie"}
+'
+
+json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Bob" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\"}"
+
+# --------------------------------------------------------------------
+
+courses=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/available_courses")
+
+expected='[
+    {"course_id":"'"$mathcourseid"'"}
+]'
+
+json_exact_match_test "Request the list of available courses from Bob" "$courses" "$expected" "course_id"
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_user_role?course_id=$mathcourseid")
+
+expected='
+  {"is_instructor":false,"is_teacher":false,"is_student":true,"is_parent":false,"is_admin":false}
+'
+
+json_exact_match_test "Get the Bob's role in course Math" "$info" "$expected" "is_instructor"
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_enrolled_students?course_id=$engcourseid")
+
+expected='
+  {"email":"bob@example.com","name":"Bob"},
+  {"email":"charlie@example.com","name":"Charlie"}
+'
+
+json_exact_match_test "Get students enrolled into Math course by Bob" "$info" "$expected" "email"
+
+# --------------------------------------------------------------------
+
+fail_test "Request to remove Charlie from Math course by Bob" \
+    -X POST "$API_URL/remove_student?course_id=$engcourseid&student_email=charlie@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+success_test "Request to remove Bob from Math course by Bob" \
+    -X POST "$API_URL/remove_student?course_id=$engcourseid&student_email=bob@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+courses=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/available_courses")
+
+expected='[
+    
+]'
+
+json_exact_match_test "Request the empty list of available courses from Bob" "$courses" "$expected" "course_id"
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Alice" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\"}"
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_enrolled_students?course_id=$engcourseid")
+
+expected='
+  {"email":"charlie@example.com","name":"Charlie"}
+'
+
+json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
+
+# --------------------------------------------------------------------
+
+success_test "Request to remove Charlie from Math course by Alice" \
+    -X POST "$API_URL/remove_student?course_id=$engcourseid&student_email=charlie@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_enrolled_students?course_id=$engcourseid")
+
+expected='
+'
+
+json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
