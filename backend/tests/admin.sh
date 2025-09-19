@@ -111,7 +111,7 @@ admins=$(curl -s -X GET \
 
 expected='[
     {"email":"admin","name":"admin"},
-    {"email":"alice@example.com","name":"Alice"},
+    {"email":"alice@example.com","name":"Alice"}
 ]'
 
 json_exact_match_test "Request the list of admins from Admin" "$admins" "$expected" "email"
