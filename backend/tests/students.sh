@@ -42,11 +42,11 @@ mathcourseid=$(curl -s -X POST \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_user_role?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_user_role?course_id=$mathcourseid")
 
 expected='
-  {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
+    {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
 '
 
 json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" "is_instructor"
@@ -64,12 +64,12 @@ success_test "Invite Charlie to Alice's course" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_enrolled_students?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_enrolled_students?course_id=$mathcourseid")
 
 expected='[
-  {"email":"bob@example.com","name":"Bob"},
-  {"email":"charlie@example.com","name":"Charlie"}
+    {"email":"bob@example.com","name":"Bob"},
+    {"email":"charlie@example.com","name":"Charlie"}
 ]'
 
 json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
@@ -84,8 +84,8 @@ login_and_get_token "Login as Bob" \
 # --------------------------------------------------------------------
 
 courses=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/available_courses")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/available_courses")
 
 expected='[
     {"course_id":"'"$mathcourseid"'"}
@@ -96,11 +96,11 @@ json_exact_match_test "Request the list of available courses from Bob" "$courses
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_user_role?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_user_role?course_id=$mathcourseid")
 
 expected='
-  {"is_instructor":false,"is_teacher":false,"is_student":true,"is_parent":false,"is_admin":false}
+    {"is_instructor":false,"is_teacher":false,"is_student":true,"is_parent":false,"is_admin":false}
 '
 
 json_exact_match_test "Get the Bob's role in course Math" "$info" "$expected" "is_instructor"
@@ -108,12 +108,12 @@ json_exact_match_test "Get the Bob's role in course Math" "$info" "$expected" "i
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_enrolled_students?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_enrolled_students?course_id=$mathcourseid")
 
 expected='[
-  {"email":"bob@example.com","name":"Bob"},
-  {"email":"charlie@example.com","name":"Charlie"}
+    {"email":"bob@example.com","name":"Bob"},
+    {"email":"charlie@example.com","name":"Charlie"}
 ]'
 
 json_exact_match_test "Get students enrolled into Math course by Bob" "$info" "$expected" "email"
@@ -131,8 +131,8 @@ success_test "Request to remove Bob from Math course by Bob" \
 # --------------------------------------------------------------------
 
 courses=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/available_courses")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/available_courses")
 
 expected='[
     
@@ -150,11 +150,11 @@ login_and_get_token "Login as Alice" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_enrolled_students?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_enrolled_students?course_id=$mathcourseid")
 
 expected='
-  {"email":"charlie@example.com","name":"Charlie"}
+    {"email":"charlie@example.com","name":"Charlie"}
 '
 
 json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
@@ -168,8 +168,8 @@ success_test "Request to remove Charlie from Math course by Alice" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_enrolled_students?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_enrolled_students?course_id=$mathcourseid")
 
 expected='[
 ]
@@ -186,11 +186,11 @@ success_test "Invite Charlie to Alice's course" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_enrolled_students?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_enrolled_students?course_id=$mathcourseid")
 
 expected='[
-  {"email":"charlie@example.com","name":"Charlie"}
+    {"email":"charlie@example.com","name":"Charlie"}
 ]'
 
 json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
@@ -216,8 +216,8 @@ login_and_get_token "Login as Alice" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_enrolled_students?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_enrolled_students?course_id=$mathcourseid")
 
 expected='[
 ]

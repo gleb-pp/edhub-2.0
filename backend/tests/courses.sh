@@ -35,11 +35,11 @@ mathcourseid=$(curl -s -X POST \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_user_role?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_user_role?course_id=$mathcourseid")
 
 expected='
-  {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
+    {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
 '
 
 json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" "is_instructor"
@@ -47,11 +47,11 @@ json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" 
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_course_info?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_course_info?course_id=$mathcourseid")
 
 expected='[
-  {"course_id":"'"$mathcourseid"'","title":"Math","instructor":"alice@example.com","organization":"Innopolis University"}
+    {"course_id":"'"$mathcourseid"'","title":"Math","instructor":"alice@example.com","organization":"Innopolis University"}
 ]'
 
 json_partial_match_test "Request the course info from Alice" "$info" "$expected" "course_id" "creation_time"
@@ -71,12 +71,12 @@ assignmentid=$(curl -s -X POST \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_course_feed?course_id=$mathcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_course_feed?course_id=$mathcourseid")
 
 expected='[
-  {"course_id":"'"$mathcourseid"'","post_id":'$materialid',"type":"mat","author":"alice@example.com"},
-  {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"type":"ass","author":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","post_id":'$materialid',"type":"mat","author":"alice@example.com"},
+    {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"type":"ass","author":"alice@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
@@ -84,11 +84,11 @@ json_partial_match_test "Request the course feed from Alice" "$info" "$expected"
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_material?course_id=$mathcourseid&material_id=$materialid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_material?course_id=$mathcourseid&material_id=$materialid")
 
 expected='
-  {"course_id":"'"$mathcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material describtion","author":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material describtion","author":"alice@example.com"}
 '
 
 json_partial_match_test "Request the material info from Alice" "$info" "$expected" "material_id" "creation_time"
@@ -96,11 +96,11 @@ json_partial_match_test "Request the material info from Alice" "$info" "$expecte
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_assignment?course_id=$mathcourseid&assignment_id=$assignmentid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_assignment?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='
-  {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"alice@example.com"}
 '
 
 json_partial_match_test "Request the assignment info from Alice" "$info" "$expected" "assignment_id" "creation_time"
@@ -115,8 +115,8 @@ login_and_get_token "Login as Bob" \
 # --------------------------------------------------------------------
 
 courses=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/available_courses")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/available_courses")
 
 expected='[]'
 
@@ -125,8 +125,8 @@ json_exact_match_test "Request the list of available courses from Bob" "$courses
 # --------------------------------------------------------------------
 
 courses=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_instructor_courses")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_instructor_courses")
 
 expected='[]'
 
@@ -165,11 +165,11 @@ engcourseid=$(curl -s -X POST \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_user_role?course_id=$engcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_user_role?course_id=$engcourseid")
 
 expected='
-  {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
+    {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
 '
 
 json_exact_match_test "Get the Bob's role in course English" "$info" "$expected" "is_instructor"
@@ -202,11 +202,11 @@ login_and_get_token "Login as Alice" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_user_role?course_id=$engcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_user_role?course_id=$engcourseid")
 
 expected='
-  {"is_instructor":false,"is_teacher":false,"is_student":true,"is_parent":false,"is_admin":false}
+    {"is_instructor":false,"is_teacher":false,"is_student":true,"is_parent":false,"is_admin":false}
 '
 
 json_exact_match_test "Get the Alice's role in course English" "$info" "$expected" "is_instructor"
@@ -214,8 +214,8 @@ json_exact_match_test "Get the Alice's role in course English" "$info" "$expecte
 # --------------------------------------------------------------------
 
 courses=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/available_courses")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/available_courses")
 
 expected='[
     {"course_id":"'"$mathcourseid"'"},
@@ -227,8 +227,8 @@ json_exact_match_test "Request the list of available courses from Alice" "$cours
 # --------------------------------------------------------------------
 
 courses=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_instructor_courses")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_instructor_courses")
 
 expected='[
     {"course_id":"'"$mathcourseid"'"}
@@ -239,12 +239,12 @@ json_exact_match_test "Request the list of instructor courses from Alice" "$cour
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_course_feed?course_id=$engcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_course_feed?course_id=$engcourseid")
 
 expected='[
-  {"course_id":"'"$engcourseid"'","post_id":'$materialid',"type":"mat","author":"bob@example.com"},
-  {"course_id":"'"$engcourseid"'","post_id":'$assignmentid',"type":"ass","author":"bob@example.com"}
+    {"course_id":"'"$engcourseid"'","post_id":'$materialid',"type":"mat","author":"bob@example.com"},
+    {"course_id":"'"$engcourseid"'","post_id":'$assignmentid',"type":"ass","author":"bob@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
@@ -252,11 +252,11 @@ json_partial_match_test "Request the course feed from Alice" "$info" "$expected"
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_material?course_id=$engcourseid&material_id=$materialid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_material?course_id=$engcourseid&material_id=$materialid")
 
 expected='
-  {"course_id":"'"$engcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material describtion","author":"bob@example.com"}
+    {"course_id":"'"$engcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material describtion","author":"bob@example.com"}
 '
 
 json_partial_match_test "Request the material info from Alice" "$info" "$expected" "material_id" "creation_time"
@@ -264,11 +264,11 @@ json_partial_match_test "Request the material info from Alice" "$info" "$expecte
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_assignment?course_id=$engcourseid&assignment_id=$assignmentid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_assignment?course_id=$engcourseid&assignment_id=$assignmentid")
 
 expected='
-  {"course_id":"'"$engcourseid"'","assignment_id":'$assignmentid',"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"bob@example.com"}
+    {"course_id":"'"$engcourseid"'","assignment_id":'$assignmentid',"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"bob@example.com"}
 '
 
 json_partial_match_test "Request the assignment info from Alice" "$info" "$expected" "assignment_id" "creation_time"
@@ -321,8 +321,8 @@ fail_test "Reguest to delete the deleted assignment in Bob's course by Bob" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_course_feed?course_id=$engcourseid")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_course_feed?course_id=$engcourseid")
 
 expected='[
 
@@ -392,8 +392,8 @@ login_and_get_token "Login as Alice" \
 # --------------------------------------------------------------------
 
 courses=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/available_courses")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/available_courses")
 
 expected='[
     {"course_id":"'"$mathcourseid"'"}

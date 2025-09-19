@@ -34,11 +34,11 @@ fail_test "Request the list of all courses from Alice" \
 # --------------------------------------------------------------------
 
 admins=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_admins")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_admins")
 
 expected='[
-  {"email":"admin","name":"admin"}
+    {"email":"admin","name":"admin"}
 ]'
 
 json_exact_match_test "Request the list of admins from Alice" "$admins" "$expected" "email"
@@ -53,11 +53,11 @@ login_and_get_token "Login as Admin" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_user_info")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_user_info")
 
 expected='
-  {"email":"admin","name":"admin"}
+    {"email":"admin","name":"admin"}
 '
 
 json_exact_match_test "Get the admin's name" "$info" "$expected" "email"
@@ -65,12 +65,12 @@ json_exact_match_test "Get the admin's name" "$info" "$expected" "email"
 # --------------------------------------------------------------------
 
 users=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_all_users")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_all_users")
 
 expected='[
-  {"email":"admin","name":"admin"},
-  {"email":"alice@example.com","name":"Alice"}
+    {"email":"admin","name":"admin"},
+    {"email":"alice@example.com","name":"Alice"}
 ]'
 
 json_exact_match_test "Request the list of all users from Admin" "$users" "$expected" "email"
@@ -78,11 +78,11 @@ json_exact_match_test "Request the list of all users from Admin" "$users" "$expe
 # --------------------------------------------------------------------
 
 admins=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_admins")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_admins")
 
 expected='[
-  {"email":"admin","name":"admin"}
+    {"email":"admin","name":"admin"}
 ]'
 
 json_exact_match_test "Request the list of admins from Admin" "$admins" "$expected" "email"
@@ -90,8 +90,8 @@ json_exact_match_test "Request the list of admins from Admin" "$admins" "$expect
 # --------------------------------------------------------------------
 
 courses=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_all_courses")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_all_courses")
 
 expected='[]'
 

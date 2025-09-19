@@ -57,11 +57,11 @@ login_and_get_token "Correct login as Alice" \
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "$API_URL/get_user_info")
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_user_info")
 
 expected='
-  {"email":"alice@example.com","name":"Alice"}
+    {"email":"alice@example.com","name":"Alice"}
 '
 
 json_exact_match_test "Get the Alice's name" "$info" "$expected" "email"
