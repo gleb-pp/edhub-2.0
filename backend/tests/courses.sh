@@ -39,7 +39,7 @@ info=$(curl -s -X GET \
   "$API_URL/get_user_role?course_id=$mathcourseid")
 
 expected='
-  {"is_instructor":true,"is_teacher":false,"is_student":false,"is_parent":false,"is_admin":false}
+  {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
 '
 
 json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" "is_instructor"
@@ -169,7 +169,7 @@ info=$(curl -s -X GET \
   "$API_URL/get_user_role?course_id=$engcourseid")
 
 expected='
-  {"is_instructor":true,"is_teacher":false,"is_student":false,"is_parent":false,"is_admin":false}
+  {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
 '
 
 json_exact_match_test "Get the Bob's role in course English" "$info" "$expected" "is_instructor"
