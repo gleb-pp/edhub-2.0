@@ -1,0 +1,29 @@
+@keyframes fade-translate-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-translate-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-8);
+  }
+}
+
+.fade-translate-in {
+  animation: fade-translate-in 200ms forwards;
+}
+
+.fade-translate-out {
+  animation: fade-translate-out 200ms forwards;
+}

@@ -16,7 +16,7 @@ const ButtonStyles: Record<ButtonTypes, string> = {
   outline:
     "text-dark bg-white border-[1.5px] border-outline shadow-md hover:bg-bg-outline",
   cancel: "text-white bg-ui-red hover:bg-ui-red/90",
-  clean: "text-dark hover:underline",
+  clean: "text-dark",
 } as const;
 
 export const Button = memo(function Button({
