@@ -275,8 +275,86 @@ json_partial_match_test "Request the assignment info from Alice" "$info" "$expec
 
 # --------------------------------------------------------------------
 
-fail_test "Request to delete Bob's course from Alice" \
+fail_test "Request to delete Bob's course by Alice" \
     -X POST "$API_URL/remove_course?course_id=$engcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+fail_test "Request to delete the material in Bob's course by Alice" \
+    -X POST "$API_URL/remove_material?course_id=$engcourseid&material_id=$materialid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+fail_test "Request to delete the assignment in Bob's course by Alice" \
+    -X POST "$API_URL/remove_assignment?course_id=$engcourseid&assignment_id=$assignmentid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Bob" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\"}"
+
+# --------------------------------------------------------------------
+
+success_test "Delete the material in Bob's course by Bob" \
+    -X POST "$API_URL/remove_material?course_id=$engcourseid&material_id=$materialid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+success_test "Delete the assignment in Bob's course by Bob" \
+    -X POST "$API_URL/remove_assignment?course_id=$engcourseid&assignment_id=$assignmentid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+fail_test "Reguest to delete the deleted material in Bob's course by Bob" \
+    -X POST "$API_URL/remove_material?course_id=$engcourseid&material_id=$materialid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Reguest to delete the deleted assignment in Bob's course by Bob" \
+    -X POST "$API_URL/remove_assignment?course_id=$engcourseid&assignment_id=$assignmentid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_course_feed?course_id=$engcourseid")
+
+expected='[
+
+]'
+
+json_partial_match_test "Request the empty course feed from Bob" "$info" "$expected" "post_id type" "timeadded"
+
+# --------------------------------------------------------------------
+
+fail_test "Request to get the removed material by Bob" \
+    -X GET "$API_URL/get_material?course_id=$engcourseid&material_id=$materialid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to get the removed assignment by Bob" \
+    -X GET "$API_URL/get_assignment?course_id=$engcourseid&assignment_id=$assignmentid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Alice" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\"}"
+
+# --------------------------------------------------------------------
+
+fail_test "Request to get the removed material by Alice" \
+    -X GET "$API_URL/get_material?course_id=$engcourseid&material_id=$materialid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to get the removed assignment by Alice" \
+    -X GET "$API_URL/get_assignment?course_id=$engcourseid&assignment_id=$assignmentid" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
@@ -290,6 +368,12 @@ login_and_get_token "Login as Bob" \
 
 success_test "Delete Bob's course" \
     -X POST "$API_URL/remove_course?course_id=$engcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+fail_test "Request to get the feed of the removed course by Bob" \
+    -X GET "$API_URL/get_course_feed?course_id=$engcourseid" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
@@ -315,16 +399,4 @@ json_exact_match_test "Request the list of available courses from Alice" "$cours
 
 fail_test "Request to get the feed of the removed course" \
     -X GET "$API_URL/get_course_feed?course_id=$engcourseid" \
-    -H "Authorization: Bearer $TOKEN" \
-
-# --------------------------------------------------------------------
-
-fail_test "Request to get the material of the removed course" \
-    -X GET "$API_URL/get_material?course_id=$engcourseid&material_id=$materialid" \
-    -H "Authorization: Bearer $TOKEN" \
-
-# --------------------------------------------------------------------
-
-fail_test "Request to get the assignment of the removed course" \
-    -X GET "$API_URL/get_assignment?course_id=$engcourseid&assignment_id=$assignmentid" \
     -H "Authorization: Bearer $TOKEN" \
