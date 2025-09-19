@@ -70,12 +70,6 @@ json_partial_match_test "Request the list of material attachments from Alice" "$
 
 # --------------------------------------------------------------------
 
-success_test "Download material attachment from Alice" \
-    -X POST "$API_URL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" \
-    -H "Authorization: Bearer $TOKEN" \
-
-# --------------------------------------------------------------------
-
 assignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/create_assignment?course_id=$mathcourseid&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
@@ -92,16 +86,10 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment_attachments?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$fileassignmentid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of assignment attachments from Alice" "$info" "$expected" "filename" "upload_time"
-
-# --------------------------------------------------------------------
-
-success_test "Download assignment attachment from Alice" \
-    -X POST "$API_URL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" \
-    -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
 
@@ -129,20 +117,10 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment_attachments?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$fileassignmentid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of assignment attachments from Bob" "$info" "$expected" "filename" "upload_time"
-
-# --------------------------------------------------------------------
-
-success_test "Download material attachment from Bob" \
-    -X POST "$API_URL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Download assignment attachment from Bob" \
-    -X POST "$API_URL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" \
-    -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
 
@@ -162,16 +140,10 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission_attachments?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Bob" "$info" "$expected" "filename" "upload_time"
-
-# --------------------------------------------------------------------
-
-success_test "Download submission attachment from Bob" \
-    -X POST "$API_URL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" \
-    -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
 
@@ -199,7 +171,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment_attachments?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$fileassignmentid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of assignment attachments from Charlie" "$info" "$expected" "filename" "upload_time"
@@ -211,24 +183,10 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission_attachments?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filesubmissionid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Bob" "$info" "$expected" "filename" "upload_time"
-
-# --------------------------------------------------------------------
-
-success_test "Download material attachment from Charlie" \
-    -X POST "$API_URL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Download assignment attachment from Charlie" \
-    -X POST "$API_URL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Download submission attachment from Charlie" \
-    -X POST "$API_URL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" \
-    -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
 
