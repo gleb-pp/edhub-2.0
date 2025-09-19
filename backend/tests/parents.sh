@@ -57,6 +57,10 @@ success_test "Invite Bob to Alice's course as a teacher" \
     -X POST "$API_URL/invite_teacher?course_id=$mathcourseid&new_teacher_email=bob@example.com" \
     -H "Authorization: Bearer $TOKEN" \
 
+fail_test "Request to invite Dmitry to Alice's course as a Charlie's parent (Charlie is not enrolled)" \
+    -X POST "$API_URL/invite_parent?course_id=$mathcourseid&student_email=charlie@example.com&parent_email=dmitry@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
 success_test "Invite Charlie to Alice's course as a student" \
     -X POST "$API_URL/invite_student?course_id=$mathcourseid&student_email=charlie@example.com" \
     -H "Authorization: Bearer $TOKEN" \

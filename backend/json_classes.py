@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -86,8 +86,8 @@ class Submission(BaseModel):
     submission_time: str
     last_modification_time: str
     comment: str
-    grade: Union[int, None]
-    gradedby_email: Union[str, None]
+    grade: Optional[int]
+    gradedby_email: Optional[str]
 
 
 class SubmissionAttachmentMetadata(BaseModel):
