@@ -63,7 +63,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_material_attachments?course_id=$mathcourseid&material_id=$materialid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","material_id":"'"$materialid"'","file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","material_id":'$materialid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of material attachments from Alice" "$info" "$expected" "filename" "upload_time"
@@ -92,7 +92,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment_attachments?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":"'"$assignmentid"'","file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of assignment attachments from Alice" "$info" "$expected" "filename" "upload_time"
@@ -117,7 +117,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_material_attachments?course_id=$mathcourseid&material_id=$materialid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","material_id":"'"$materialid"'","file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","material_id":'$materialid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of material attachments from Bob" "$info" "$expected" "filename" "upload_time"
@@ -129,7 +129,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment_attachments?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":"'"$assignmentid"'","file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of assignment attachments from Bob" "$info" "$expected" "filename" "upload_time"
@@ -162,7 +162,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission_attachments?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":"'"$assignmentid"'","file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Bob" "$info" "$expected" "filename" "upload_time"
@@ -187,7 +187,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_material_attachments?course_id=$mathcourseid&material_id=$materialid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","material_id":"'"$materialid"'","file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","material_id":'$materialid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of material attachments from Charlie" "$info" "$expected" "filename" "upload_time"
@@ -199,7 +199,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment_attachments?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":"'"$assignmentid"'","file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of assignment attachments from Charlie" "$info" "$expected" "filename" "upload_time"
@@ -211,7 +211,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission_attachments?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":"'"$assignmentid"'","file_id":"'"$filematerialid"'","filename":"attachments.sh"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"file_id":"'"$filematerialid"'","filename":"attachments.sh"}
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Bob" "$info" "$expected" "filename" "upload_time"
@@ -228,4 +228,23 @@ success_test "Download assignment attachment from Charlie" \
 
 success_test "Download submission attachment from Charlie" \
     -X POST "$API_URL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Admin" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"admin\",\"password\":\"admin\"}"
+
+success_test "Removing Alice account from Admin" \
+    -X POST "$API_URL/remove_user?deleted_user_email=alice@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+success_test "Removing Bob account from Admin" \
+    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+success_test "Removing Charlie account from Admin" \
+    -X POST "$API_URL/remove_user?deleted_user_email=charlie@example.com" \
     -H "Authorization: Bearer $TOKEN" \
