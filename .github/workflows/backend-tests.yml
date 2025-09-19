@@ -209,25 +209,37 @@ jobs:
       # checking registration, login, changing password, and removing account
       - name: Authorization tests
         run: |
-          ./backend/tests/authorization.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+          ./backend/tests/authorization.sh || exit 1
 
       # checking admin functionalities
       - name: Admin tests
         run: |
-          ./backend/tests/admin.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+          ./backend/tests/admin.sh || exit 1
 
       # checking courses functionalities
       - name: Course tests
         run: |
-          ./backend/tests/courses.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+          ./backend/tests/courses.sh || exit 1
       
       - name: Students tests
         run: |
-          ./backend/tests/students.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+          ./backend/tests/students.sh || exit 1
       
       - name: Teachers tests
         run: |
-          ./backend/tests/teachers.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+          ./backend/tests/teachers.sh || exit 1
+
+      - name: Parents tests
+        run: |
+          ./backend/tests/parents.sh || exit 1
+      
+      - name: Submissions tests
+        run: |
+          ./backend/tests/submissions.sh || exit 1
+
+      - name: Attachments tests
+        run: |
+          ./backend/tests/attachments.sh || exit 1
 
       - name: Stop containers
         if: always()
