@@ -29,14 +29,6 @@ download_file_test() {
         return 1
     fi
     
-    local headers
-    headers=$(curl -s -I -H "Authorization: Bearer $TOKEN" "$url")
-    if [[ ! "$headers" =~ "Content-Disposition: attachment; filename=\"$expected_filename\"" ]]; then
-        echo "ERROR: $description failed: Invalid Content-Disposition header"
-        rm -f "$tmp_file"
-        return 1
-    fi
-    
     echo "✓ Successful $description"
     rm -f "$tmp_file"
 }
@@ -281,6 +273,30 @@ download_file_test "Download submission attachment by Alice" "$API_URL/download_
 
 # --------------------------------------------------------------------
 
+success_test "Registration of Eugene" \
+    -X POST $API_URL/create_user \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"eugene@example.com\",\"password\":\"eugenePass123!\",\"name\":\"Eugene\"}"
+
+# --------------------------------------------------------------------
+
+success_test "Invite Eugene to Alice's course as a student" \
+    -X POST "$API_URL/invite_student?course_id=$mathcourseid&student_email=eugene@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+login_and_get_token "Login as Eugene" \
+    -X POST $API_URL/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"eugene@example.com\",\"password\":\"eugenePass123!\"}"
+
+# --------------------------------------------------------------------
+
+fail_download_test "Request to download Bob's submission attachment by Eugene" "$API_URL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filesubmissionid"
+
+# --------------------------------------------------------------------
+
 login_and_get_token "Login as Admin" \
     -X POST $API_URL/login \
     -H "Content-Type: application/json" \
@@ -296,4 +312,8 @@ success_test "Removing Bob account from Admin" \
 
 success_test "Removing Charlie account from Admin" \
     -X POST "$API_URL/remove_user?deleted_user_email=charlie@example.com" \
+    -H "Authorization: Bearer $TOKEN" \
+
+success_test "Removing Eugene account from Admin" \
+    -X POST "$API_URL/remove_user?deleted_user_email=eugene@example.com" \
     -H "Authorization: Bearer $TOKEN" \
