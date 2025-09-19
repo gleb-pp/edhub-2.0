@@ -226,8 +226,8 @@ info=$(curl -s -X GET \
   "$API_URL/get_course_feed?course_id=$mathcourseid")
 
 expected='[
-  {"course_id":"'"$mathcourseid"'","post_id":"'"$materialid"'","type":"mat","author":"alice@example.com"},
-  {"course_id":"'"$mathcourseid"'","post_id":"'"$assignmentid"'","type":"ass","author":"alice@example.com"}
+  {"course_id":"'"$mathcourseid"'","post_id":'$materialid',"type":"mat","author":"alice@example.com"},
+  {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"type":"ass","author":"alice@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
@@ -239,7 +239,7 @@ info=$(curl -s -X GET \
   "$API_URL/get_material?course_id=$mathcourseid&material_id=$materialid")
 
 expected='
-  {"course_id":"'"$mathcourseid"'","material_id":"'"$materialid"'","title":"Lecture material","description":"Lecture material describtion","author":"alice@example.com"}
+  {"course_id":"'"$mathcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material describtion","author":"alice@example.com"}
 '
 
 json_partial_match_test "Request the material info from Alice" "$info" "$expected" "material_id" "creation_time"
@@ -251,7 +251,7 @@ info=$(curl -s -X GET \
   "$API_URL/get_assignment?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='
-  {"course_id":"'"$mathcourseid"'","assignment_id":"'"$assignmentid"'","title":"Assignment 1","description":"To do exercise 10 from the course book","author":"alice@example.com"}
+  {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"alice@example.com"}
 '
 
 json_partial_match_test "Request the assignment info from Alice" "$info" "$expected" "assignment_id" "creation_time"
@@ -370,8 +370,8 @@ info=$(curl -s -X GET \
   "$API_URL/get_course_feed?course_id=$engcourseid")
 
 expected='[
-  {"course_id":"'"$engcourseid"'","post_id":"'"$materialid"'","type":"mat","author":"bob@example.com"},
-  {"course_id":"'"$engcourseid"'","post_id":"'"$assignmentid"'","type":"ass","author":"bob@example.com"}
+  {"course_id":"'"$engcourseid"'","post_id":'$materialid',"type":"mat","author":"bob@example.com"},
+  {"course_id":"'"$engcourseid"'","post_id":'$assignmentid',"type":"ass","author":"bob@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
@@ -383,7 +383,7 @@ info=$(curl -s -X GET \
   "$API_URL/get_material?course_id=$engcourseid&material_id=$materialid")
 
 expected='
-  {"course_id":"'"$engcourseid"'","material_id":"'"$materialid"'","title":"Lecture material","description":"Lecture material describtion","author":"bob@example.com"}
+  {"course_id":"'"$engcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material describtion","author":"bob@example.com"}
 '
 
 json_partial_match_test "Request the material info from Alice" "$info" "$expected" "material_id" "creation_time"
@@ -395,7 +395,7 @@ info=$(curl -s -X GET \
   "$API_URL/get_assignment?course_id=$engcourseid&assignment_id=$assignmentid")
 
 expected='
-  {"course_id":"'"$engcourseid"'","assignment_id":"'"$assignmentid"'","title":"Assignment 1","description":"To do exercise 10 from the course book","author":"bob@example.com"}
+  {"course_id":"'"$engcourseid"'","assignment_id":'$assignmentid',"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"bob@example.com"}
 '
 
 json_partial_match_test "Request the assignment info from Alice" "$info" "$expected" "assignment_id" "creation_time"
