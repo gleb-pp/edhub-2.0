@@ -5,6 +5,60 @@ API_URL="http://localhost:8000"
 
 source ./backend/tests/common_functions.sh
 
+download_file_test() {
+    local description="$1"
+    local url="$2"
+    local expected_filename="$3"
+    local tmp_file="/tmp/test_download_$$"
+    
+    local response_code
+    response_code=$(curl -s -w "%{http_code}" \
+        -H "Authorization: Bearer $TOKEN" \
+        -o "$tmp_file" \
+        "$url")
+    
+    if [ "$response_code" != "200" ]; then
+        echo "ERROR: $description failed with HTTP $response_code"
+        rm -f "$tmp_file"
+        return 1
+    fi
+    
+    if [ ! -s "$tmp_file" ]; then
+        echo "ERROR: $description failed: downloaded file is empty"
+        rm -f "$tmp_file"
+        return 1
+    fi
+    
+    local headers
+    headers=$(curl -s -I -H "Authorization: Bearer $TOKEN" "$url")
+    if [[ ! "$headers" =~ "Content-Disposition: attachment; filename=\"$expected_filename\"" ]]; then
+        echo "ERROR: $description failed: Invalid Content-Disposition header"
+        rm -f "$tmp_file"
+        return 1
+    fi
+    
+    echo "✓ Successful $description"
+    rm -f "$tmp_file"
+}
+
+fail_download_test() {
+    local description="$1"
+    local url="$2"
+    
+    local response_code
+    response_code=$(curl -s -w "%{http_code}" \
+        -H "Authorization: Bearer $TOKEN" \
+        -o /dev/null \
+        "$url")
+    
+    if [ "$response_code" == "200" ]; then
+        echo "ERROR: $description expected to fail, but got HTTP $response_code"
+        return 1
+    fi
+    
+    echo "✓ Successfully rejected $description"
+}
+
 # --------------------------------------------------------------------
 
 success_test "Registration of Alice" \
@@ -68,6 +122,8 @@ expected='[
 
 json_partial_match_test "Request the list of material attachments from Alice" "$info" "$expected" "filename" "upload_time"
 
+download_file_test "Download material attachment by Alice" "$APIURL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
+
 # --------------------------------------------------------------------
 
 assignmentid=$(curl -s -X POST \
@@ -91,6 +147,8 @@ expected='[
 
 json_partial_match_test "Request the list of assignment attachments from Alice" "$info" "$expected" "filename" "upload_time"
 
+download_file_test "Download assignment attachment by Alice" "$APIURL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" "attachments.sh"
+
 # --------------------------------------------------------------------
 
 login_and_get_token "Login as Bob" \
@@ -110,6 +168,8 @@ expected='[
 
 json_partial_match_test "Request the list of material attachments from Bob" "$info" "$expected" "filename" "upload_time"
 
+download_file_test "Download material attachment by Bob" "$APIURL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
+
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
@@ -121,6 +181,8 @@ expected='[
 ]'
 
 json_partial_match_test "Request the list of assignment attachments from Bob" "$info" "$expected" "filename" "upload_time"
+
+download_file_test "Download assignment attachment by Bob" "$APIURL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -145,6 +207,8 @@ expected='[
 
 json_partial_match_test "Request the list of submission attachments from Bob" "$info" "$expected" "filename" "upload_time"
 
+download_file_test "Download submission attachment by Bob" "$APIURL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" "attachments.sh"
+
 # --------------------------------------------------------------------
 
 login_and_get_token "Login as Charlie" \
@@ -164,6 +228,8 @@ expected='[
 
 json_partial_match_test "Request the list of material attachments from Charlie" "$info" "$expected" "filename" "upload_time"
 
+download_file_test "Download material attachment by Charlie" "$APIURL/download_material_attachment?course_id=$mathcourseid&material_id=$materialid&file_id=$filematerialid" "attachments.sh"
+
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
@@ -176,6 +242,8 @@ expected='[
 
 json_partial_match_test "Request the list of assignment attachments from Charlie" "$info" "$expected" "filename" "upload_time"
 
+download_file_test "Download assignment attachment by Charlie" "$APIURL/download_assignment_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&file_id=$filematerialid" "attachments.sh"
+
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
@@ -187,6 +255,8 @@ expected='[
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Charlie" "$info" "$expected" "filename" "upload_time"
+
+download_file_test "Download submission attachment by Charlie" "$APIURL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
@@ -206,6 +276,8 @@ expected='[
 ]'
 
 json_partial_match_test "Request the list of submission attachments from Alice" "$info" "$expected" "filename" "upload_time"
+
+download_file_test "Download submission attachment by Alice" "$APIURL/download_submission_attachment?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&file_id=$filematerialid" "attachments.sh"
 
 # --------------------------------------------------------------------
 
