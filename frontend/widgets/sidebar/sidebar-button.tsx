@@ -23,7 +23,7 @@ export const SidebarButton: React.FC<Props> = ({
   return (
     <Link
       className={clsx(
-        "flex items-center px-[6px] w-full py-1 text-xl font-light rounded-md transition-all duration-200 hover:bg-bg-outline group text-dark/80",
+        "flex items-center px-[6px] w-full py-[2px] text-xl font-light rounded-md transition-all duration-200 hover:bg-bg-outline group text-dark/80",
         className
       )}
       href={href}

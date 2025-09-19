@@ -44,12 +44,12 @@ export const Sidebar: FC<Props> = ({ className }) => {
         )}
       >
         <div className={clsx("flex items-center w-full h-full")}>
-          <div className="flex-shrink-0">
+          <div className={clsx("flex-shrink-0")}>
             <Image
-              className="size-12"
+              className="size-13"
               src={"/logo.svg"}
-              width={48}
-              height={48}
+              width={52}
+              height={52}
               alt={"Edhub"}
             />
           </div>
@@ -74,14 +74,14 @@ export const Sidebar: FC<Props> = ({ className }) => {
         <div className="flex flex-col gap-1">
           <SidebarButton
             className="group text-dark/80"
-            icon={<House width={32} strokeWidth={1.7} />}
+            icon={<House width={36} strokeWidth={1.7} />}
             text="Home"
             href="#"
             isOpen={isOpen}
           />
           <SidebarButton
             className="group text-dark/80"
-            icon={<ListTodo width={32} strokeWidth={1.7} />}
+            icon={<ListTodo width={36} strokeWidth={1.7} />}
             text="Tasks"
             href="#"
             isOpen={isOpen}
@@ -103,14 +103,14 @@ export const Sidebar: FC<Props> = ({ className }) => {
         >
           <SidebarButton
             className="group text-dark/80"
-            icon={<Package width={32} strokeWidth={1.7} />}
+            icon={<Package width={36} strokeWidth={1.7} />}
             text="Сourse archive"
             href="#"
             isOpen={isOpen}
           />
           <SidebarButton
             className="group text-dark/80"
-            icon={<Bolt width={32} strokeWidth={1.7} />}
+            icon={<Bolt width={36} strokeWidth={1.7} />}
             text="Settings"
             href="#"
             isOpen={isOpen}
@@ -124,13 +124,13 @@ export const Sidebar: FC<Props> = ({ className }) => {
         >
           <Button
             onClick={handleToggleSidebar}
-            className="size-9 rounded-md pointer-events-auto"
+            className="size-[39px] rounded-md pointer-events-auto"
             variant="outline"
           >
             <ChevronsLeft
               size={22}
               className={clsx(
-                "text-dark/80 mr-[1px] transition-transform duration-200",
+                "text-dark/80 mr-[1px] transition-transform duration-200 hover:text-dark",
                 isOpen ? "rotate-0" : "rotate-180"
               )}
             />
