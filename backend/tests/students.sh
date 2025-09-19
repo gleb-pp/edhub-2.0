@@ -121,7 +121,7 @@ json_exact_match_test "Get students enrolled into Math course by Bob" "$info" "$
 # --------------------------------------------------------------------
 
 fail_test "Request to create a material from a student Bob" \
-    -X POST "$API_URL/create_material?course_id=$mathcourseid&title=Lecture%20material&description=Lecture%20material%20describtion" \
+    -X POST "$API_URL/create_material?course_id=$mathcourseid&title=Lecture%20material&description=Lecture%20material%20description" \
     -H "Authorization: Bearer $TOKEN" \
 
 fail_test "Request to create an assignment from a student Bob" \
@@ -161,9 +161,9 @@ info=$(curl -s -X GET \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/get_enrolled_students?course_id=$mathcourseid")
 
-expected='
+expected='[
     {"email":"charlie@example.com","name":"Charlie"}
-'
+]'
 
 json_exact_match_test "Get students enrolled into Math course by Alice" "$info" "$expected" "email"
 

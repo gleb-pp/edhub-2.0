@@ -95,7 +95,7 @@ expected='[
     {"email":"eugene@example.com","name":"Eugene"}
 ]'
 
-json_exact_match_test "Get the list of Charlie's praents" "$info" "$expected" "email"
+json_exact_match_test "Get the list of Charlie's parents" "$info" "$expected" "email"
 
 # --------------------------------------------------------------------
 

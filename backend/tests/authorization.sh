@@ -14,7 +14,7 @@ fail_test "Registration with incorrect email" \
 
 # --------------------------------------------------------------------
 
-fail_test "Registation with weak password" \
+fail_test "Registration with weak password" \
     -X POST $API_URL/create_user \
     -H "Content-Type: application/json" \
     -d "{\"email\":\"alice@example.com\",\"password\":\"pwd\",\"name\":\"Alice\"}"
@@ -64,7 +64,7 @@ expected='
     {"email":"alice@example.com","name":"Alice"}
 '
 
-json_exact_match_test "Get the Alice's name" "$info" "$expected" "email"
+json_exact_match_test "Get Alice's name" "$info" "$expected" "email"
 
 # --------------------------------------------------------------------
 

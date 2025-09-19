@@ -170,7 +170,7 @@ expected='
     {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","comment":"The answer is 10","grade":5,"gradedby_email":"alice@example.com"}
 '
 
-json_partial_match_test "Request the submission details by Alice" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
+json_partial_match_test "Request the submission details by Charlie" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
 
 # --------------------------------------------------------------------
 

@@ -105,9 +105,16 @@ success_test "Giving admin rights to Alice by Admin" \
 
 # --------------------------------------------------------------------
 
-success_test "Giving admin rights to Alice by Admin" \
-    -X POST "$API_URL/give_admin_permissions?object_email=alice@example.com" \
+admins=$(curl -s -X GET \
     -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_admins")
+
+expected='[
+    {"email":"admin","name":"admin"},
+    {"email":"alice@example.com","name":"Alice"},
+]'
+
+json_exact_match_test "Request the list of admins from Admin" "$admins" "$expected" "email"
 
 # --------------------------------------------------------------------
 

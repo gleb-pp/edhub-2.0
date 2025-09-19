@@ -49,7 +49,7 @@ success_test "Invite Charlie to Alice's course as Bob's parent" \
 
 materialid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_material?course_id=$mathcourseid&title=Lecture%20material&description=Lecture%20material%20describtion" | extract_field material_id)
+    "$API_URL/create_material?course_id=$mathcourseid&title=Lecture%20material&description=Lecture%20material%20description" | extract_field material_id)
 
 filematerialid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
@@ -96,7 +96,7 @@ json_partial_match_test "Request the list of assignment attachments from Alice" 
 login_and_get_token "Login as Bob" \
     -X POST $API_URL/login \
     -H "Content-Type: application/json" \
-    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\"}"\
+    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\"}"
 
 # --------------------------------------------------------------------
 
@@ -150,7 +150,7 @@ json_partial_match_test "Request the list of submission attachments from Bob" "$
 login_and_get_token "Login as Charlie" \
     -X POST $API_URL/login \
     -H "Content-Type: application/json" \
-    -d "{\"email\":\"charlie@example.com\",\"password\":\"charliePass123!\"}"\
+    -d "{\"email\":\"charlie@example.com\",\"password\":\"charliePass123!\"}"
 
 # --------------------------------------------------------------------
 

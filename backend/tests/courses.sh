@@ -42,7 +42,7 @@ expected='
     {"is_instructor":true,"is_teacher":true,"is_student":false,"is_parent":false,"is_admin":false}
 '
 
-json_exact_match_test "Get the Alice's role in course Math" "$info" "$expected" "is_instructor"
+json_exact_match_test "Get Alice's role in course Math" "$info" "$expected" "is_instructor"
 
 # --------------------------------------------------------------------
 
@@ -50,9 +50,9 @@ info=$(curl -s -X GET \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/get_course_info?course_id=$mathcourseid")
 
-expected='[
+expected='
     {"course_id":"'"$mathcourseid"'","title":"Math","instructor":"alice@example.com","organization":"Innopolis University"}
-]'
+'
 
 json_partial_match_test "Request the course info from Alice" "$info" "$expected" "course_id" "creation_time"
 
@@ -60,7 +60,7 @@ json_partial_match_test "Request the course info from Alice" "$info" "$expected"
 
 materialid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_material?course_id=$mathcourseid&title=Lecture%20material&description=Lecture%20material%20describtion" | extract_field material_id)
+    "$API_URL/create_material?course_id=$mathcourseid&title=Lecture%20material&description=Lecture%20material%20description" | extract_field material_id)
 
 # --------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_material?course_id=$mathcourseid&material_id=$materialid")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material describtion","author":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material description","author":"alice@example.com"}
 '
 
 json_partial_match_test "Request the material info from Alice" "$info" "$expected" "material_id" "creation_time"
@@ -184,7 +184,7 @@ success_test "Invite Alice to Bob's course" \
 
 materialid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_material?course_id=$engcourseid&title=Lecture%20material&description=Lecture%20material%20describtion" | extract_field material_id)
+    "$API_URL/create_material?course_id=$engcourseid&title=Lecture%20material&description=Lecture%20material%20description" | extract_field material_id)
 
 # --------------------------------------------------------------------
 
@@ -209,7 +209,7 @@ expected='
     {"is_instructor":false,"is_teacher":false,"is_student":true,"is_parent":false,"is_admin":false}
 '
 
-json_exact_match_test "Get the Alice's role in course English" "$info" "$expected" "is_instructor"
+json_exact_match_test "Get Alice's role in course English" "$info" "$expected" "is_instructor"
 
 # --------------------------------------------------------------------
 
@@ -256,7 +256,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_material?course_id=$engcourseid&material_id=$materialid")
 
 expected='
-    {"course_id":"'"$engcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material describtion","author":"bob@example.com"}
+    {"course_id":"'"$engcourseid"'","material_id":'$materialid',"title":"Lecture material","description":"Lecture material description","author":"bob@example.com"}
 '
 
 json_partial_match_test "Request the material info from Alice" "$info" "$expected" "material_id" "creation_time"
@@ -310,11 +310,11 @@ success_test "Delete the assignment in Bob's course by Bob" \
 
 # --------------------------------------------------------------------
 
-fail_test "Reguest to delete the deleted material in Bob's course by Bob" \
+fail_test "Request to delete the deleted material in Bob's course by Bob" \
     -X POST "$API_URL/remove_material?course_id=$engcourseid&material_id=$materialid" \
     -H "Authorization: Bearer $TOKEN" \
 
-fail_test "Reguest to delete the deleted assignment in Bob's course by Bob" \
+fail_test "Request to delete the deleted assignment in Bob's course by Bob" \
     -X POST "$API_URL/remove_assignment?course_id=$engcourseid&assignment_id=$assignmentid" \
     -H "Authorization: Bearer $TOKEN" \
 
