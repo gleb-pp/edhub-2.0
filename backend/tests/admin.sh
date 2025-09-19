@@ -52,6 +52,18 @@ login_and_get_token "Login as Admin" \
 
 # --------------------------------------------------------------------
 
+info=$(curl -s -X GET \
+  -H "Authorization: Bearer $TOKEN" \
+  "$API_URL/get_user_info")
+
+expected='
+  {"email":"admin","name":"admin"}
+'
+
+json_exact_match_test "Get the admin's name" "$info" "$expected" "email"
+
+# --------------------------------------------------------------------
+
 users=$(curl -s -X GET \
   -H "Authorization: Bearer $TOKEN" \
   "$API_URL/get_all_users")
