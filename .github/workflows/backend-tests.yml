@@ -37,17 +37,6 @@ jobs:
             -e PGDATA=/var/lib/postgresql/data \
             edhub-system-db
 
-      - name: Run filestorage_db container
-        run: |
-          docker run -d \
-            --name filestorage_db \
-            --network edhub-network \
-            -e POSTGRES_USER=postgres \
-            -e POSTGRES_PASSWORD=12345678 \
-            -e POSTGRES_DB=edhub_storage \
-            -e PGDATA=/var/lib/postgresql/data \
-            edhub-filestorage-db
-      
       - name: Wait for system_db to be ready
         run: |
           echo "Waiting for system_db to be ready..."
@@ -61,6 +50,17 @@ jobs:
           done
           echo "system_db failed to start"
           exit 1
+
+      - name: Run filestorage_db container
+        run: |
+          docker run -d \
+            --name filestorage_db \
+            --network edhub-network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=12345678 \
+            -e POSTGRES_DB=edhub_storage \
+            -e PGDATA=/var/lib/postgresql/data \
+            edhub-filestorage-db
 
       - name: Wait for filestorage_db to be ready  
         run: |
@@ -140,17 +140,6 @@ jobs:
             -e PGDATA=/var/lib/postgresql/data \
             edhub-system-db
 
-      - name: Run filestorage_db container
-        run: |
-          docker run -d \
-            --name filestorage_db \
-            --network edhub-network \
-            -e POSTGRES_USER=postgres \
-            -e POSTGRES_PASSWORD=12345678 \
-            -e POSTGRES_DB=edhub_storage \
-            -e PGDATA=/var/lib/postgresql/data \
-            edhub-filestorage-db
-
       - name: Wait for system_db to be ready
         run: |
           echo "Waiting for system_db to be ready..."
@@ -164,6 +153,17 @@ jobs:
           done
           echo "system_db failed to start"
           exit 1
+
+      - name: Run filestorage_db container
+        run: |
+          docker run -d \
+            --name filestorage_db \
+            --network edhub-network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=12345678 \
+            -e POSTGRES_DB=edhub_storage \
+            -e PGDATA=/var/lib/postgresql/data \
+            edhub-filestorage-db
 
       - name: Wait for filestorage_db to be ready  
         run: |
@@ -202,10 +202,24 @@ jobs:
           (echo "Backend failed to start" && docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
           exit 1
 
-      - name: Run tests.sh
+      - name: Set up tests
         run: |
           chmod +x ./backend/tests/*.sh
-          ./backend/tests/tests.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+
+      # checking registration, login, changing password, and removing account
+      - name: Authorization tests
+        run: |
+          ./backend/tests/authorization.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+
+      # checking admin functionalities
+      - name: Admin tests
+        run: |
+          ./backend/tests/admin.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
+
+      # checking courses functionalities
+      - name: Course tests
+        run: |
+          ./backend/tests/courses.sh || (docker logs backend && docker logs system_db && docker logs filestorage_db && exit 1)
 
       - name: Stop containers
         if: always()

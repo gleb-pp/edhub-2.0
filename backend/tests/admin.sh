@@ -1,5 +1,5 @@
 #!/bin/bash
-set -o pipefail
+set -euo pipefail
 
 API_URL="http://localhost:8000"
 
