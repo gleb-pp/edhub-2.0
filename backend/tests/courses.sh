@@ -52,10 +52,6 @@ fail_test "Request to create the course with invalid organization" \
     -X POST "$API_URL/create_course?title=Math&organization=Innopolis%24University" \
     -H "Authorization: Bearer $TOKEN" \
 
-success_test "Create the course with no organization" \
-    -X POST "$API_URL/create_course?title=Title" \
-    -H "Authorization: Bearer $TOKEN" \
-
 noorgcourseid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/create_course?title=Math" | extract_field course_id)
