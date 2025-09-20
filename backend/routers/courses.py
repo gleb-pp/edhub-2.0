@@ -38,7 +38,7 @@ async def create_course(
         description="Title can contain only letters, digits, spaces, and underscores, 3-80 symbols"
     ),
     organization: Optional[str] = Query(
-        ...,
+        None,
         min_length=3,
         max_length=80,
         pattern=r"^[\p{L}0-9_ ]+$",
