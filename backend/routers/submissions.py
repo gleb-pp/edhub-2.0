@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, Query, UploadFile, File
 from auth import get_current_user, get_db, get_storage_db
 import json_classes
 import logic.submissions
@@ -12,11 +12,18 @@ router = APIRouter()
 async def submit_assignment(
     course_id: str,
     assignment_id: str,
-    comment: str,
+    comment: str = Query(
+        ...,
+        min_length=3,
+        max_length=10000,
+        description="Comment must contain 3-10000 symbols"
+    ),
     student_email: str = Depends(get_current_user),
 ):
     """
     Allows student to submit their assignment.
+
+    Comment must contains from 3 to 10000 symbols.
 
     Student role required.
 

@@ -28,6 +28,42 @@ login_and_get_token "Login as Alice" \
 
 # --------------------------------------------------------------------
 
+fail_test "Request to create the course with too short name" \
+    -X POST "$API_URL/create_course?title=M&organization=Innopolis%20University" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the course with too long name" \
+    -X POST "$API_URL/create_course?title=MathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMath&organization=Innopolis%20University" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the course with invalid name" \
+    -X POST "$API_URL/create_course?title=M%24ath&organization=Innopolis%20University" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the course with too short organization" \
+    -X POST "$API_URL/create_course?title=Math&organization=In" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the course with too long organization" \
+    -X POST "$API_URL/create_course?title=Math&organization=Innopolis%20UniversityInnopolis%20UniversityInnopolis%20UniversityInnopolis%20UniversityInnopolis%20University" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the course with invalid organization" \
+    -X POST "$API_URL/create_course?title=Math&organization=Innopolis%24University" \
+    -H "Authorization: Bearer $TOKEN" \
+
+noorgcourseid=$(curl -s -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/create_course?title=Math" | extract_field course_id)
+
+echo "✓ Successful Create the course with no organization"
+
+success_test "Remove the course with no organization" \
+    -X POST "$API_URL/remove_course?course_id=$noorgcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
 mathcourseid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/create_course?title=Math&organization=Innopolis%20University" | extract_field course_id)
@@ -55,6 +91,42 @@ expected='
 '
 
 json_partial_match_test "Request the course info from Alice" "$info" "$expected" "course_id" "creation_time"
+
+# --------------------------------------------------------------------
+
+fail_test "Request to create the material with too short title" \
+    -X POST "$API_URL/create_material?course_id=$mathcourseid&title=Ti&description=Lecture%20material%20description" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the material with too long title" \
+    -X POST "$API_URL/create_material?course_id=$mathcourseid&title=TitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitle&description=Lecture%20material%20description" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the material with invalid title" \
+    -X POST "$API_URL/create_material?course_id=$mathcourseid&title=Ti%24tle&description=Lecture%20material%20description" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the material with too short desctiption" \
+    -X POST "$API_URL/create_material?course_id=$mathcourseid&title=Title&description=De" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+fail_test "Request to create the assignment with too short title" \
+    -X POST "$API_URL/create_assignment?course_id=$mathcourseid&title=Ti&description=Lecture%20assignment%20description" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the assignment with too long title" \
+    -X POST "$API_URL/create_assignment?course_id=$mathcourseid&title=TitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitle&description=Lecture%20assignment%20description" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the assignment with invalid title" \
+    -X POST "$API_URL/create_assignment?course_id=$mathcourseid&title=Ti%24tle&description=Lecture%20assignment%20description" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the assignment with too short desctiption" \
+    -X POST "$API_URL/create_assignment?course_id=$mathcourseid&title=Title&description=De" \
+    -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
 

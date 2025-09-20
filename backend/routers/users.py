@@ -33,6 +33,10 @@ async def create_user(user: json_classes.UserCreate):
 
     User email should be in the correct format.
 
+    User name can contain only letters, digits, spaces, and underscores; user name can not start with digit.
+
+    User name must contains from 1 to 80 symbols.
+
     User password should have at least 8 symbols and contain digits, letters, and special symbols.
 
     Returns email and JWT access token for 30 minutes.

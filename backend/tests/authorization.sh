@@ -14,6 +14,27 @@ fail_test "Registration with incorrect email" \
 
 # --------------------------------------------------------------------
 
+fail_test "Registration with too long name" \
+    -X POST $API_URL/create_user \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\",\"name\":\"AliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAliceAlice\"}"
+
+# --------------------------------------------------------------------
+
+fail_test "Registration with invalid name (dollar sign)" \
+    -X POST $API_URL/create_user \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\",\"name\":\"Alice%24Alice\"}"
+
+# --------------------------------------------------------------------
+
+fail_test "Registration with invalid name (starts with digits)" \
+    -X POST $API_URL/create_user \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"alice@example.com\",\"password\":\"alicePass123!\",\"name\":\"2025Alice\"}"
+
+# --------------------------------------------------------------------
+
 fail_test "Registration with weak password" \
     -X POST $API_URL/create_user \
     -H "Content-Type: application/json" \

@@ -39,6 +39,16 @@ def create_user(db_conn, db_cursor, user):
         and len(user.email.split("@")[0]) <= 64
     ):
         raise HTTPException(status_code=400, detail="Incorrect email format")
+    
+    # validation of username format
+    pattern=r"^[\p{L}0-9_ ]+$"
+    user.name = user.name.strip()
+    if not (
+        match(pattern, user.name)
+        and 1 <= len(user.name) <= 80
+        and not(user.name[0].isdigit())
+    ):
+        raise HTTPException(status_code=400, detail="Incorrect name format")
 
     # validation of password complexity (length, digit(s), letter(s), special symbol(s))
     if not (
