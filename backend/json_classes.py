@@ -1,5 +1,6 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+import regex
 
 
 class Success(BaseModel):
@@ -105,8 +106,24 @@ class Account(BaseModel):
 
 
 class UserCreate(BaseModel):
-    email: str
-    password: str
+    email: str = Field(
+        ...,
+        pattern=regex.compile(
+            r"^(?=.{1,254}$)(?=.{1,64}@)(?!.*\.\.)"
+            r"[a-zA-Z0-9](?:[a-zA-Z0-9._%+-]{0,62}[a-zA-Z0-9])?"
+            r"@"
+            r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+"
+            r"[A-Za-z]{2,}$"
+        ),
+        description="Email must be in a correct format",
+    )
+    password: str = Field(
+        ...,
+        pattern=regex.compile(
+            r"^(?=.*\d)(?=.*\p{L})(?=.*[^\p{L}\p{N}\s]).{8,}$"
+        ),
+        description="Password should have at least 8 symbols and contain digits, letters, and special symbols",
+    )
     name: str
 
 
