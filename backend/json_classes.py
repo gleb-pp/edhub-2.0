@@ -1,7 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
-import regex
-
+from pydantic import BaseModel
 
 class Success(BaseModel):
     success: bool
