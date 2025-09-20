@@ -42,6 +42,7 @@ def create_user(db_conn, db_cursor, user):
     
     # validation of username format
     pattern=r"^[\p{L}0-9_ ]+$"
+    user.name = user.name.strip()
     if not (
         match(pattern, user.name)
         and 1 <= len(user.name) <= 80
