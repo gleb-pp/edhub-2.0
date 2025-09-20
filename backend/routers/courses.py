@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Query, Depends
 from auth import get_current_user, get_db
 import json_classes
 import logic.courses
@@ -29,9 +29,29 @@ async def get_all_courses(user_email: str = Depends(get_current_user)):
 
 
 @router.post("/create_course", response_model=json_classes.CourseId, tags=["Courses"])
-async def create_course(title: str, organization: Optional[str] = None, user_email: str = Depends(get_current_user)):
+async def create_course(
+    title: str = Query(
+        ...,
+        min_length=3,
+        max_length=80,
+        pattern=r"^[\p{L}0-9_ ]+$",
+        description="Title can contain only letters, digits, spaces, and underscores, 3-80 symbols"
+    ),
+    organization: Optional[str] = Query(
+        ...,
+        min_length=3,
+        max_length=80,
+        pattern=r"^[\p{L}0-9_ ]+$",
+        description="Organization can contain only letters, digits, spaces, and underscores, 3-80 symbols"
+    ),
+    user_email: str = Depends(get_current_user),
+):
     """
     Create the course with provided title and become a Primary Instructor in it.
+
+    Title and Organization can contain only letters, digits, spaces, and underscores.
+
+    Title and Organization must contains from 3 to 80 symbols.
 
     Organization parameter is optional / can be None.
     """
