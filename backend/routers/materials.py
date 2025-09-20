@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, Query, UploadFile, File
 from auth import get_current_user, get_db, get_storage_db
 import json_classes
 import logic.materials
@@ -11,12 +11,29 @@ router = APIRouter()
 @router.post("/create_material", response_model=json_classes.MaterialID, tags=["Materials"])
 async def create_material(
     course_id: str,
-    title: str,
-    description: str,
+    title: str = Query(
+        ...,
+        min_length=3,
+        max_length=80,
+        pattern=r"^[\p{L}0-9_ ]+$",
+        description="Title can contain only letters, digits, spaces, and underscores, 3-80 symbols"
+    ),
+    description: str = Query(
+        ...,
+        min_length=3,
+        max_length=10000,
+        description="Description must contain 3-10000 symbols"
+    ),
     user_email: str = Depends(get_current_user),
 ):
     """
     Create the material with provided title and description in the course with provided course_id.
+
+    Title can contain only letters, digits, spaces, and underscores.
+
+    Title must contains from 3 to 80 symbols.
+
+    Description must contains from 3 to 10000 symbols.
 
     Teacher OR Primary Instructor role required.
 
