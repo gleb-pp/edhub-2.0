@@ -88,6 +88,12 @@ json_partial_match_test "Request the assignment info from Bob" "$info" "$expecte
 
 # --------------------------------------------------------------------
 
+fail_test "Request to submit the assignment with too short comment" \
+    -X POST "$API_URL/submit_assignment?course_id=$mathcourseid&assignment_id=$assignmentid&comment=An" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
 success_test "Submit assignment as Bob" \
     -X POST "$API_URL/submit_assignment?course_id=$mathcourseid&assignment_id=$assignmentid&comment=The%20answer%20is%2010" \
     -H "Authorization: Bearer $TOKEN" \
