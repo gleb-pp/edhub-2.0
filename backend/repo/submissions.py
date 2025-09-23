@@ -12,7 +12,7 @@ def sql_select_submission_grade(db_cursor, course_id: str, assignment_id: str, s
 
 def sql_insert_submission(db_cursor, course_id: str, assignment_id: str, student_email: str, submission_text: str) -> None:
     db_cursor.execute(
-        "INSERT INTO course_assignments_submissions (courseid, assid, email, timeadded, timemodified, submission_text, grade, gradedby) VALUES (%s, %s, %s, now(), now(), %s, null, null)",
+        "INSERT INTO course_assignments_submissions (courseid, assid, email, timeadded, timemodified, submissiontext, grade, gradedby) VALUES (%s, %s, %s, now(), now(), %s, null, null)",
         (course_id, assignment_id, student_email, submission_text),
     )
 
@@ -57,7 +57,7 @@ def sql_update_submission_text(db_cursor, submission_text: str, course_id: str, 
     db_cursor.execute(
         """
         UPDATE course_assignments_submissions
-        SET submission_text = %s, timemodified = now()
+        SET submissiontext = %s, timemodified = now()
         WHERE courseid = %s AND assid = %s AND email = %s
         """,
         (submission_text, course_id, assignment_id, student_email),
@@ -72,7 +72,7 @@ def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> Lis
             u.publicname,
             s.timeadded,
             s.timemodified,
-            s.submission_text,
+            s.submissiontext,
             s.grade,
             s.gradedby
         FROM course_assignments_submissions s
@@ -93,7 +93,7 @@ def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, 
             u.publicname,
             s.timeadded,
             s.timemodified,
-            s.submission_text,
+            s.submissiontext,
             s.grade,
             s.gradedby
         FROM course_assignments_submissions s
