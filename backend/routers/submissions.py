@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, Query, UploadFile, File
 from auth import get_current_user, get_db, get_storage_db
 import json_classes
@@ -12,18 +12,18 @@ router = APIRouter()
 async def submit_assignment(
     course_id: str,
     assignment_id: str,
-    comment: str = Query(
+    submission_text: str = Query(
         ...,
         min_length=3,
         max_length=10000,
-        description="Comment must contain 3-10000 symbols"
+        description="Submission text must contain 3-10000 symbols"
     ),
     student_email: str = Depends(get_current_user),
 ):
     """
     Allows student to submit their assignment.
 
-    Comment must contains from 3 to 10000 symbols.
+    Submission text must contains from 3 to 10000 symbols.
 
     Student role required.
 
@@ -32,7 +32,7 @@ async def submit_assignment(
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic.submissions.submit_assignment(db_conn, db_cursor, course_id, assignment_id, comment, student_email)
+        return logic.submissions.submit_assignment(db_conn, db_cursor, course_id, assignment_id, submission_text, student_email)
 
 
 @router.get("/get_assignment_submissions", response_model=List[json_classes.Submission], tags=["Submissions"])
@@ -44,11 +44,11 @@ async def get_assignment_submissions(course_id: str, assignment_id: str, user_em
 
     Submissions are ordered by submission_time, the first submissions are new.
 
-    Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, comment, grade, gradedby_email).
+    Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email).
 
     The format of submission_time and last_modification_time is TIME_FORMAT.
 
-    `grade` and `gradedby_email` can be `null` if the assignment was not graded yet.
+    `grade`, `comment`, and `gradedby_email` can be `null` if the assignment was not graded yet.
     """
 
     # connection to database
@@ -70,11 +70,11 @@ async def get_submission(
     - Parent can get the submission of their student
     - Stuent can get their submissions
 
-    Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, comment, grade, gradedby_email).
+    Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email).
 
     The format of submission_time and last_modification_time is TIME_FORMAT.
 
-    `grade` and `gradedby_email` can be `null` if the assignment was not graded yet.
+    `grade`, `comment`, and `gradedby_email` can be `null` if the assignment was not graded yet.
     """
 
     # connection to database
@@ -88,12 +88,20 @@ async def grade_submission(
     assignment_id: str,
     student_email: str,
     grade: str,
+    comment: Optional[str] = Query(
+        None,
+        min_length=3,
+        max_length=10000,
+        description="Comment must contain 3-10000 symbols"
+    ),
     user_email: str = Depends(get_current_user),
 ):
     """
     Allows teacher to grade student's submission.
 
     Teacher OR Primary Instructor role required.
+
+    Comment must be None or contain from 3 to 10000 symbols.
     """
 
     # connection to database
@@ -105,7 +113,8 @@ async def grade_submission(
             assignment_id,
             student_email,
             grade,
-            user_email,
+            comment,
+            user_email
         )
 
 
@@ -119,6 +128,8 @@ async def create_submission_attachment(
 ):
     """
     Attach the provided file to provided course assignment submission.
+
+    Filename should contain no more than 80 symbols.
 
     Student role required.
 

@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import HTTPException, UploadFile, Response
 from constants import TIME_FORMAT
 import constraints
@@ -12,7 +13,7 @@ def submit_assignment(
     db_cursor,
     course_id: str,
     assignment_id: str,
-    comment: str,
+    submission_text: str,
     student_email: str,
 ):
     # checking constraints
@@ -23,12 +24,12 @@ def submit_assignment(
 
     # inserting submission
     if submission is None:
-        repo_submit.sql_insert_submission(db_cursor, course_id, assignment_id, student_email, comment)
+        repo_submit.sql_insert_submission(db_cursor, course_id, assignment_id, student_email, submission_text)
         db_conn.commit()
 
     # updating submission if not graded
     elif submission[0] is None:
-        repo_submit.sql_update_submission_comment(db_cursor, comment, course_id, assignment_id, student_email)
+        repo_submit.sql_update_submission_text(db_cursor, submission_text, course_id, assignment_id, student_email)
         db_conn.commit()
 
     else:
@@ -55,9 +56,10 @@ def get_assignment_submissions(db_cursor, course_id: str, assignment_id: str, us
             "student_name": sub[1],
             "submission_time": sub[2].strftime(TIME_FORMAT),
             "last_modification_time": sub[3].strftime(TIME_FORMAT),
-            "comment": sub[4],
+            "submission_text": sub[4],
             "grade": sub[5],
-            "gradedby_email": sub[6],
+            "comment": sub[6],
+            "gradedby_email": sub[7]
         }
         for sub in submissions
     ]
@@ -94,9 +96,10 @@ def get_submission(
         "student_name": submission[1],
         "submission_time": submission[2].strftime(TIME_FORMAT),
         "last_modification_time": submission[3].strftime(TIME_FORMAT),
-        "comment": submission[4],
+        "submission_text": submission[4],
         "grade": submission[5],
-        "gradedby_email": submission[6],
+        "comment": submission[6],
+        "gradedby_email": submission[7]
     }
     return res
 
@@ -108,13 +111,14 @@ def grade_submission(
     assignment_id: str,
     student_email: str,
     grade: str,
+    comment: Optional[str],
     user_email: str,
 ):
     # checking constraints
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
     constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
 
-    repo_submit.sql_update_submission_grade(db_cursor, grade, user_email, course_id, assignment_id, student_email)
+    repo_submit.sql_update_submission_grade(db_cursor, grade, comment, user_email, course_id, assignment_id, student_email)
     db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ASSIGNMENT_GRADE, f"Teacher {user_email} graded an assignment {assignment_id} in {course_id} by {student_email}")
@@ -128,6 +132,8 @@ async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, stor
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
 
     constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
+    if (len(file.filename) > 80):
+        raise HTTPException(status_code=400, detail="File name too long")
 
     # read the file
     contents = await careful_upload(file)

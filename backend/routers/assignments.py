@@ -87,6 +87,8 @@ async def create_assignment_attachment(
     """
     Attach the provided file to provided course assignment.
 
+    Filename should contain no more than 80 symbols.
+
     Teacher OR Primary Instructor role required.
 
     Returns the (course_id, assignment_id, file_id, filename, upload_time) for the new attachment in case of success.

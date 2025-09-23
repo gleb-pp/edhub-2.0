@@ -88,14 +88,14 @@ json_partial_match_test "Request the assignment info from Bob" "$info" "$expecte
 
 # --------------------------------------------------------------------
 
-fail_test "Request to submit the assignment with too short comment" \
-    -X POST "$API_URL/submit_assignment?course_id=$mathcourseid&assignment_id=$assignmentid&comment=An" \
+fail_test "Request to submit the assignment with too short submission_text" \
+    -X POST "$API_URL/submit_assignment?course_id=$mathcourseid&assignment_id=$assignmentid&submission_text=An" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
 
 success_test "Submit assignment as Bob" \
-    -X POST "$API_URL/submit_assignment?course_id=$mathcourseid&assignment_id=$assignmentid&comment=The%20answer%20is%2010" \
+    -X POST "$API_URL/submit_assignment?course_id=$mathcourseid&assignment_id=$assignmentid&submission_text=The%20answer%20is%2010" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
@@ -105,7 +105,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","comment":"The answer is 10","grade":null,"gradedby_email":null}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null}
 '
 
 json_partial_match_test "Request the submission details from Bob" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
@@ -124,7 +124,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment_submissions?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","comment":"The answer is 10","grade":null,"gradedby_email":null}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null}
 ]'
 
 json_partial_match_test "Request the list of assignment submissions by Alice" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
@@ -136,7 +136,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","comment":"The answer is 10","grade":null,"gradedby_email":null}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null}
 '
 
 json_partial_match_test "Request the submission details by Alice" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
@@ -144,7 +144,7 @@ json_partial_match_test "Request the submission details by Alice" "$info" "$expe
 # --------------------------------------------------------------------
 
 success_test "Grade submission by Alice" \
-    -X POST "$API_URL/grade_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&grade=5" \
+    -X POST "$API_URL/grade_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com&grade=5&comment=Good%20job" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
@@ -154,7 +154,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","comment":"The answer is 10","grade":5,"gradedby_email":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":5,"comment":"Good job","gradedby_email":"alice@example.com"}
 '
 
 json_partial_match_test "Request the submission details by Alice" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
@@ -173,7 +173,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","comment":"The answer is 10","grade":5,"gradedby_email":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":5,"comment":"Good job","gradedby_email":"alice@example.com"}
 '
 
 json_partial_match_test "Request the submission details by Charlie" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
