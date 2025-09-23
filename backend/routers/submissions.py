@@ -129,6 +129,8 @@ async def create_submission_attachment(
     """
     Attach the provided file to provided course assignment submission.
 
+    Filename should contain no more than 80 symbols.
+
     Student role required.
 
     Returns the (course_id, assignment_id, student_email, file_id, filename, upload_time) for the new attachment in case of success.

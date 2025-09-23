@@ -3,7 +3,7 @@ CREATE DATABASE edhub;
 
 CREATE TABLE users(
     email text PRIMARY KEY CHECK (length(email) <= 254),
-    publicname text NOT NULL CHECK (length(publicname) <= 128),
+    publicname text NOT NULL CHECK (length(publicname) <= 80),
     isadmin bool NOT NULL DEFAULT 'f',
     timeregistered timestamp NOT NULL,
     passwordhash text NOT NULL
@@ -11,8 +11,8 @@ CREATE TABLE users(
 
 CREATE TABLE courses(
     courseid uuid PRIMARY KEY,
-    name text NOT NULL CHECK (length(name) <= 128),
-    organization text NULL CHECK (length(organization) <= 128),
+    name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
+    organization text NULL CHECK (length(organization) BETWEEN 3 AND 80),
     instructor text NOT NULL REFERENCES users(email) ON DELETE CASCADE,
     timecreated timestamp NOT NULL
 );
@@ -22,8 +22,8 @@ CREATE TABLE course_materials(
     matid serial NOT NULL,
     timeadded timestamp NOT NULL,
     author text NULL REFERENCES users(email) ON DELETE SET NULL,
-    name text NOT NULL CHECK (length(name) <= 100),
-    description text NOT NULL CHECK (length(description) <= 1000),
+    name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
+    description text NOT NULL CHECK (length(description) BETWEEN 3 AND 10000),
     PRIMARY KEY (courseid, matid)
 );
 
@@ -32,8 +32,8 @@ CREATE TABLE course_assignments(
     assid serial NOT NULL,
     timeadded timestamp NOT NULL,
     author text NULL REFERENCES users(email) ON DELETE SET NULL,
-    name text NOT NULL CHECK (length(name) <= 100),
-    description text NOT NULL CHECK (length(description) <= 1000),
+    name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
+    description text NOT NULL CHECK (length(description) BETWEEN 3 AND 10000),
     PRIMARY KEY (courseid, assid)
 );
 
@@ -43,9 +43,9 @@ CREATE TABLE course_assignments_submissions(
     email text REFERENCES users ON DELETE CASCADE,
     timeadded timestamp NOT NULL,
     timemodified timestamp NOT NULL CHECK (timemodified >= timeadded),
-    submissiontext text NOT NULL CHECK (length(submissiontext) <= 1000),
+    submissiontext text NOT NULL CHECK (length(submissiontext) BETWEEN 3 AND 10000),
     grade int NULL,
-    comment text NULL,
+    comment text NULL CHECK (length(comment) BETWEEN 3 AND 10000),
     gradedby text NULL REFERENCES users ON DELETE SET NULL,
     FOREIGN KEY (courseid, assid) REFERENCES course_assignments ON DELETE CASCADE,
     PRIMARY KEY (courseid, assid, email)
@@ -81,7 +81,7 @@ CREATE TABLE material_files(
     courseid uuid,
     matid int,
     fileid uuid,
-    filename text NOT NULL CHECK (length(filename) <= 256),
+    filename text NOT NULL CHECK (length(filename) <= 80),
     uploadtime timestamp NOT NULL,
     FOREIGN KEY (courseid, matid) REFERENCES course_materials ON DELETE CASCADE,
     PRIMARY KEY (courseid, matid, fileid)
@@ -91,7 +91,7 @@ CREATE TABLE assignment_files(
     courseid uuid,
     assid int,
     fileid uuid,
-    filename text NOT NULL CHECK (length(filename) <= 256),
+    filename text NOT NULL CHECK (length(filename) <= 80),
     uploadtime timestamp NOT NULL,
     FOREIGN KEY (courseid, assid) REFERENCES course_assignments ON DELETE CASCADE,
     PRIMARY KEY (courseid, assid, fileid)
@@ -102,7 +102,7 @@ CREATE TABLE submissions_files(
     assid int,
     email text,
     fileid uuid,
-    filename text NOT NULL CHECK (length(filename) <= 256),
+    filename text NOT NULL CHECK (length(filename) <= 80),
     uploadtime timestamp NOT NULL,
     FOREIGN KEY (courseid, assid, email) REFERENCES course_assignments_submissions ON DELETE CASCADE,
     PRIMARY KEY (courseid, assid, email, fileid)
