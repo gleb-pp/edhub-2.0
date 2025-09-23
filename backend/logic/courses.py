@@ -21,7 +21,6 @@ def get_all_courses(db_cursor, user_email: str):
 
 def create_course(db_conn, db_cursor, title: str, user_email: str, organization: Optional[str] = None):
     course_id = repo.courses.sql_insert_course(db_cursor, title, user_email, organization)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_COURSE_ADD, f"User {user_email} created course {course_id}")
 
@@ -31,7 +30,6 @@ def create_course(db_conn, db_cursor, title: str, user_email: str, organization:
 def remove_course(db_conn, db_cursor, course_id: str, user_email: str):
     constraints.assert_instructor_access(db_cursor, user_email, course_id)
     repo.courses.sql_delete_course(db_cursor, course_id)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_COURSE_DEL, f"User {user_email} deleted course {course_id}")
 

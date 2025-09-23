@@ -25,12 +25,10 @@ def submit_assignment(
     # inserting submission
     if submission is None:
         repo_submit.sql_insert_submission(db_cursor, course_id, assignment_id, student_email, submission_text)
-        db_conn.commit()
 
     # updating submission if not graded
     elif submission[0] is None:
         repo_submit.sql_update_submission_text(db_cursor, submission_text, course_id, assignment_id, student_email)
-        db_conn.commit()
 
     else:
         raise HTTPException(status_code=409, detail="Can't edit the submission after it was graded.")
@@ -119,7 +117,6 @@ def grade_submission(
     constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
 
     repo_submit.sql_update_submission_grade(db_cursor, grade, comment, user_email, course_id, assignment_id, student_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ASSIGNMENT_GRADE, f"Teacher {user_email} graded an assignment {assignment_id} in {course_id} by {student_email}")
 
@@ -140,8 +137,6 @@ async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, stor
 
     # save the file into database
     attachment_metadata = repo_submit.sql_insert_submission_attachment(db_cursor, storage_db_cursor, course_id, assignment_id, student_email, file.filename, contents)
-    db_conn.commit()
-    storage_db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ATTACHMENT_ADD_SUB, f"User {user_email} created an attachment {file.filename} for the submission for the assignment {assignment_id} in course {course_id}")
     return {

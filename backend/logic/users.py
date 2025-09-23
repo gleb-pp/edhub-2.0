@@ -67,7 +67,6 @@ def create_user(db_conn, db_cursor, user):
     # hashing password
     hashed_password = pwd_hasher.hash(user.password)
     repo_users.sql_insert_user(db_cursor, user.email, user.name, hashed_password)
-    db_conn.commit()
 
     # giving access_token
     data = {
@@ -118,7 +117,6 @@ def change_password(db_conn, db_cursor, user):
     # changing the password to a new one
     hashed_new_password = pwd_hasher.hash(user.new_password)
     repo_users.sql_update_password(db_cursor, user.email, hashed_new_password)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_USER_CHPW, f"User {user.email} changed their password")
 
@@ -145,7 +143,6 @@ def remove_user(db_conn, db_cursor, deleted_user_email: str, user_email: str):
     # remove user
     repo_users.sql_delete_user(db_cursor, deleted_user_email)
 
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_USER_DEL, f"Removed user {deleted_user_email} from the system")
 
@@ -155,7 +152,6 @@ def remove_user(db_conn, db_cursor, deleted_user_email: str, user_email: str):
 def create_admin_account(db_conn, db_cursor):
     repo_users.sql_insert_user(db_cursor, 'admin', 'admin', pwd_hasher.hash('admin'))
     repo_users.sql_give_admin_permissions(db_cursor, 'admin')
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_USER_ADD, "Created new user: admin")
     logger.log(db_conn, logger.TAG_ADMIN_ADD, "Added admin privileges to user: admin")
@@ -168,7 +164,6 @@ def give_admin_permissions(db_conn, db_cursor, object_email: str, subject_email:
     constraints.assert_user_exists(db_cursor, object_email)
 
     repo_users.sql_give_admin_permissions(db_cursor, object_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ADMIN_ADD, f"Added admin privileges to user: {object_email}")
 

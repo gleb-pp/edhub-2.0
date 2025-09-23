@@ -37,7 +37,6 @@ def invite_teacher(db_conn, db_cursor, course_id: str, new_teacher_email: str, i
 
     # invite teacher
     repo_teachers.sql_insert_teacher(db_cursor, course_id, new_teacher_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_TEACHER_ADD, f"Instructor {instructor_email} invited a teacher {new_teacher_email} to course {course_id}")
 
@@ -60,7 +59,6 @@ def remove_teacher(db_conn, db_cursor, course_id: str, removing_teacher_email: s
 
     # remove teacher
     repo_teachers.sql_delete_teacher(db_cursor, course_id, removing_teacher_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_TEACHER_DEL, f"Teacher {user_email} removed a teacher {removing_teacher_email} from course {course_id}")
 
@@ -75,7 +73,6 @@ def change_course_instructor(db_conn, db_cursor, course_id: str, teacher_email: 
     repo_teachers.sql_delete_teacher(db_cursor, course_id, teacher_email)
     repo_teachers.sql_insert_teacher(db_cursor, course_id, instructor_email)
     repo_teachers.sql_update_instructor(db_cursor, course_id, teacher_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_INSTRUCTOR_EDIT, f"Course {course_id} now have new instructor {teacher_email}")
 

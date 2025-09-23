@@ -50,7 +50,6 @@ def invite_parent(
 
     # invite parent
     repo_parents.sql_insert_parent_of_at_course(db_cursor, parent_email, student_email, course_id)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_PARENT_ADD, f"Teacher {teacher_email} invited a parent {parent_email} for student {student_email} at the course {course_id}")
 
@@ -79,7 +78,6 @@ def remove_parent(
 
     # remove parent
     repo_parents.sql_delete_parent_of_at_course(db_cursor, course_id, student_email, parent_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_PARENT_DEL, f"Teacher {user_email} removed a parent {parent_email} for student {student_email}")
 

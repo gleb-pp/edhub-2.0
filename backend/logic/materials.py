@@ -13,7 +13,6 @@ def create_material(db_conn, db_cursor, course_id: str, title: str, description:
 
     # create material
     material_id = repo_mat.sql_insert_material(db_cursor, course_id, title, description, user_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_MATERIAL_ADD, f"User {user_email} created a material {material_id} in {course_id}")
     return {"course_id": course_id, "material_id": material_id}
@@ -26,7 +25,6 @@ def remove_material(db_conn, db_cursor, course_id: str, material_id: str, user_e
 
     # remove material
     repo_mat.sql_delete_material(db_cursor, course_id, material_id)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_MATERIAL_DEL, f"User {user_email} removed a material {material_id} in {course_id}")
 
@@ -65,8 +63,6 @@ async def create_material_attachment(db_conn, db_cursor, storage_db_conn, storag
 
     # save the file into database
     attachment_metadata = repo_mat.sql_insert_material_attachment(db_cursor, storage_db_cursor, course_id, material_id, file.filename, contents)
-    db_conn.commit()
-    storage_db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ATTACHMENT_ADD_MAT, f"User {user_email} created an attachment {file.filename} for the material {material_id} in course {course_id}")
     return {
