@@ -106,7 +106,7 @@ fail_test "Request to create the material with invalid title" \
     -X POST "$API_URL/create_material?course_id=$mathcourseid&title=Ti%24tle&description=Lecture%20material%20description" \
     -H "Authorization: Bearer $TOKEN" \
 
-fail_test "Request to create the material with too short desctiption" \
+fail_test "Request to create the material with too short description" \
     -X POST "$API_URL/create_material?course_id=$mathcourseid&title=Title&description=De" \
     -H "Authorization: Bearer $TOKEN" \
 
@@ -124,7 +124,7 @@ fail_test "Request to create the assignment with invalid title" \
     -X POST "$API_URL/create_assignment?course_id=$mathcourseid&title=Ti%24tle&description=Lecture%20assignment%20description" \
     -H "Authorization: Bearer $TOKEN" \
 
-fail_test "Request to create the assignment with too short desctiption" \
+fail_test "Request to create the assignment with too short description" \
     -X POST "$API_URL/create_assignment?course_id=$mathcourseid&title=Title&description=De" \
     -H "Authorization: Bearer $TOKEN" \
 

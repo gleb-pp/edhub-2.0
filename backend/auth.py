@@ -21,11 +21,17 @@ def mk_database(dbname, user, password, host, port):
             conn = conn_pool.getconn()
             with conn.cursor() as cursor:
                 yield conn, cursor
+            conn.commit()
         except PoolError as exc:
+            if conn is not None:
+                conn.rollback()
             raise HTTPException(status_code=503, detail="All database connections are busy") from exc
+        except Exception:
+            if conn is not None:
+                conn.rollback()
+            raise
         finally:
             if conn is not None:
-                conn.commit()
                 conn_pool.putconn(conn)
 
     return get_conn
@@ -41,8 +47,10 @@ get_storage_db = mk_database(
 
 router = APIRouter()
 
-# setting for JWT and autorization
+# settings for JWT and authorization
 JWT_SECRET_KEY = environ.get('JWT_SECRET_KEY')
+if not JWT_SECRET_KEY:
+    raise RuntimeError("JWT_SECRET_KEY is not set")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -72,6 +80,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         db_cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE email = %s)", (user_email,))
         user_exists = db_cursor.fetchone()[0]
         if not user_exists:
-            raise HTTPException(status_code=401, detail="User not exists")
+            raise HTTPException(status_code=401, detail="User does not exist")
 
     return user_email
