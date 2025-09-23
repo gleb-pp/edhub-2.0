@@ -38,7 +38,7 @@ def create_user(db_conn, db_cursor, user):
         and not ".." in user.email
         and len(user.email.split("@")[0]) <= 64
     ):
-        raise HTTPException(status_code=400, detail="Incorrect email format")
+        raise HTTPException(status_code=422, detail="Incorrect email format")
 
     # validation of username format
     pattern=r"^[\p{L}0-9_ ]+$"
@@ -48,7 +48,7 @@ def create_user(db_conn, db_cursor, user):
         and 1 <= len(user.name) <= 80
         and not(user.name[0].isdigit())
     ):
-        raise HTTPException(status_code=400, detail="Incorrect name format")
+        raise HTTPException(status_code=422, detail="Incorrect name format")
 
     # validation of password complexity (length, digit(s), letter(s), special symbol(s))
     if not (
@@ -57,7 +57,7 @@ def create_user(db_conn, db_cursor, user):
         and search(r"\p{L}", user.password)
         and search(r"[^\p{L}\p{N}\s]", user.password)
     ):
-        raise HTTPException(status_code=400, detail="Password is too weak")
+        raise HTTPException(status_code=422, detail="Password is too weak")
 
     # checking whether such user exists
     user_exists = repo_users.sql_select_user_exists(db_cursor, user.email)
