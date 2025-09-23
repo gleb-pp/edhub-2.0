@@ -45,6 +45,7 @@ CREATE TABLE course_assignments_submissions(
     timemodified timestamp NOT NULL CHECK (timemodified >= timeadded),
     submissiontext text NOT NULL CHECK (length(submissiontext) <= 1000),
     grade int NULL,
+    comment text NULL,
     gradedby text NULL REFERENCES users ON DELETE SET NULL,
     FOREIGN KEY (courseid, assid) REFERENCES course_assignments ON DELETE CASCADE,
     PRIMARY KEY (courseid, assid, email)

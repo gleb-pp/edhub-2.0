@@ -12,7 +12,7 @@ def sql_select_submission_grade(db_cursor, course_id: str, assignment_id: str, s
 
 def sql_insert_submission(db_cursor, course_id: str, assignment_id: str, student_email: str, submission_text: str) -> None:
     db_cursor.execute(
-        "INSERT INTO course_assignments_submissions (courseid, assid, email, timeadded, timemodified, submissiontext, grade, gradedby) VALUES (%s, %s, %s, now(), now(), %s, null, null)",
+        "INSERT INTO course_assignments_submissions (courseid, assid, email, timeadded, timemodified, submissiontext, grade, comment, gradedby) VALUES (%s, %s, %s, now(), now(), %s, null, null, null)",
         (course_id, assignment_id, student_email, submission_text),
     )
 
@@ -64,7 +64,7 @@ def sql_update_submission_text(db_cursor, submission_text: str, course_id: str, 
     )
 
 
-def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> List[Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str]]]:
+def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> List[Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str], Optional[str]]]:
     db_cursor.execute(
         """
         SELECT
@@ -74,6 +74,7 @@ def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> Lis
             s.timemodified,
             s.submissiontext,
             s.grade,
+            s.comment,
             s.gradedby
         FROM course_assignments_submissions s
         JOIN users u ON s.email = u.email
@@ -85,7 +86,7 @@ def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> Lis
     return db_cursor.fetchall()
 
 
-def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str]]:
+def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str], Optional[str]]:
     db_cursor.execute(
         """
         SELECT
@@ -95,6 +96,7 @@ def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, 
             s.timemodified,
             s.submissiontext,
             s.grade,
+            s.comment,
             s.gradedby
         FROM course_assignments_submissions s
         JOIN users u ON s.email = u.email
@@ -105,12 +107,12 @@ def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, 
     return db_cursor.fetchone()
 
 
-def sql_update_submission_grade(db_cursor, grade: str | int, user_email: str, course_id: str, assignment_id: str, student_email: str) -> None:
+def sql_update_submission_grade(db_cursor, grade: str | int, comment: str, user_email: str, course_id: str, assignment_id: str, student_email: str) -> None:
     db_cursor.execute(
         """
         UPDATE course_assignments_submissions
-        SET grade = %s, gradedby = %s
+        SET grade = %s, comment = %s, gradedby = %s
         WHERE courseid = %s AND assid = %s AND email = %s
         """,
-        (grade, user_email, course_id, assignment_id, student_email),
+        (grade, comment, user_email, course_id, assignment_id, student_email),
     )

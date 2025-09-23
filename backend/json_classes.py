@@ -86,6 +86,7 @@ class Submission(BaseModel):
     last_modification_time: str
     submission_text: str
     grade: Optional[int]
+    comment: Optional[str]
     gradedby_email: Optional[str]
 
 
