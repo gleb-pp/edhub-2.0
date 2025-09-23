@@ -84,7 +84,7 @@ class Submission(BaseModel):
     student_name: str
     submission_time: str
     last_modification_time: str
-    comment: str
+    submission_text: str
     grade: Optional[int]
     gradedby_email: Optional[str]
 

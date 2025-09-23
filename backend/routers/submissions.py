@@ -12,18 +12,18 @@ router = APIRouter()
 async def submit_assignment(
     course_id: str,
     assignment_id: str,
-    comment: str = Query(
+    submission_text: str = Query(
         ...,
         min_length=3,
         max_length=10000,
-        description="Comment must contain 3-10000 symbols"
+        description="Submission text must contain 3-10000 symbols"
     ),
     student_email: str = Depends(get_current_user),
 ):
     """
     Allows student to submit their assignment.
 
-    Comment must contains from 3 to 10000 symbols.
+    Submission text must contains from 3 to 10000 symbols.
 
     Student role required.
 
@@ -32,7 +32,7 @@ async def submit_assignment(
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic.submissions.submit_assignment(db_conn, db_cursor, course_id, assignment_id, comment, student_email)
+        return logic.submissions.submit_assignment(db_conn, db_cursor, course_id, assignment_id, submission_text, student_email)
 
 
 @router.get("/get_assignment_submissions", response_model=List[json_classes.Submission], tags=["Submissions"])
@@ -44,7 +44,7 @@ async def get_assignment_submissions(course_id: str, assignment_id: str, user_em
 
     Submissions are ordered by submission_time, the first submissions are new.
 
-    Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, comment, grade, gradedby_email).
+    Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, gradedby_email).
 
     The format of submission_time and last_modification_time is TIME_FORMAT.
 
@@ -70,7 +70,7 @@ async def get_submission(
     - Parent can get the submission of their student
     - Stuent can get their submissions
 
-    Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, comment, grade, gradedby_email).
+    Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, gradedby_email).
 
     The format of submission_time and last_modification_time is TIME_FORMAT.
 

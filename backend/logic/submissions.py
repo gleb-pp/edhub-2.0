@@ -12,7 +12,7 @@ def submit_assignment(
     db_cursor,
     course_id: str,
     assignment_id: str,
-    comment: str,
+    submission_text: str,
     student_email: str,
 ):
     # checking constraints
@@ -23,12 +23,12 @@ def submit_assignment(
 
     # inserting submission
     if submission is None:
-        repo_submit.sql_insert_submission(db_cursor, course_id, assignment_id, student_email, comment)
+        repo_submit.sql_insert_submission(db_cursor, course_id, assignment_id, student_email, submission_text)
         db_conn.commit()
 
     # updating submission if not graded
     elif submission[0] is None:
-        repo_submit.sql_update_submission_comment(db_cursor, comment, course_id, assignment_id, student_email)
+        repo_submit.sql_update_submission_text(db_cursor, submission_text, course_id, assignment_id, student_email)
         db_conn.commit()
 
     else:
@@ -55,7 +55,7 @@ def get_assignment_submissions(db_cursor, course_id: str, assignment_id: str, us
             "student_name": sub[1],
             "submission_time": sub[2].strftime(TIME_FORMAT),
             "last_modification_time": sub[3].strftime(TIME_FORMAT),
-            "comment": sub[4],
+            "submission_text": sub[4],
             "grade": sub[5],
             "gradedby_email": sub[6],
         }
@@ -94,7 +94,7 @@ def get_submission(
         "student_name": submission[1],
         "submission_time": submission[2].strftime(TIME_FORMAT),
         "last_modification_time": submission[3].strftime(TIME_FORMAT),
-        "comment": submission[4],
+        "submission_text": submission[4],
         "grade": submission[5],
         "gradedby_email": submission[6],
     }
