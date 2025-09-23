@@ -107,7 +107,7 @@ def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, 
     return db_cursor.fetchone()
 
 
-def sql_update_submission_grade(db_cursor, grade: str | int, comment: str, user_email: str, course_id: str, assignment_id: str, student_email: str) -> None:
+def sql_update_submission_grade(db_cursor, grade: str | int, comment: Optional[str], user_email: str, course_id: str, assignment_id: str, student_email: str) -> None:
     db_cursor.execute(
         """
         UPDATE course_assignments_submissions
