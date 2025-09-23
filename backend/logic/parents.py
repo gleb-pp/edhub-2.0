@@ -14,7 +14,7 @@ def get_students_parents(db_cursor, course_id: str, student_email: str, user_ema
 
     # check if the student is enrolled to course
     if not constraints.check_student_access(db_cursor, student_email, course_id):
-        raise HTTPException(status_code=404, detail="Provided user in not a student at this course")
+        raise HTTPException(status_code=404, detail="Provided user is not a student at this course")
 
     # finding student's parents
     parents = repo_parents.sql_select_students_parents(db_cursor, course_id, student_email)
@@ -38,15 +38,15 @@ def invite_parent(
 
     # check if the parent already assigned to the course with the student
     if constraints.check_parent_student_access(db_cursor, parent_email, student_email, course_id):
-        raise HTTPException(status_code=403, detail="Parent already assigned to this student at this course")
+        raise HTTPException(status_code=409, detail="Parent already assigned to this student at this course")
 
     # check if the potential parent already has teacher rights at this course
     if constraints.check_teacher_access(db_cursor, parent_email, course_id):
-        raise HTTPException(status_code=403, detail="Can't invite course teacher as a parent")
+        raise HTTPException(status_code=409, detail="Can't invite course teacher as a parent")
 
     # check if the potential parent already has student rights at this course
     if constraints.check_student_access(db_cursor, parent_email, course_id):
-        raise HTTPException(status_code=403, detail="Can't invite course student as a parent")
+        raise HTTPException(status_code=409, detail="Can't invite course student as a parent")
 
     # invite parent
     repo_parents.sql_insert_parent_of_at_course(db_cursor, parent_email, student_email, course_id)
@@ -75,7 +75,7 @@ def remove_parent(
 
     # check if the parent assigned to the course with the student
     if not constraints.check_parent_student_access(db_cursor, parent_email, student_email, course_id):
-        raise HTTPException(status_code=404, detail="User to remove is not a parent of this student at this course")
+        raise HTTPException(status_code=422, detail="User to remove is not a parent of this student at this course")
 
     # remove parent
     repo_parents.sql_delete_parent_of_at_course(db_cursor, course_id, student_email, parent_email)
@@ -97,7 +97,7 @@ def get_parents_children(db_cursor, course_id: str, parent_email, user_email: st
 
     # check if the user is parent already has teacher rights at this course
     if not constraints.check_parent_access(db_cursor, parent_email, course_id):
-        raise HTTPException(status_code=403, detail="Provided user in not a parent at this course")
+        raise HTTPException(status_code=422, detail="Provided user is not a parent at this course")
 
     parents_children = repo_parents.sql_select_parents_children(db_cursor, course_id, parent_email)
 

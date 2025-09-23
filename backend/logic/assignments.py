@@ -66,8 +66,8 @@ async def create_assignment_attachment(db_conn, db_cursor, storage_db_conn, stor
     # checking constraints
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
     constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
-    if (len(file.filename) > 80):
-        raise HTTPException(status_code=400, detail="File name too long")
+    if len(file.filename) > 80:
+        raise HTTPException(status_code=422, detail="File name too long")
 
     # read the file
     contents = await careful_upload(file)

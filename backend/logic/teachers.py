@@ -23,17 +23,17 @@ def invite_teacher(db_conn, db_cursor, course_id: str, new_teacher_email: str, i
     # check if the teacher already assigned to course
     if constraints.check_teacher_access(db_cursor, new_teacher_email, course_id):
         raise HTTPException(
-            status_code=403,
+            status_code=409,
             detail="User to invite already has teacher right at this course",
         )
 
     # check if the potential teacher already has student rights at this course
     if constraints.check_student_access(db_cursor, new_teacher_email, course_id):
-        raise HTTPException(status_code=403, detail="Can't invite course student as a teacher")
+        raise HTTPException(status_code=409, detail="Can't invite course student as a teacher")
 
     # check if the potential teacher already has parent rights at this course
     if constraints.check_parent_access(db_cursor, new_teacher_email, course_id):
-        raise HTTPException(status_code=403, detail="Can't invite parent as a teacher")
+        raise HTTPException(status_code=409, detail="Can't invite parent as a teacher")
 
     # invite teacher
     repo_teachers.sql_insert_teacher(db_cursor, course_id, new_teacher_email)
@@ -52,11 +52,11 @@ def remove_teacher(db_conn, db_cursor, course_id: str, removing_teacher_email: s
         raise HTTPException(status_code=403, detail="User does not have permissions to delete this teacher")
 
     if constraints.check_instructor_access(db_cursor, removing_teacher_email, course_id):
-        raise HTTPException(status_code=403, detail="Impossible to remove Primary Instructor")
+        raise HTTPException(status_code=409, detail="Impossible to remove Primary Instructor")
 
     # check if the teacher assigned to the course
     if not constraints.check_teacher_access(db_cursor, removing_teacher_email, course_id):
-        raise HTTPException(status_code=403, detail="User to remove is not a teacher at this course")
+        raise HTTPException(status_code=422, detail="User to remove is not a teacher at this course")
 
     # remove teacher
     repo_teachers.sql_delete_teacher(db_cursor, course_id, removing_teacher_email)

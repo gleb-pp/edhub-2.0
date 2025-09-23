@@ -33,7 +33,7 @@ def submit_assignment(
         db_conn.commit()
 
     else:
-        raise HTTPException(status_code=404, detail="Can't edit the submission after it was graded.")
+        raise HTTPException(status_code=409, detail="Can't edit the submission after it was graded.")
 
     logger.log(db_conn, logger.TAG_ASSIGNMENT_SUBMIT, f"Student {student_email} submitted an assignment{assignment_id} in {course_id}")
 
@@ -132,8 +132,8 @@ async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, stor
         raise HTTPException(status_code=403, detail="User does not have access to this submission")
 
     constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
-    if (len(file.filename) > 80):
-        raise HTTPException(status_code=400, detail="File name too long")
+    if len(file.filename) > 80:
+        raise HTTPException(status_code=422, detail="File name too long")
 
     # read the file
     contents = await careful_upload(file)

@@ -62,7 +62,7 @@ def create_user(db_conn, db_cursor, user):
     # checking whether such user exists
     user_exists = repo_users.sql_select_user_exists(db_cursor, user.email)
     if user_exists:
-        raise HTTPException(status_code=400, detail="User already exists")
+        raise HTTPException(status_code=409, detail="User already exists")
 
     # hashing password
     hashed_password = pwd_hasher.hash(user.password)
@@ -140,7 +140,7 @@ def remove_user(db_conn, db_cursor, deleted_user_email: str, user_email: str):
 
     constraints.assert_user_exists(db_cursor, deleted_user_email)
     if constraints.check_admin_access(db_cursor, deleted_user_email) and repo_users.sql_count_admins(db_cursor) == 1:
-        raise HTTPException(status_code=403, detail="Cannot remove the last administrator")
+        raise HTTPException(status_code=422, detail="Cannot remove the last administrator")
 
     # remove user
     repo_users.sql_delete_user(db_cursor, deleted_user_email)
