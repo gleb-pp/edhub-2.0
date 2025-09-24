@@ -54,6 +54,9 @@ secondassignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/create_assignment?course_id=$mathcourseid&title=Assignment%202&description=To%20do%20exercise%2020%20from%20the%20course%20book" | extract_field assignment_id)
 
+echo "firstassignmentid=$firstassignmentid"
+echo "secondassignmentid=$secondassignmentid"
+
 # --------------------------------------------------------------------
 
 success_test "Invite Bob to Alice's course as a student" \
@@ -89,6 +92,9 @@ expected='[
     {"assignment_name":"Assignment 1","assignment_id":'$firstassignmentid',"grade":null,"comment":null,"grader_name":null,"grader_email":null},
     {"assignment_name":"Assignment 2","assignment_id":'$secondassignmentid',"grade":null,"comment":null,"grader_name":null,"grader_email":null}
 ]'
+
+echo $expected
+echo "$expected" | jq .
 
 json_exact_match_test "Request Bob's assignment grades from Bob" "$info" "$expected" "assignment_name"
 
