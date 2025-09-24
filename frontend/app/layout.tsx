@@ -1,33 +1,25 @@
-import type { Metadata } from "next";
-import { Rubik } from "next/font/google";
-import "./globals.css";
-import { Sidebar } from "@/widgets/sidebar/sidebar";
-import { Header } from "@/widgets/header/header";
+import type { Metadata } from 'next'
+import { Rubik } from 'next/font/google'
+import './globals.css'
 
 const rubikSans = Rubik({
-  subsets: ["latin"],
-});
+  subsets: ['latin'],
+  display: 'swap',
+  adjustFontFallback: false,
+})
 
 export const metadata: Metadata = {
-  title: "Edhub",
-};
+  title: 'Edhub',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${rubikSans.className} h-screen w-screen antialiased bg-zinc-100 flex items-center justify-center`}
-      >
-        <Sidebar />
-        <div className="h-full w-full">
-          <Header />
-          {children}
-        </div>
-      </body>
+      <body className={`${rubikSans.className} antialiased`}>{children}</body>
     </html>
-  );
+  )
 }

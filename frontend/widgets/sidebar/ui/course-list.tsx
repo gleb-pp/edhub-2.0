@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 import React, { useState } from "react";
 import { SidebarButton } from "./sidebar-button";
 import { useAnimatedPresence } from "@/shared/hooks";
-import "./sidebar.css";
+import "../sidebar.css";
 
 interface CourseItem {
   courseName: string;

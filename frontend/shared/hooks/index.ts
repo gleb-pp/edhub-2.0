@@ -1,4 +1,4 @@
-import { useAnimatedPresence } from "./useAnimatedPresence";
-import { useClickOutside } from "./useClickOutside";
+import { useAnimatedPresence } from './useAnimatedPresence'
+import { useClickOutside } from './useClickOutside'
 
-export { useAnimatedPresence, useClickOutside };
+export { useAnimatedPresence, useClickOutside }

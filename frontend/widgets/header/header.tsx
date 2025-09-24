@@ -18,15 +18,13 @@ export const Header: React.FC<Props> = ({ className }) => {
     >
       <p className="text-3xl font-light">Hi, Timur Farizunov</p>
       <div className="flex items-center h-full py-5">
-        <div className="h-full py-[2px]">
-          <Button
-            className="h-full w-74 rounded-md justify-start px-3 gap-2 text-dark/50"
-            variant="outline"
-          >
-            <Search size={20} />
-            Search here...
-          </Button>
-        </div>
+        <Button
+          className="h-full w-70 rounded-md justify-start px-3 gap-2 text-dark/50"
+          variant="outline"
+        >
+          <Search size={20} />
+          Search here...
+        </Button>
 
         <div className="mx-5 w-[1px] h-full bg-outline" />
 
