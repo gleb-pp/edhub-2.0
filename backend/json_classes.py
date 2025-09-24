@@ -128,7 +128,7 @@ class StudentsGrades(BaseModel):
 
 class AssignmentGrade(BaseModel):
     assignment_name: str
-    assignment_id: str
+    assignment_id: int
     grade: Optional[int]
     comment: Optional[str]
     grader_name: Optional[str]
