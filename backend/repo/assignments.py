@@ -72,6 +72,6 @@ def sql_select_course_assignments(db_cursor, course_id: str) -> List[Tuple[str, 
         FROM course_assignments
         WHERE courseid = %s ORDER BY assid
         """,
-        (course_id),
+        (course_id, ),
     )
     return db_cursor.fetchall()

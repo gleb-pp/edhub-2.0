@@ -96,9 +96,6 @@ expected='[
 echo $expected
 echo "$expected" | jq .
 
-echo $info
-echo "$info" | jq .
-
 json_exact_match_test "Request Bob's assignment grades from Bob" "$info" "$expected" "assignment_name"
 
 # --------------------------------------------------------------------
