@@ -3,6 +3,7 @@ from fastapi import HTTPException
 import constraints
 import repo.grades as repo_grades
 import repo.assignments as repo_assignments
+import repo.submissions as repo_submissions
 import repo.students as repo_students
 import logic.logging as logger
 
@@ -43,11 +44,11 @@ def get_all_course_grades(db_cursor, course_id: str, user_email: str):
     if len(assignments) == 0:
         raise HTTPException(status_code=404, detail="Empty grade table (there are no assignments published)")
 
-    # TODO: return table
-    table = [
-        {"name": "Gleb Popov", "email": "g@p.ru", "grades": [5, 4, 3]},
-        {"name": "John Does", "email": "j@d.ru", "grades": [None, 4, 3]}
-    ]
+    table = []
+    for student in students:
+        table.append({"name": student[1], 
+                      "email": student[0], 
+                      "grades": repo_grades.sql_select_students_grades(db_cursor, course_id, student[0])})
     return table
 
 
@@ -65,9 +66,13 @@ def get_student_course_grades(db_cursor, course_id: str, student_email: str, use
     if len(assignments) == 0:
         raise HTTPException(status_code=404, detail="Empty grade table (there are no assignments published)")
 
-    # TODO: return table
-    table = [
-        {"assignment_name": "Ass 1", "assignment_id": 0, "grade": 5, "comment": "Good job!", "grader_name": "Artem", "grader_email": "mail@mail.ru"},
-        {"assignment_name": "Ass 2", "assignment_id": 1, "grade": None, "comment": None, "grader_name": None, "grader_email": None},
-    ]
+    table = []
+    for ass in assignments:
+        sbmt = repo_submissions.sql_select_single_submission(db_cursor, course_id, ass[1], student_email)
+        table.append({"assignment_name": ass[0],
+                      "assignment_id": ass[1],
+                      "grade": sbmt[5],
+                      "comment": sbmt[6],
+                      "grader_name": sbmt[8],
+                      "grader_email": sbmt[7]})
     return table

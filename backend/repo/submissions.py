@@ -57,20 +57,22 @@ def sql_update_submission_text(db_cursor, submission_text: str, course_id: str, 
     )
 
 
-def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> List[Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str], Optional[str]]]:
+def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> List[Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str], Optional[str], Optional[str]]]:
     db_cursor.execute(
         """
         SELECT
             s.email,
-            u.publicname,
+            st.publicname,
             s.timeadded,
             s.timemodified,
             s.submissiontext,
             s.grade,
             s.comment,
-            s.gradedby
+            s.gradedby,
+            tch.publicname
         FROM course_assignments_submissions s
-        JOIN users u ON s.email = u.email
+        JOIN users st ON s.email = st.email
+        JOIN users tch ON s.gradedby = tch.email
         WHERE s.courseid = %s AND s.assid = %s
         ORDER BY s.timeadded DESC
         """,
@@ -79,20 +81,22 @@ def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> Lis
     return db_cursor.fetchall()
 
 
-def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str], Optional[str]]:
+def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str], Optional[str], Optional[str]]:
     db_cursor.execute(
         """
         SELECT
             s.email,
-            u.publicname,
+            st.publicname,
             s.timeadded,
             s.timemodified,
             s.submissiontext,
             s.grade,
             s.comment,
-            s.gradedby
+            s.gradedby,
+            tch.publicname
         FROM course_assignments_submissions s
-        JOIN users u ON s.email = u.email
+        JOIN users st ON s.email = st.email
+        JOIN users tch ON s.gradedby = tch.email
         WHERE s.courseid = %s AND s.assid = %s AND s.email = %s
         """,
         (course_id, assignment_id, student_email),

@@ -44,7 +44,7 @@ async def get_assignment_submissions(course_id: str, assignment_id: str, user_em
 
     Submissions are ordered by submission_time, newest submissions go first.
 
-    Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email).
+    Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email, gradedby_name).
 
     The format of submission_time and last_modification_time is TIME_FORMAT.
 
@@ -70,7 +70,7 @@ async def get_submission(
     - Parent can get the submission of their student
     - Student can get their submissions
 
-    Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email).
+    Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email, gradedby_name).
 
     The format of submission_time and last_modification_time is TIME_FORMAT.
 

@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import List, Tuple, Optional
 
 
 def sql_select_submission_grade(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Optional[Tuple[int]]:
@@ -18,3 +18,11 @@ def sql_update_submission_grade(db_cursor, grade: str | int, comment: Optional[s
         """,
         (grade, comment, user_email, course_id, assignment_id, student_email),
     )
+
+
+def sql_select_students_grades(db_cursor, course_id: str, student_email: str) -> List[Optional[int]]:
+    db_cursor.execute(
+        "SELECT grade FROM course_assignments_submissions WHERE courseid = %s AND email = %s ORDER BY assid",
+        (course_id, student_email),
+    )
+    return [elem[0] for elem in db_cursor.fetchall()]

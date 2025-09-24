@@ -88,6 +88,7 @@ class Submission(BaseModel):
     grade: Optional[int]
     comment: Optional[str]
     gradedby_email: Optional[str]
+    gradedby_name: Optional[str]
 
 
 class SubmissionAttachmentMetadata(BaseModel):

@@ -57,7 +57,8 @@ def get_assignment_submissions(db_cursor, course_id: str, assignment_id: str, us
             "submission_text": sub[4],
             "grade": sub[5],
             "comment": sub[6],
-            "gradedby_email": sub[7]
+            "gradedby_email": sub[7],
+            "gradedby_name": sub[8]
         }
         for sub in submissions
     ]
@@ -97,7 +98,8 @@ def get_submission(
         "submission_text": submission[4],
         "grade": submission[5],
         "comment": submission[6],
-        "gradedby_email": submission[7]
+        "gradedby_email": submission[7],
+        "gradedby_name": submission[8]
     }
     return res
 
