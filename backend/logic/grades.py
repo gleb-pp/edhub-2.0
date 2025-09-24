@@ -69,7 +69,7 @@ def get_student_course_grades(db_cursor, course_id: str, student_email: str, use
     table = []
     for ass in assignments:
         sbmt = repo_submissions.sql_select_single_submission(db_cursor, course_id, ass[1], student_email)
-        table.append({"assignment_name": ass[0],
+        table.append({"assignment_name": ass[3],
                       "assignment_id": ass[1],
                       "grade": sbmt[5],
                       "comment": sbmt[6],

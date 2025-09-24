@@ -67,7 +67,11 @@ def sql_select_assignment_attachments(db_cursor, course_id: str, assignment_id: 
 
 def sql_select_course_assignments(db_cursor, course_id: str) -> List[Tuple[str, int]]:
     db_cursor.execute(
-        "SELECT name, assid FROM course_assignments WHERE courseid = %s ORDER BY assid",
+        """
+        SELECT courseid, assid, timeadded, name, description, author
+        FROM course_assignments
+        WHERE courseid = %s ORDER BY assid
+        """,
         (course_id),
     )
     return db_cursor.fetchall()
