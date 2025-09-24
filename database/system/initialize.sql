@@ -107,3 +107,17 @@ CREATE TABLE submissions_files(
     FOREIGN KEY (courseid, assid, email) REFERENCES course_assignments_submissions ON DELETE CASCADE,
     PRIMARY KEY (courseid, assid, email, fileid)
 );
+
+CREATE INDEX idx_users_isadmin_true ON users(isadmin) WHERE isadmin = true;
+CREATE INDEX idx_courses_instructor ON courses(instructor);
+CREATE INDEX idx_materials_course_time ON course_materials(courseid, timeadded);
+CREATE INDEX idx_assignments_course_time ON course_assignments(courseid, timeadded);
+CREATE INDEX idx_submissions_course_ass_time ON course_assignments_submissions(courseid, assid, timeadded);
+CREATE INDEX idx_material_files_fileid ON material_files(fileid);
+CREATE INDEX idx_assignment_files_fileid ON assignment_files(fileid);
+CREATE INDEX idx_submissions_files_fileid ON submissions_files(fileid);
+CREATE INDEX idx_teaches_course ON teaches(courseid);
+CREATE INDEX idx_student_at_course ON student_at(courseid);
+CREATE INDEX idx_parent_course_student ON parent_of_at_course(courseid, studentemail);
+CREATE INDEX idx_parent_course_parent ON parent_of_at_course(courseid, parentemail);
+CREATE INDEX idx_logs_t ON logs(t);
