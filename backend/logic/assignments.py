@@ -20,7 +20,6 @@ def create_assignment(
 
     # create assignment
     assignment_id = repo_ass.sql_insert_assignment(db_cursor, course_id, title, description, user_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ASSIGNMENT_ADD, f"Created assignment {assignment_id}")
 
@@ -34,7 +33,6 @@ def remove_assignment(db_conn, db_cursor, course_id: str, assignment_id: str, us
 
     # remove assignment
     repo_ass.sql_delete_assignment(db_cursor, course_id, assignment_id)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ASSIGNMENT_DEL, f"Removed assignment {assignment_id}")
 
@@ -66,16 +64,14 @@ async def create_assignment_attachment(db_conn, db_cursor, storage_db_conn, stor
     # checking constraints
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
     constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
-    if (len(file.filename) > 80):
-        raise HTTPException(status_code=400, detail="File name too long")
+    if len(file.filename) > 80:
+        raise HTTPException(status_code=422, detail="File name too long")
 
     # read the file
     contents = await careful_upload(file)
 
     # save the file into database
     attachment_metadata = repo_ass.sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id, assignment_id, file.filename, contents)
-    db_conn.commit()
-    storage_db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ATTACHMENT_ADD_ASS, f"User {user_email} created an attachment {file.filename} for the assignment {assignment_id} in course {course_id}")
     return {

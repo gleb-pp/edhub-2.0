@@ -38,7 +38,7 @@ def create_user(db_conn, db_cursor, user):
         and not ".." in user.email
         and len(user.email.split("@")[0]) <= 64
     ):
-        raise HTTPException(status_code=400, detail="Incorrect email format")
+        raise HTTPException(status_code=422, detail="Incorrect email format")
 
     # validation of username format
     pattern=r"^[\p{L}0-9_ ]+$"
@@ -48,7 +48,7 @@ def create_user(db_conn, db_cursor, user):
         and 1 <= len(user.name) <= 80
         and not(user.name[0].isdigit())
     ):
-        raise HTTPException(status_code=400, detail="Incorrect name format")
+        raise HTTPException(status_code=422, detail="Incorrect name format")
 
     # validation of password complexity (length, digit(s), letter(s), special symbol(s))
     if not (
@@ -57,17 +57,16 @@ def create_user(db_conn, db_cursor, user):
         and search(r"\p{L}", user.password)
         and search(r"[^\p{L}\p{N}\s]", user.password)
     ):
-        raise HTTPException(status_code=400, detail="Password is too weak")
+        raise HTTPException(status_code=422, detail="Password is too weak")
 
     # checking whether such user exists
     user_exists = repo_users.sql_select_user_exists(db_cursor, user.email)
     if user_exists:
-        raise HTTPException(status_code=400, detail="User already exists")
+        raise HTTPException(status_code=409, detail="User already exists")
 
     # hashing password
     hashed_password = pwd_hasher.hash(user.password)
     repo_users.sql_insert_user(db_cursor, user.email, user.name, hashed_password)
-    db_conn.commit()
 
     # giving access_token
     data = {
@@ -118,7 +117,6 @@ def change_password(db_conn, db_cursor, user):
     # changing the password to a new one
     hashed_new_password = pwd_hasher.hash(user.new_password)
     repo_users.sql_update_password(db_cursor, user.email, hashed_new_password)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_USER_CHPW, f"User {user.email} changed their password")
 
@@ -140,12 +138,11 @@ def remove_user(db_conn, db_cursor, deleted_user_email: str, user_email: str):
 
     constraints.assert_user_exists(db_cursor, deleted_user_email)
     if constraints.check_admin_access(db_cursor, deleted_user_email) and repo_users.sql_count_admins(db_cursor) == 1:
-        raise HTTPException(status_code=403, detail="Cannot remove the last administrator")
+        raise HTTPException(status_code=422, detail="Cannot remove the last administrator")
 
     # remove user
     repo_users.sql_delete_user(db_cursor, deleted_user_email)
 
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_USER_DEL, f"Removed user {deleted_user_email} from the system")
 
@@ -155,7 +152,6 @@ def remove_user(db_conn, db_cursor, deleted_user_email: str, user_email: str):
 def create_admin_account(db_conn, db_cursor):
     repo_users.sql_insert_user(db_cursor, 'admin', 'admin', pwd_hasher.hash('admin'))
     repo_users.sql_give_admin_permissions(db_cursor, 'admin')
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_USER_ADD, "Created new user: admin")
     logger.log(db_conn, logger.TAG_ADMIN_ADD, "Added admin privileges to user: admin")
@@ -168,7 +164,6 @@ def give_admin_permissions(db_conn, db_cursor, object_email: str, subject_email:
     constraints.assert_user_exists(db_cursor, object_email)
 
     repo_users.sql_give_admin_permissions(db_cursor, object_email)
-    db_conn.commit()
 
     logger.log(db_conn, logger.TAG_ADMIN_ADD, f"Added admin privileges to user: {object_email}")
 

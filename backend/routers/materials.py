@@ -31,9 +31,9 @@ async def create_material(
 
     Title can contain only letters, digits, spaces, and underscores.
 
-    Title must contains from 3 to 80 symbols.
+    Title must contain from 3 to 80 symbols.
 
-    Description must contains from 3 to 10000 symbols.
+    Description must contain from 3 to 10000 symbols.
 
     Teacher OR Primary Instructor role required.
 

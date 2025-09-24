@@ -42,7 +42,7 @@ async def get_assignment_submissions(course_id: str, assignment_id: str, user_em
 
     Teacher OR Primary Instructor role required.
 
-    Submissions are ordered by submission_time, the first submissions are new.
+    Submissions are ordered by submission_time, newest submissions go first.
 
     Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email).
 
@@ -68,7 +68,7 @@ async def get_submission(
 
     - Teacher AND Primary Instructor can get all submissions of the course
     - Parent can get the submission of their student
-    - Stuent can get their submissions
+    - Student can get their submissions
 
     Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email).
 
@@ -148,7 +148,7 @@ async def get_submission_attachments(course_id: str, assignment_id: str, student
 
     - Teacher AND Primary Instructor can get all submission attachments of the course
     - Parent can get the submission attachments of their student
-    - Stuent can get their submission attachments
+    - Student can get their submission attachments
     
     Returns list of attachments metadata (course_id, assignment_id, student_email, file_id, filename, upload_time).
 
