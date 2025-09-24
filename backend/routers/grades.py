@@ -44,8 +44,6 @@ async def grade_submission(
         )
 
 
-# TODO: write get_coruse_assignments (для таблицы) в routers/assignments.py и logic/assignments.py
-# TODO: write tests
 @router.get("/get_all_course_grades", response_model=List[json_classes.StudentsGrades], tags=["Grades"])
 async def get_all_course_grades(
     course_id: str,
@@ -56,7 +54,7 @@ async def get_all_course_grades(
 
     Teacher OR Primary Instructor role required.
 
-    Returns the list where each row corresponds to some student.
+    Returns the list where each row corresponds to some student (students are sorted in the alphabetical order (first by user name, then by email)).
 
     Each row has the following format: {name: str, email: str, grades: List[Optional[int]]}
 
@@ -68,7 +66,6 @@ async def get_all_course_grades(
         return logic.grades.get_all_course_grades(db_cursor, course_id, user_email)
 
 
-# TODO: write tests
 @router.get("/get_student_course_grades", response_model=List[json_classes.AssignmentGrade], tags=["Grades"])
 async def get_student_course_grades(
     course_id: str,

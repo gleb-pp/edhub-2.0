@@ -46,7 +46,7 @@ def get_all_course_grades(db_cursor, course_id: str, user_email: str):
 
     table = []
     for student in students:
-        table.append({"name": student[1], 
+        table.append({"name": student[1],
                       "email": student[0], 
                       "grades": repo_grades.sql_select_students_grades(db_cursor, course_id, student[0])})
     return table

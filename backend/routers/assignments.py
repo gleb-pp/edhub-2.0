@@ -75,7 +75,8 @@ async def get_assignment(course_id: str, assignment_id: str, user_email: str = D
     # connection to database
     with get_db() as (db_conn, db_cursor):
         return logic.assignments.get_assignment(db_cursor, course_id, assignment_id, user_email)
-    
+
+
 @router.get("/get_course_assignments", response_model=List[json_classes.Assignment], tags=["Assignments"])
 async def get_course_assignments(course_id: str, user_email: str = Depends(get_current_user)):
     """

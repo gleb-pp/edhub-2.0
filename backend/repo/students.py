@@ -9,6 +9,7 @@ def sql_select_enrolled_students(db_cursor, course_id: str) -> List[Tuple[str, s
         FROM student_at s
         JOIN users u ON s.email = u.email
         WHERE s.courseid = %s
+        ORDER BY u.publicname, s.email
         """,
         (course_id,),
     )
