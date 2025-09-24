@@ -120,12 +120,12 @@ class UserNewPassword(BaseModel):
     password: str
     new_password: str
 
-class StudentsGrades:
+class StudentsGrades(BaseModel):
     name: str
     email: str
     grades: List[Optional[int]]
 
-class AssignmentGrade:
+class AssignmentGrade(BaseModel):
     assignment_name: str
     assignment_id: str
     grade: Optional[int]
