@@ -72,7 +72,7 @@ def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> Lis
             tch.publicname
         FROM course_assignments_submissions s
         JOIN users st ON s.email = st.email
-        JOIN users tch ON s.gradedby = tch.email
+        LEFT JOIN users tch ON s.gradedby = tch.email
         WHERE s.courseid = %s AND s.assid = %s
         ORDER BY s.timeadded DESC
         """,
@@ -96,7 +96,7 @@ def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, 
             tch.publicname
         FROM course_assignments_submissions s
         JOIN users st ON s.email = st.email
-        JOIN users tch ON s.gradedby = tch.email
+        LEFT JOIN users tch ON s.gradedby = tch.email
         WHERE s.courseid = %s AND s.assid = %s AND s.email = %s
         """,
         (course_id, assignment_id, student_email),
