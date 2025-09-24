@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from fastapi import APIRouter, Depends, Query, UploadFile, File
 from auth import get_current_user, get_db, get_storage_db
 import json_classes
@@ -80,42 +80,6 @@ async def get_submission(
     # connection to database
     with get_db() as (db_conn, db_cursor):
         return logic.submissions.get_submission(db_cursor, course_id, assignment_id, student_email, user_email)
-
-
-@router.post("/grade_submission", response_model=json_classes.Success, tags=["Submissions"])
-async def grade_submission(
-    course_id: str,
-    assignment_id: str,
-    student_email: str,
-    grade: str,
-    comment: Optional[str] = Query(
-        None,
-        min_length=3,
-        max_length=10000,
-        description="Comment must contain 3-10000 symbols"
-    ),
-    user_email: str = Depends(get_current_user),
-):
-    """
-    Allows teacher to grade student's submission.
-
-    Teacher OR Primary Instructor role required.
-
-    Comment must be None or contain from 3 to 10000 symbols.
-    """
-
-    # connection to database
-    with get_db() as (db_conn, db_cursor):
-        return logic.submissions.grade_submission(
-            db_conn,
-            db_cursor,
-            course_id,
-            assignment_id,
-            student_email,
-            grade,
-            comment,
-            user_email
-        )
 
 
 @router.post("/create_submission_attachment", response_model=json_classes.SubmissionAttachmentMetadata, tags=["Submissions"])
