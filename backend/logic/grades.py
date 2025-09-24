@@ -29,6 +29,7 @@ def grade_submission(
     return {"success": True}
 
 
+# TODO: подумать над оптимизацией запросов
 def get_all_course_grades(db_cursor, course_id: str, user_email: str):
 
     # checking constraints
@@ -60,6 +61,7 @@ def get_all_course_grades(db_cursor, course_id: str, user_email: str):
     return table
 
 
+# TODO: подумать над оптимизацией запросов
 def get_student_course_grades(db_cursor, course_id: str, student_email: str, user_email: str):
     # checking constraints
     if not (
