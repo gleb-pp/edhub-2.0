@@ -46,9 +46,17 @@ def get_all_course_grades(db_cursor, course_id: str, user_email: str):
 
     table = []
     for student in students:
+        grades = []
+        for ass in assignments:
+            grade = repo_grades.sql_select_submission_grade(db_cursor, course_id, ass[1], student[0])
+            if grade is None:
+                grades.append(None)
+            else:
+                grades.append(grade[0])
+
         table.append({"name": student[1],
                       "email": student[0], 
-                      "grades": repo_grades.sql_select_students_grades(db_cursor, course_id, student[0])})
+                      "grades": grades})
     return table
 
 
@@ -69,10 +77,18 @@ def get_student_course_grades(db_cursor, course_id: str, student_email: str, use
     table = []
     for ass in assignments:
         sbmt = repo_submissions.sql_select_single_submission(db_cursor, course_id, ass[1], student_email)
-        table.append({"assignment_name": ass[3],
-                      "assignment_id": ass[1],
-                      "grade": sbmt[5],
-                      "comment": sbmt[6],
-                      "grader_name": sbmt[8],
-                      "grader_email": sbmt[7]})
+        if sbmt is None:
+            table.append({"assignment_name": ass[3],
+                        "assignment_id": ass[1],
+                        "grade": None,
+                        "comment": None,
+                        "grader_name": None,
+                        "grader_email": None})
+        else:
+            table.append({"assignment_name": ass[3],
+                        "assignment_id": ass[1],
+                        "grade": sbmt[5],
+                        "comment": sbmt[6],
+                        "grader_name": sbmt[8],
+                        "grader_email": sbmt[7]})
     return table

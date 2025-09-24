@@ -81,7 +81,7 @@ def sql_select_submissions(db_cursor, course_id: str, assignment_id: str) -> Lis
     return db_cursor.fetchall()
 
 
-def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str], Optional[str], Optional[str]]:
+def sql_select_single_submission(db_cursor, course_id: str, assignment_id: str, student_email: str) -> Optional[Tuple[str, str, datetime, datetime, str, Optional[int], Optional[str], Optional[str], Optional[str]]]:
     db_cursor.execute(
         """
         SELECT
