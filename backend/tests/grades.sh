@@ -87,10 +87,10 @@ info=$(curl -s -X GET \
 
 expected='[
     {"assignment_name":"Assignment 1","assignment_id":'$firstassignmentid',"grade":null,"comment":null,"grader_name":null,"grader_email":null},
-    {"assignment_name":"Assignment 2","assignment_id":'$secondassignmentid',"grade":null,"comment":null,"grader_name":null,"grader_email":null},
+    {"assignment_name":"Assignment 2","assignment_id":'$secondassignmentid',"grade":null,"comment":null,"grader_name":null,"grader_email":null}
 ]'
 
-json_exact_match_test "Request Bob's assignment grades from Bob" "$info" "$expected" "assignment_id"
+json_exact_match_test "Request Bob's assignment grades from Bob" "$info" "$expected" "assignment_name"
 
 # --------------------------------------------------------------------
 
@@ -141,7 +141,7 @@ info=$(curl -s -X GET \
 
 expected='[
     {"assignment_name":"Assignment 1","assignment_id":'$firstassignmentid',"grade":null,"comment":null,"grader_name":null,"grader_email":null},
-    {"assignment_name":"Assignment 2","assignment_id":'$secondassignmentid',"grade":null,"comment":null,"grader_name":null,"grader_email":null},
+    {"assignment_name":"Assignment 2","assignment_id":'$secondassignmentid',"grade":null,"comment":null,"grader_name":null,"grader_email":null}
 ]'
 
 json_exact_match_test "Request the Bob's assignment grades from Eugene" "$info" "$expected" "assignment_id"
