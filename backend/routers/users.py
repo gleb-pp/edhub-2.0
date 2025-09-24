@@ -65,7 +65,7 @@ async def change_password(user: json_classes.UserNewPassword):
         return logic.users.change_password(db_conn, db_cursor, user)
 
 
-@router.get("/get_instructor_courses", response_model=List[json_classes.CourseId], tags=["Users"])
+@router.get("/get_instructor_courses", response_model=List[json_classes.CourseID], tags=["Users"])
 async def get_instructor_courses(user_email: str = Depends(get_current_user)):
     """
     Get the list of IDs of courses where the provided user is a Primary Instructor.

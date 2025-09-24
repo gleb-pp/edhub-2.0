@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 class Success(BaseModel):
@@ -18,11 +18,11 @@ class CourseRole(BaseModel):
     is_admin: bool
 
 
-class CourseId(BaseModel):
+class CourseID(BaseModel):
     course_id: str
 
 
-class Course(CourseId):
+class Course(CourseID):
     title: str
     instructor: str
     organization: Optional[str]
@@ -119,3 +119,16 @@ class UserNewPassword(BaseModel):
     email: str
     password: str
     new_password: str
+
+class StudentsGrades:
+    name: str
+    email: str
+    grades: List[Optional[int]]
+
+class AssignmentGrade:
+    assignment_name: str
+    assignment_id: str
+    grade: Optional[int]
+    comment: Optional[str]
+    grader_name: Optional[str]
+    grader_email: Optional[str]

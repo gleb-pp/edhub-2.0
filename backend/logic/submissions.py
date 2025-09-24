@@ -2,6 +2,7 @@ from fastapi import HTTPException, UploadFile, Response
 from constants import TIME_FORMAT
 import constraints
 import repo.submissions as repo_submit
+import repo.grades as repo_grades
 import repo.files as repo_files
 import logic.logging as logger
 from logic.uploading import careful_upload
@@ -19,7 +20,7 @@ def submit_assignment(
     constraints.assert_student_access(db_cursor, student_email, course_id)
     constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
 
-    submission = repo_submit.sql_select_submission_grade(db_cursor, course_id, assignment_id, student_email)
+    submission = repo_grades.sql_select_submission_grade(db_cursor, course_id, assignment_id, student_email)
 
     # inserting submission
     if submission is None:
