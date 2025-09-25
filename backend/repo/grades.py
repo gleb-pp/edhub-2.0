@@ -19,7 +19,7 @@ def sql_update_submission_grade(db_cursor, grade: str | int, comment: Optional[s
         (grade, comment, user_email, course_id, assignment_id, student_email),
     )
 
-def sql_select_student_grades(db_cursor, course_id: str, student_email: str) -> List[str, int, Optional[int], Optional[str], Optional[str], Optional[str]]:
+def sql_select_student_grades(db_cursor, course_id: str, student_email: str) -> List[Tuple[str, int, Optional[int], Optional[str], Optional[str], Optional[str]]]:
     db_cursor.execute(
         """
         SELECT 
