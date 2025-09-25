@@ -3,7 +3,6 @@ from fastapi import HTTPException
 import constraints
 import repo.grades as repo_grades
 import repo.assignments as repo_assignments
-import repo.submissions as repo_submissions
 import repo.students as repo_students
 import logic.logging as logger
 
@@ -29,7 +28,6 @@ def grade_submission(
     return {"success": True}
 
 
-# TODO: подумать над оптимизацией запросов
 def get_all_course_grades(db_cursor, course_id: str, user_email: str):
 
     # checking constraints
@@ -45,23 +43,27 @@ def get_all_course_grades(db_cursor, course_id: str, user_email: str):
     if len(assignments) == 0:
         raise HTTPException(status_code=404, detail="Empty grade table (there are no assignments published)")
 
+    grades = repo_grades.sql_select_all_grades(db_cursor, course_id)
     table = []
-    for student in students:
-        grades = []
-        for ass in assignments:
-            grade = repo_grades.sql_select_submission_grade(db_cursor, course_id, ass[1], student[0])
-            if grade is None:
-                grades.append(None)
-            else:
-                grades.append(grade[0])
+    current_student = None
+    current_record = None
 
-        table.append({"name": student[1],
-                      "email": student[0], 
-                      "grades": grades})
+    for email, name, assid, assname, grade in grades:
+        if current_student != email:
+            if current_record:
+                table.append(current_record)
+            current_student = email
+            current_record = {
+                "name": name,
+                "email": email,
+                "grades": []
+            }
+        current_record["grades"].append(grade)
+    if current_record:
+        table.append(current_record)
     return table
 
 
-# TODO: подумать над оптимизацией запросов
 def get_student_course_grades(db_cursor, course_id: str, student_email: str, user_email: str):
     # checking constraints
     if not (

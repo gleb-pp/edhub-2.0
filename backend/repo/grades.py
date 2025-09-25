@@ -42,3 +42,26 @@ def sql_select_student_grades(db_cursor, course_id: str, student_email: str) -> 
         (student_email, course_id),
     )
     return db_cursor.fetchall()
+
+def sql_select_all_grades(db_cursor, course_id: str) -> List[Tuple[str, str, int, str, Optional[int]]]:
+    db_cursor.execute(
+        """
+        SELECT 
+            st.email AS student_email,
+            u.publicname AS student_name,
+            ass.assid AS assignment_id,
+            ass.name AS assignment_name,
+            sbmt.grade
+        FROM student_at st
+        JOIN users u ON st.email = u.email
+        JOIN course_assignments ass ON ass.courseid = st.courseid
+        LEFT JOIN course_assignments_submissions sbmt
+            ON sbmt.courseid = ass.courseid
+           AND sbmt.assid = ass.assid
+           AND sbmt.email = st.email
+        WHERE st.courseid = %s
+        ORDER BY u.publicname, st.email, ass.assid;
+        """,
+        (course_id,)
+    )
+    return db_cursor.fetchall()
