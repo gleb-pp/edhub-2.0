@@ -1,8 +1,8 @@
-from typing import Optional
 from fastapi import HTTPException, UploadFile, Response
 from constants import TIME_FORMAT
 import constraints
 import repo.submissions as repo_submit
+import repo.grades as repo_grades
 import repo.files as repo_files
 import logic.logging as logger
 from logic.uploading import careful_upload
@@ -20,7 +20,7 @@ def submit_assignment(
     constraints.assert_student_access(db_cursor, student_email, course_id)
     constraints.assert_assignment_exists(db_cursor, course_id, assignment_id)
 
-    submission = repo_submit.sql_select_submission_grade(db_cursor, course_id, assignment_id, student_email)
+    submission = repo_grades.sql_select_submission_grade(db_cursor, course_id, assignment_id, student_email)
 
     # inserting submission
     if submission is None:
@@ -33,7 +33,7 @@ def submit_assignment(
     else:
         raise HTTPException(status_code=409, detail="Can't edit the submission after it was graded.")
 
-    logger.log(db_conn, logger.TAG_ASSIGNMENT_SUBMIT, f"Student {student_email} submitted an assignment{assignment_id} in {course_id}")
+    logger.log(db_conn, logger.TAG_ASSIGNMENT_SUBMIT, f"Student {student_email} submitted an assignment {assignment_id} in {course_id}")
 
     return {"success": True}
 
@@ -57,7 +57,8 @@ def get_assignment_submissions(db_cursor, course_id: str, assignment_id: str, us
             "submission_text": sub[4],
             "grade": sub[5],
             "comment": sub[6],
-            "gradedby_email": sub[7]
+            "gradedby_email": sub[7],
+            "gradedby_name": sub[8]
         }
         for sub in submissions
     ]
@@ -97,30 +98,10 @@ def get_submission(
         "submission_text": submission[4],
         "grade": submission[5],
         "comment": submission[6],
-        "gradedby_email": submission[7]
+        "gradedby_email": submission[7],
+        "gradedby_name": submission[8]
     }
     return res
-
-
-def grade_submission(
-    db_conn,
-    db_cursor,
-    course_id: str,
-    assignment_id: str,
-    student_email: str,
-    grade: str,
-    comment: Optional[str],
-    user_email: str,
-):
-    # checking constraints
-    constraints.assert_teacher_access(db_cursor, user_email, course_id)
-    constraints.assert_submission_exists(db_cursor, course_id, assignment_id, student_email)
-
-    repo_submit.sql_update_submission_grade(db_cursor, grade, comment, user_email, course_id, assignment_id, student_email)
-
-    logger.log(db_conn, logger.TAG_ASSIGNMENT_GRADE, f"Teacher {user_email} graded an assignment {assignment_id} in {course_id} by {student_email}")
-
-    return {"success": True}
 
 
 async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, storage_db_cursor, course_id: str, assignment_id: str, student_email: str, file: UploadFile, user_email: str):

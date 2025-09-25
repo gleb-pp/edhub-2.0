@@ -77,6 +77,25 @@ async def get_assignment(course_id: str, assignment_id: str, user_email: str = D
         return logic.assignments.get_assignment(db_cursor, course_id, assignment_id, user_email)
 
 
+@router.get("/get_course_assignments", response_model=List[json_classes.Assignment], tags=["Assignments"])
+async def get_course_assignments(course_id: str, user_email: str = Depends(get_current_user)):
+    """
+    Get the list of course assignments by the provided course_id.
+
+    For each assignment, it returns course_id, assignment_id, creation_time, title, description, and email of the author.
+
+    Author can be NULL if the author deleted their account.
+
+    The format of creation time is TIME_FORMAT.
+
+    Course role (Primary Instructor, Teacher, Student, Parent) required.
+    """
+
+    # connection to database
+    with get_db() as (db_conn, db_cursor):
+        return logic.assignments.get_course_assignments(db_cursor, course_id, user_email)
+
+
 @router.post("/create_assignment_attachment", response_model=json_classes.AssignmentAttachmentMetadata, tags=["Assignments"])
 async def create_assignment_attachment(
     course_id: str,

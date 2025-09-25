@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from fastapi import APIRouter, Depends, Query, UploadFile, File
 from auth import get_current_user, get_db, get_storage_db
 import json_classes
@@ -44,7 +44,7 @@ async def get_assignment_submissions(course_id: str, assignment_id: str, user_em
 
     Submissions are ordered by submission_time, newest submissions go first.
 
-    Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email).
+    Returns the list of submissions (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email, gradedby_name).
 
     The format of submission_time and last_modification_time is TIME_FORMAT.
 
@@ -66,11 +66,11 @@ async def get_submission(
     """
     Get the student submission of assignment by course_id, assignment_id and student_email.
 
-    - Teacher AND Primary Instructor can get all submissions of the course
+    - Teacher OR Primary Instructor can get all submissions of the course
     - Parent can get the submission of their student
     - Student can get their submissions
 
-    Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email).
+    Returns the submission (course_id, assignment_id, student_email, student_name, submission_time, last_modification_time, submission_text, grade, comment, gradedby_email, gradedby_name).
 
     The format of submission_time and last_modification_time is TIME_FORMAT.
 
@@ -80,42 +80,6 @@ async def get_submission(
     # connection to database
     with get_db() as (db_conn, db_cursor):
         return logic.submissions.get_submission(db_cursor, course_id, assignment_id, student_email, user_email)
-
-
-@router.post("/grade_submission", response_model=json_classes.Success, tags=["Submissions"])
-async def grade_submission(
-    course_id: str,
-    assignment_id: str,
-    student_email: str,
-    grade: str,
-    comment: Optional[str] = Query(
-        None,
-        min_length=3,
-        max_length=10000,
-        description="Comment must contain 3-10000 symbols"
-    ),
-    user_email: str = Depends(get_current_user),
-):
-    """
-    Allows teacher to grade student's submission.
-
-    Teacher OR Primary Instructor role required.
-
-    Comment must be None or contain from 3 to 10000 symbols.
-    """
-
-    # connection to database
-    with get_db() as (db_conn, db_cursor):
-        return logic.submissions.grade_submission(
-            db_conn,
-            db_cursor,
-            course_id,
-            assignment_id,
-            student_email,
-            grade,
-            comment,
-            user_email
-        )
 
 
 @router.post("/create_submission_attachment", response_model=json_classes.SubmissionAttachmentMetadata, tags=["Submissions"])
@@ -146,7 +110,7 @@ async def get_submission_attachments(course_id: str, assignment_id: str, student
     """
     Get the list of attachments to the course assignment submission by provided course_id, assignment_id, student_email.
 
-    - Teacher AND Primary Instructor can get all submission attachments of the course
+    - Teacher OR Primary Instructor can get all submission attachments of the course
     - Parent can get the submission attachments of their student
     - Student can get their submission attachments
     

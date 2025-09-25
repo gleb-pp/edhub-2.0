@@ -105,7 +105,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null,"gradedby_name":null}
 '
 
 json_partial_match_test "Request the submission details from Bob" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
@@ -124,7 +124,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment_submissions?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null,"gradedby_name":null}
 ]'
 
 json_partial_match_test "Request the list of assignment submissions by Alice" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
@@ -136,7 +136,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":null,"comment":null,"gradedby_email":null,"gradedby_name":null}
 '
 
 json_partial_match_test "Request the submission details by Alice" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
@@ -154,7 +154,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":5,"comment":"Good job","gradedby_email":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":5,"comment":"Good job","gradedby_email":"alice@example.com","gradedby_name":"Alice"}
 '
 
 json_partial_match_test "Request the submission details by Alice" "$info" "$expected" "assignment_id" "submission_time last_modification_time"
@@ -173,7 +173,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_submission?course_id=$mathcourseid&assignment_id=$assignmentid&student_email=bob@example.com")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":5,"comment":"Good job","gradedby_email":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"student_email":"bob@example.com","student_name":"Bob","submission_text":"The answer is 10","grade":5,"comment":"Good job","gradedby_email":"alice@example.com","gradedby_name":"Alice"}
 '
 
 json_partial_match_test "Request the submission details by Charlie" "$info" "$expected" "assignment_id" "submission_time last_modification_time"

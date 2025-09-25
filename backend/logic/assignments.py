@@ -44,7 +44,7 @@ def get_assignment(db_cursor, course_id: str, assignment_id: str, user_email: st
     # checking constraints
     constraints.assert_course_access(db_cursor, user_email, course_id)
 
-    # searching for assignments
+    # searching for the assignment
     assignment = repo_ass.sql_select_assignment(db_cursor, course_id, assignment_id)
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
@@ -57,6 +57,28 @@ def get_assignment(db_cursor, course_id: str, assignment_id: str, user_email: st
         "description": assignment[4],
         "author": assignment[5],
     }
+    return res
+
+
+def get_course_assignments(db_cursor, course_id: str, user_email: str):
+
+    # checking constraints
+    constraints.assert_course_access(db_cursor, user_email, course_id)
+
+    # searching for assignments
+    assignments = repo_ass.sql_select_course_assignments(db_cursor, course_id)
+
+    res = [
+        {
+            "course_id": str(ass[0]),
+            "assignment_id": ass[1],
+            "creation_time": ass[2].strftime(TIME_FORMAT),
+            "title": ass[3],
+            "description": ass[4],
+            "author": ass[5],
+        }
+        for ass in assignments
+    ]
     return res
 
 

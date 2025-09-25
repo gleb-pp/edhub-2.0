@@ -8,7 +8,7 @@ import logic.courses
 router = APIRouter()
 
 
-@router.get("/available_courses", response_model=List[json_classes.CourseId], tags=["Courses"])
+@router.get("/available_courses", response_model=List[json_classes.CourseID], tags=["Courses"])
 async def available_courses(user_email: str = Depends(get_current_user)):
     """
     Get the list of IDs of courses available for user (as a Primary Instructor, Teacher, Student, or Parent).
@@ -17,7 +17,7 @@ async def available_courses(user_email: str = Depends(get_current_user)):
         return logic.courses.available_courses(db_cursor, user_email)
 
 
-@router.get("/get_all_courses", response_model=List[json_classes.CourseId], tags=["Courses"])
+@router.get("/get_all_courses", response_model=List[json_classes.CourseID], tags=["Courses"])
 async def get_all_courses(user_email: str = Depends(get_current_user)):
     """
     Get the list of IDs of all courses in the system.
@@ -28,7 +28,7 @@ async def get_all_courses(user_email: str = Depends(get_current_user)):
         return logic.courses.get_all_courses(db_cursor, user_email)
 
 
-@router.post("/create_course", response_model=json_classes.CourseId, tags=["Courses"])
+@router.post("/create_course", response_model=json_classes.CourseID, tags=["Courses"])
 async def create_course(
     title: str = Query(
         ...,

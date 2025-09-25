@@ -237,6 +237,10 @@ jobs:
         run: |
           ./backend/tests/submissions.sh || exit 1
 
+      - name: Grades tests
+        run: |
+          ./backend/tests/grades.sh || exit 1
+
       - name: Attachments tests
         run: |
           ./backend/tests/attachments.sh || exit 1
