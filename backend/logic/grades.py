@@ -71,6 +71,9 @@ def get_student_course_grades(db_cursor, course_id: str, student_email: str, use
     ):
         raise HTTPException(status_code=403, detail="User does not have access to the grades of this student")
 
+    # check if the student is enrooled in the course
+    constraints.assert_student_access(db_cursor, student_email, course_id)
+
     # check if there are any assignments within the course
     assignments = repo_assignments.sql_select_course_assignments(db_cursor, course_id)
     if len(assignments) == 0:
