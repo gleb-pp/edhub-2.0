@@ -33,7 +33,7 @@ def submit_assignment(
     else:
         raise HTTPException(status_code=409, detail="Can't edit the submission after it was graded.")
 
-    logger.log(db_conn, logger.TAG_ASSIGNMENT_SUBMIT, f"Student {student_email} submitted an assignment{assignment_id} in {course_id}")
+    logger.log(db_conn, logger.TAG_ASSIGNMENT_SUBMIT, f"Student {student_email} submitted an assignment {assignment_id} in {course_id}")
 
     return {"success": True}
 
