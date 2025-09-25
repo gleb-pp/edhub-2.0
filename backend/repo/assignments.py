@@ -65,7 +65,7 @@ def sql_select_assignment_attachments(db_cursor, course_id: str, assignment_id: 
     return db_cursor.fetchall()
 
 
-def sql_select_course_assignments(db_cursor, course_id: str) -> List[Tuple[str, int]]:
+def sql_select_course_assignments(db_cursor, course_id: str) -> List[Tuple[UUID, int, datetime, str, str, Optional[str]]]:
     db_cursor.execute(
         """
         SELECT courseid, assid, timeadded, name, description, author
