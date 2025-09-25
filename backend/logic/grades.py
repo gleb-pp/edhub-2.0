@@ -80,21 +80,15 @@ def get_student_course_grades(db_cursor, course_id: str, student_email: str, use
     if len(assignments) == 0:
         raise HTTPException(status_code=404, detail="Empty grade table (there are no assignments published)")
 
-    table = []
-    for ass in assignments:
-        sbmt = repo_submissions.sql_select_single_submission(db_cursor, course_id, ass[1], student_email)
-        if sbmt is None:
-            table.append({"assignment_name": ass[3],
-                        "assignment_id": ass[1],
-                        "grade": None,
-                        "comment": None,
-                        "grader_name": None,
-                        "grader_email": None})
-        else:
-            table.append({"assignment_name": ass[3],
-                        "assignment_id": ass[1],
-                        "grade": sbmt[5],
-                        "comment": sbmt[6],
-                        "grader_name": sbmt[8],
-                        "grader_email": sbmt[7]})
+    table = [
+        {
+            "assignment_name": grade[0],
+            "assignment_id": grade[1],
+            "grade": grade[2],
+            "comment": grade[3],
+            "grader_name": grade[4],
+            "grader_email": grade[5]
+        }
+        for grade in repo_grades.sql_select_student_grades(db_cursor, course_id, student_email)
+    ]
     return table
