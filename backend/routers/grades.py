@@ -75,7 +75,7 @@ async def get_student_course_grades(
     """
     Get the table of course grades of student with provided student_email.
 
-    - Teacher AND Primary Instructor can get grades of every student.
+    - Teacher OR Primary Instructor can get grades of every student.
     - Parent can get the grades of their student
     - Student can get their grades
 

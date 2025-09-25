@@ -66,7 +66,7 @@ async def get_submission(
     """
     Get the student submission of assignment by course_id, assignment_id and student_email.
 
-    - Teacher AND Primary Instructor can get all submissions of the course
+    - Teacher OR Primary Instructor can get all submissions of the course
     - Parent can get the submission of their student
     - Student can get their submissions
 
@@ -110,7 +110,7 @@ async def get_submission_attachments(course_id: str, assignment_id: str, student
     """
     Get the list of attachments to the course assignment submission by provided course_id, assignment_id, student_email.
 
-    - Teacher AND Primary Instructor can get all submission attachments of the course
+    - Teacher OR Primary Instructor can get all submission attachments of the course
     - Parent can get the submission attachments of their student
     - Student can get their submission attachments
     
