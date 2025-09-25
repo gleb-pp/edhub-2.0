@@ -179,6 +179,18 @@ json_partial_match_test "Request the assignment info from Alice" "$info" "$expec
 
 # --------------------------------------------------------------------
 
+info=$(curl -s -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_course_assignments?course_id=$mathcourseid")
+
+expected='[
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"alice@example.com"}
+]'
+
+json_partial_match_test "Request the assignment info from Alice" "$info" "$expected" "assignment_id" "creation_time"
+
+# --------------------------------------------------------------------
+
 login_and_get_token "Login as Bob" \
     -X POST $API_URL/login \
     -H "Content-Type: application/json" \

@@ -68,16 +68,17 @@ def get_course_assignments(db_cursor, course_id: str, user_email: str):
     # searching for assignments
     assignments = repo_ass.sql_select_course_assignments(db_cursor, course_id)
 
-    res = []
-    for ass in assignments:
-        res.append({
+    res = [
+        {
             "course_id": str(ass[0]),
             "assignment_id": ass[1],
             "creation_time": ass[2].strftime(TIME_FORMAT),
             "title": ass[3],
             "description": ass[4],
             "author": ass[5],
-        })
+        }
+        for ass in assignments
+    ]
     return res
 
 
