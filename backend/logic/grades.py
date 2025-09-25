@@ -13,7 +13,7 @@ def grade_submission(
     course_id: str,
     assignment_id: str,
     student_email: str,
-    grade: str,
+    grade: int,
     comment: Optional[str],
     user_email: str,
 ):
