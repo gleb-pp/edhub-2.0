@@ -332,7 +332,7 @@ info=$(curl -s -X GET \
 
 expected='[
     {"course_id":"'"$engcourseid"'","post_id":'$materialid',"section_id":3,"section_name":"General","section_order":0,"type":"mat","author":"bob@example.com"},
-    {"course_id":"'"$engcourseid"'","post_id":'$assignmentid',"section_id":4,"section_name":"General","section_order":0,"type":"ass","author":"bob@example.com"}
+    {"course_id":"'"$engcourseid"'","post_id":'$assignmentid',"section_id":4,"section_name":"New Section","section_order":1,"type":"ass","author":"bob@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
@@ -414,7 +414,7 @@ info=$(curl -s -X GET \
 
 expected='[
     {"course_id":"'"$engcourseid"'","post_id":null,"section_id":3,"section_name":"General","section_order":0,"type":null,"author":null},
-    {"course_id":"'"$engcourseid"'","post_id":null,"section_id":4,"section_name":"General","section_order":0,"type":null,"author":null}
+    {"course_id":"'"$engcourseid"'","post_id":null,"section_id":4,"section_name":"New Section","section_order":1,"type":null,"author":null}
 ]'
 
 json_partial_match_test "Request the empty course feed from Bob" "$info" "$expected" "post_id type" "timeadded"
