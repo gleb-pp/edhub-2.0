@@ -132,7 +132,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER courses_default_section_trigger
     AFTER INSERT ON courses
     FOR EACH ROW
-    EXECUTE FUNCTION create_default_section();
+    EXECUTE PROCEDURE create_default_section();
 
 CREATE INDEX idx_users_isadmin_true ON users(isadmin) WHERE isadmin = true;
 CREATE INDEX idx_courses_instructor ON courses(instructor);

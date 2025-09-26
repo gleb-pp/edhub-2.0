@@ -8,7 +8,6 @@ import logic.assignments
 router = APIRouter()
 
 
-# TODO: fix tests
 @router.post("/create_assignment", response_model=json_classes.AssignmentID, tags=["Assignments"])
 async def create_assignment(
     course_id: str,
