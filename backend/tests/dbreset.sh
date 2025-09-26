@@ -3,18 +3,19 @@ set -euo pipefail
 
 docker exec -i system_db psql -U postgres -d edhub -v ON_ERROR_STOP=1 -c "
   TRUNCATE TABLE
-    submissions_files,
-    assignment_files,
-    material_files,
-    course_assignments_submissions,
-    course_assignments,
-    course_materials,
-    parent_of_at_course,
-    student_at,
-    teaches,
-    logs,
+    users, 
     courses,
-    users
+    course_section,
+    course_materials,
+    course_assignments,
+    course_assignments_submissions,
+    teaches,
+    student_at,
+    parent_of_at_course,
+    logs,
+    material_files,
+    assignment_files,
+    submissions_files
   RESTART IDENTITY CASCADE;
 "
 
