@@ -49,7 +49,7 @@ success_test "Invite Charlie to Alice's course as Bob's parent" \
 
 materialid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_material?course_id=$mathcourseid&section_id=1&title=Lecture%20material&description=Lecture%20material%20description" | extract_field material_id)
+    "$API_URL/create_material?course_id=$mathcourseid&section_id=9&title=Lecture%20material&description=Lecture%20material%20description" | extract_field material_id)
 
 filematerialid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
@@ -74,7 +74,7 @@ download_file_test "Download material attachment by Alice" "$API_URL/download_ma
 
 assignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_assignment?course_id=$mathcourseid&section_id=1&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
+    "$API_URL/create_assignment?course_id=$mathcourseid&section_id=9&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
 
 fileassignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \

@@ -121,11 +121,11 @@ json_exact_match_test "Get students enrolled into Math course by Bob" "$info" "$
 # --------------------------------------------------------------------
 
 fail_test "Request to create a material from a student Bob" \
-    -X POST "$API_URL/create_material?course_id=$mathcourseid&section_id=1&title=Lecture%20material&description=Lecture%20material%20description" \
+    -X POST "$API_URL/create_material?course_id=$mathcourseid&section_id=4&title=Lecture%20material&description=Lecture%20material%20description" \
     -H "Authorization: Bearer $TOKEN" \
 
 fail_test "Request to create an assignment from a student Bob" \
-    -X POST "$API_URL/create_assignment?course_id=$mathcourseid&section_id=1&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" \
+    -X POST "$API_URL/create_assignment?course_id=$mathcourseid&section_id=4&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" \
     -H "Authorization: Bearer $TOKEN" \
 
 fail_test "Request to remove Charlie from Math course by Bob" \

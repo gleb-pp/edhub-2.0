@@ -53,7 +53,7 @@ success_test "Invite Charlie to Alice's course as Bob's parent" \
 
 assignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_assignment?course_id=$mathcourseid&section_id=1&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
+    "$API_URL/create_assignment?course_id=$mathcourseid&section_id=7&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
 
 # --------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_course_feed?course_id=$mathcourseid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"section_id":1,"section_name":"General","section_order":0,"type":"ass","author":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"section_id":7,"section_name":"General","section_order":0,"type":"ass","author":"alice@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Bob" "$info" "$expected" "post_id type" "timeadded"
@@ -81,7 +81,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment?course_id=$mathcourseid&assignment_id=$assignmentid")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"section_id":1,"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"alice@example.com"}
+    {"course_id":"'"$mathcourseid"'","assignment_id":'$assignmentid',"section_id":7,"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"alice@example.com"}
 '
 
 json_partial_match_test "Request the assignment info from Bob" "$info" "$expected" "assignment_id" "creation_time"
