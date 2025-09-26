@@ -34,7 +34,6 @@ jobs:
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=12345678 \
             -e POSTGRES_DB=edhub \
-            -e PGDATA=/var/lib/postgresql/data \
             edhub-system-db
 
       - name: Wait for system_db to be ready
@@ -59,7 +58,6 @@ jobs:
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=12345678 \
             -e POSTGRES_DB=edhub_storage \
-            -e PGDATA=/var/lib/postgresql/data \
             edhub-filestorage-db
 
       - name: Wait for filestorage_db to be ready  
@@ -137,7 +135,6 @@ jobs:
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=12345678 \
             -e POSTGRES_DB=edhub \
-            -e PGDATA=/var/lib/postgresql/data \
             edhub-system-db
 
       - name: Wait for system_db to be ready
@@ -162,7 +159,6 @@ jobs:
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=12345678 \
             -e POSTGRES_DB=edhub_storage \
-            -e PGDATA=/var/lib/postgresql/data \
             edhub-filestorage-db
 
       - name: Wait for filestorage_db to be ready  

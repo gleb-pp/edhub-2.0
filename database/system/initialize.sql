@@ -121,6 +121,19 @@ CREATE TABLE submissions_files(
     PRIMARY KEY (courseid, assid, email, fileid)
 );
 
+CREATE OR REPLACE FUNCTION create_default_section() RETURNS trigger AS $$
+BEGIN
+    INSERT INTO course_section (courseid, name, sectionorder)
+    VALUES (NEW.courseid, 'General', 0);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER courses_default_section_trigger
+    AFTER INSERT ON courses
+    FOR EACH ROW
+    EXECUTE PROCEDURE create_default_section();
+
 CREATE INDEX idx_users_isadmin_true ON users(isadmin) WHERE isadmin = true;
 CREATE INDEX idx_courses_instructor ON courses(instructor);
 CREATE INDEX idx_materials_course_time ON course_materials(courseid, timeadded);
