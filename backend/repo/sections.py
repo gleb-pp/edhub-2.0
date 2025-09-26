@@ -3,7 +3,7 @@ from uuid import UUID
 from datetime import datetime
 
 
-def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, int, int, str, int, str, datetime, Optional[str]]]:
+def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, Optional[int], int, str, int, Optional[str], Optional[datetime], Optional[str]]]:
     db_cursor.execute(
         """
         SELECT cs.courseid, feed.postid, cs.sectionid, cs.name, cs.sectionorder, feed.type, feed.timeadded, feed.author
@@ -26,7 +26,7 @@ def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, int, i
     return db_cursor.fetchall()
 
 
-def sql_insert_section(db_cursor, course_id: str, title: str) -> None:
+def sql_insert_section(db_cursor, course_id: str, title: str) -> int:
     db_cursor.execute(
         """
         INSERT INTO course_section (courseid, name, sectionorder)
