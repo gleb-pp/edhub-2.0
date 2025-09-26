@@ -15,7 +15,7 @@ def create_material(db_conn, db_cursor, course_id: str, section_id: int, title: 
     # create material
     material_id = repo_mat.sql_insert_material(db_cursor, course_id, section_id, title, description, user_email)
 
-    logger.log(db_conn, logger.TAG_MATERIAL_ADD, f"User {user_email} created a material {material_id} in {course_id}")
+    logger.log(db_conn, logger.TAG_MATERIAL_ADD, f"User {user_email} created a material {material_id} within the section {section_id} in the course {course_id}")
     return {"course_id": course_id, "material_id": material_id, "section_id": section_id}
 
 
@@ -27,7 +27,7 @@ def remove_material(db_conn, db_cursor, course_id: str, material_id: str, user_e
     # remove material
     repo_mat.sql_delete_material(db_cursor, course_id, material_id)
 
-    logger.log(db_conn, logger.TAG_MATERIAL_DEL, f"User {user_email} removed a material {material_id} in {course_id}")
+    logger.log(db_conn, logger.TAG_MATERIAL_DEL, f"User {user_email} removed a material {material_id} from the course {course_id}")
 
     return {"success": True}
 

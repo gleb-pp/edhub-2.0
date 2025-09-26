@@ -35,7 +35,7 @@ def invite_student(db_conn, db_cursor, course_id: str, student_email: str, teach
     # invite student
     repo_students.sql_insert_student_at(db_cursor, student_email, course_id)
 
-    logger.log(db_conn, logger.TAG_STUDENT_ADD, f"Teacher {teacher_email} invited a student {student_email}")
+    logger.log(db_conn, logger.TAG_STUDENT_ADD, f"Teacher {teacher_email} invited a student {student_email} to the course {course_id}")
     return {"success": True}
 
 
@@ -54,6 +54,6 @@ def remove_student(db_conn, db_cursor, course_id: str, student_email: str, user_
     # remove student
     repo_students.sql_delete_student_at(db_cursor, course_id, student_email)
 
-    logger.log(db_conn, logger.TAG_STUDENT_DEL, f"Teacher {user_email} removed a student {student_email}")
+    logger.log(db_conn, logger.TAG_STUDENT_DEL, f"Teacher {user_email} removed a student {student_email} from the course {course_id}")
 
     return {"success": True}

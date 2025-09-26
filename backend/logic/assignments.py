@@ -23,7 +23,7 @@ def create_assignment(
     # create assignment
     assignment_id = repo_ass.sql_insert_assignment(db_cursor, course_id, section_id, title, description, user_email)
 
-    logger.log(db_conn, logger.TAG_ASSIGNMENT_ADD, f"Created assignment {assignment_id}")
+    logger.log(db_conn, logger.TAG_ASSIGNMENT_ADD, f"User {user_email} created an assignment {assignment_id} within the section {section_id} in the course {course_id}")
 
     return {"course_id": course_id, "assignment_id": assignment_id, "section_id": section_id}
 
@@ -36,7 +36,7 @@ def remove_assignment(db_conn, db_cursor, course_id: str, assignment_id: str, us
     # remove assignment
     repo_ass.sql_delete_assignment(db_cursor, course_id, assignment_id)
 
-    logger.log(db_conn, logger.TAG_ASSIGNMENT_DEL, f"Removed assignment {assignment_id}")
+    logger.log(db_conn, logger.TAG_ASSIGNMENT_DEL, f"User {user_email} removed an assignment {assignment_id} from the course {course_id}")
 
     return {"success": True}
 

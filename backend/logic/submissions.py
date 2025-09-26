@@ -33,7 +33,7 @@ def submit_assignment(
     else:
         raise HTTPException(status_code=409, detail="Can't edit the submission after it was graded.")
 
-    logger.log(db_conn, logger.TAG_ASSIGNMENT_SUBMIT, f"Student {student_email} submitted an assignment {assignment_id} in {course_id}")
+    logger.log(db_conn, logger.TAG_ASSIGNMENT_SUBMIT, f"Student {student_email} submitted an assignment {assignment_id} in the course {course_id}")
 
     return {"success": True}
 
@@ -119,7 +119,7 @@ async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, stor
     # save the file into database
     attachment_metadata = repo_submit.sql_insert_submission_attachment(db_cursor, storage_db_cursor, course_id, assignment_id, student_email, file.filename, contents)
 
-    logger.log(db_conn, logger.TAG_ATTACHMENT_ADD_SUB, f"User {user_email} created an attachment {file.filename} for the submission for the assignment {assignment_id} in course {course_id}")
+    logger.log(db_conn, logger.TAG_ATTACHMENT_ADD_SUB, f"User {user_email} created an attachment {file.filename} for their submission for the assignment {assignment_id} in course {course_id}")
     return {
         "course_id": course_id,
         "assignment_id": assignment_id,
