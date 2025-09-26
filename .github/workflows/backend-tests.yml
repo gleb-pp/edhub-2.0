@@ -48,7 +48,7 @@ jobs:
             echo "Waiting for system_db... ($i/30)"
             sleep 2
           done
-          echo "system_db failed to start"
+          echo "system_db failed to start" && docker logs system_db
           exit 1
 
       - name: Run filestorage_db container
@@ -73,7 +73,7 @@ jobs:
             echo "Waiting for filestorage_db... ($i/30)"
             sleep 2
           done
-          echo "filestorage_db failed to start"
+          echo "filestorage_db failed to start" && docker logs filestorage_db
           exit 1
 
       - name: Run backend container
@@ -151,7 +151,7 @@ jobs:
             echo "Waiting for system_db... ($i/30)"
             sleep 2
           done
-          echo "system_db failed to start"
+          echo "system_db failed to start" && docker logs system_db
           exit 1
 
       - name: Run filestorage_db container
@@ -176,7 +176,7 @@ jobs:
             echo "Waiting for filestorage_db... ($i/30)"
             sleep 2
           done
-          echo "filestorage_db failed to start"
+          echo "filestorage_db failed to start" && docker logs filestorage_db
           exit 1
 
       - name: Run backend container
