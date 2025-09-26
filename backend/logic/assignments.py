@@ -11,19 +11,21 @@ def create_assignment(
     db_conn,
     db_cursor,
     course_id: str,
+    section_id: int,
     title: str,
     description: str,
     user_email: str,
 ):
     # checking constraints
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
+    constraints.assert_section_exists(db_cursor, course_id, section_id)
 
     # create assignment
-    assignment_id = repo_ass.sql_insert_assignment(db_cursor, course_id, title, description, user_email)
+    assignment_id = repo_ass.sql_insert_assignment(db_cursor, course_id, section_id, title, description, user_email)
 
     logger.log(db_conn, logger.TAG_ASSIGNMENT_ADD, f"Created assignment {assignment_id}")
 
-    return {"course_id": course_id, "assignment_id": assignment_id}
+    return {"course_id": course_id, "assignment_id": assignment_id, "section_id": section_id}
 
 
 def remove_assignment(db_conn, db_cursor, course_id: str, assignment_id: str, user_email: str):
@@ -52,10 +54,11 @@ def get_assignment(db_cursor, course_id: str, assignment_id: str, user_email: st
     res = {
         "course_id": str(assignment[0]),
         "assignment_id": assignment[1],
-        "creation_time": assignment[2].strftime(TIME_FORMAT),
-        "title": assignment[3],
-        "description": assignment[4],
-        "author": assignment[5],
+        "section_id": assignment[2],
+        "creation_time": assignment[3].strftime(TIME_FORMAT),
+        "title": assignment[4],
+        "description": assignment[5],
+        "author": assignment[6],
     }
     return res
 
@@ -72,10 +75,11 @@ def get_course_assignments(db_cursor, course_id: str, user_email: str):
         {
             "course_id": str(ass[0]),
             "assignment_id": ass[1],
-            "creation_time": ass[2].strftime(TIME_FORMAT),
-            "title": ass[3],
-            "description": ass[4],
-            "author": ass[5],
+            "section_id": ass[2],
+            "creation_time": ass[3].strftime(TIME_FORMAT),
+            "title": ass[4],
+            "description": ass[5],
+            "author": ass[6],
         }
         for ass in assignments
     ]

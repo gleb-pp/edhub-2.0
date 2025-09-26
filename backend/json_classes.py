@@ -29,17 +29,29 @@ class Course(CourseID):
     creation_time: str
 
 
+class SectionID(BaseModel):
+    section_id: int
+
+
+class Section(SectionID):
+    title: str
+
+
 class CoursePost(BaseModel):
     course_id: str
-    post_id: int
-    type: str
-    timeadded: str
+    post_id: Optional[int]
+    section_id: int
+    section_name: str
+    section_order: int
+    type: Optional[str]
+    timeadded: Optional[str]
     author: Optional[str]
 
 
 class MaterialID(BaseModel):
     course_id: str
     material_id: int
+    section_id: int
 
 
 class Material(MaterialID):
@@ -60,6 +72,7 @@ class MaterialAttachmentMetadata(BaseModel):
 class AssignmentID(BaseModel):
     course_id: str
     assignment_id: int
+    section_id: int
 
 
 class Assignment(AssignmentID):

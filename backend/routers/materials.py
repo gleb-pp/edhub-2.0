@@ -11,6 +11,7 @@ router = APIRouter()
 @router.post("/create_material", response_model=json_classes.MaterialID, tags=["Materials"])
 async def create_material(
     course_id: str,
+    section_id: int,
     title: str = Query(
         ...,
         min_length=3,
@@ -27,7 +28,7 @@ async def create_material(
     user_email: str = Depends(get_current_user),
 ):
     """
-    Create the material with provided title and description in the course with provided course_id.
+    Create the material with provided title and description within the section by provided section_id within the course with provided course_id.
 
     Title can contain only letters, digits, spaces, and underscores.
 
@@ -37,10 +38,10 @@ async def create_material(
 
     Teacher OR Primary Instructor role required.
 
-    Returns the (course_id, material_id) for the new material in case of success.
+    Returns the (course_id, material_id, section_id) for the new material in case of success.
     """
     with get_db() as (db_conn, db_cursor):
-        return logic.materials.create_material(db_conn, db_cursor, course_id, title, description, user_email)
+        return logic.materials.create_material(db_conn, db_cursor, course_id, section_id, title, description, user_email)
 
 
 @router.post("/remove_material", response_model=json_classes.Success, tags=["Materials"])
@@ -59,7 +60,7 @@ async def get_material(course_id: str, material_id: str, user_email: str = Depen
     """
     Get the material details by the provided (course_id, material_id).
 
-    Returns course_id, material_id, creation_time, title, description, and email of the author.
+    Returns course_id, material_id, section_id, creation_time, title, description, and email of the author.
 
     Author can be NULL if the author deleted their account.
 

@@ -7,15 +7,16 @@ import logic.logging as logger
 from logic.uploading import careful_upload
 
 
-def create_material(db_conn, db_cursor, course_id: str, title: str, description: str, user_email: str):
+def create_material(db_conn, db_cursor, course_id: str, section_id: int, title: str, description: str, user_email: str):
     # checking constraints
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
+    constraints.assert_section_exists(db_cursor, course_id, section_id)
 
     # create material
-    material_id = repo_mat.sql_insert_material(db_cursor, course_id, title, description, user_email)
+    material_id = repo_mat.sql_insert_material(db_cursor, course_id, section_id, title, description, user_email)
 
     logger.log(db_conn, logger.TAG_MATERIAL_ADD, f"User {user_email} created a material {material_id} in {course_id}")
-    return {"course_id": course_id, "material_id": material_id}
+    return {"course_id": course_id, "material_id": material_id, "section_id": section_id}
 
 
 def remove_material(db_conn, db_cursor, course_id: str, material_id: str, user_email: str):
@@ -43,10 +44,11 @@ def get_material(db_cursor, course_id: str, material_id: str, user_email: str):
     res = {
         "course_id": str(material[0]),
         "material_id": material[1],
-        "creation_time": material[2].strftime(TIME_FORMAT),
-        "title": material[3],
-        "description": material[4],
-        "author": material[5],
+        "section_id": material[2],
+        "creation_time": material[3].strftime(TIME_FORMAT),
+        "title": material[4],
+        "description": material[5],
+        "author": material[6],
     }
     return res
 

@@ -48,11 +48,11 @@ mathcourseid=$(curl -s -X POST \
 
 firstassignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_assignment?course_id=$mathcourseid&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
+    "$API_URL/create_assignment?course_id=$mathcourseid&section_id=1&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
 
 secondassignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_assignment?course_id=$mathcourseid&title=Assignment%202&description=To%20do%20exercise%2020%20from%20the%20course%20book" | extract_field assignment_id)
+    "$API_URL/create_assignment?course_id=$mathcourseid&section_id=1&title=Assignment%202&description=To%20do%20exercise%2020%20from%20the%20course%20book" | extract_field assignment_id)
 
 # --------------------------------------------------------------------
 

@@ -8,9 +8,11 @@ import logic.assignments
 router = APIRouter()
 
 
+# TODO: fix tests
 @router.post("/create_assignment", response_model=json_classes.AssignmentID, tags=["Assignments"])
 async def create_assignment(
     course_id: str,
+    section_id: int,
     title: str = Query(
         ...,
         min_length=3,
@@ -27,7 +29,7 @@ async def create_assignment(
     user_email: str = Depends(get_current_user),
 ):
     """
-    Create the assignment with provided title and description in the course with provided course_id.
+    Create the assignment with provided title and description within the section by provided section_id within the course with provided course_id.
 
     Title can contain only letters, digits, spaces, and underscores.
 
@@ -37,12 +39,12 @@ async def create_assignment(
 
     Teacher OR Primary Instructor role required.
 
-    Returns the (course_id, assignment_id) for the new assignment in case of success.
+    Returns the (course_id, assignment_id, section_id) for the new assignment in case of success.
     """
 
     # connection to database
     with get_db() as (db_conn, db_cursor):
-        return logic.assignments.create_assignment(db_conn, db_cursor, course_id, title, description, user_email)
+        return logic.assignments.create_assignment(db_conn, db_cursor, course_id, section_id, title, description, user_email)
 
 
 @router.post("/remove_assignment", response_model=json_classes.Success, tags=["Assignments"])
@@ -63,7 +65,7 @@ async def get_assignment(course_id: str, assignment_id: str, user_email: str = D
     """
     Get the assignment details by the provided (course_id, assignment_id).
 
-    Returns course_id, assignment_id, creation_time, title, description, and email of the author.
+    Returns course_id, assignment_id, section_id, creation_time, title, description, and email of the author.
 
     Author can be NULL if the author deleted their account.
 
@@ -82,7 +84,7 @@ async def get_course_assignments(course_id: str, user_email: str = Depends(get_c
     """
     Get the list of course assignments by the provided course_id.
 
-    For each assignment, it returns course_id, assignment_id, creation_time, title, description, and email of the author.
+    For each assignment, it returns course_id, assignment_id, section_id, creation_time, title, description, and email of the author.
 
     Author can be NULL if the author deleted their account.
 

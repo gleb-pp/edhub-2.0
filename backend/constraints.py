@@ -25,6 +25,19 @@ def assert_course_exists(db_cursor, course_id: str) -> None:
         raise HTTPException(status_code=404, detail="No course with provided ID")
 
 
+# checking whether the section exists in our LMS
+def check_section_exists(db_cursor, course_id: str, section_id: int) -> bool:
+    assert_course_exists(db_cursor, course_id)
+    db_cursor.execute("SELECT EXISTS(SELECT 1 FROM course_section WHERE courseid = %s AND sectionid = %s)", (course_id, section_id))
+    section_exists = db_cursor.fetchone()[0]
+    return section_exists
+
+def assert_section_exists(db_cursor, course_id: str, section_id: int) -> None:
+    section_exists = check_section_exists(db_cursor, course_id, section_id)
+    if not section_exists:
+        raise HTTPException(status_code=404, detail="No such section in this course")
+
+
 # checking whether the material exists in the course
 def check_material_exists(db_cursor, course_id: str, material_id: str) -> bool:
     try:
