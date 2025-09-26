@@ -21,9 +21,9 @@ CREATE TABLE course_section(
     courseid uuid REFERENCES courses ON DELETE CASCADE,
     sectionid serial NOT NULL,
     name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
-    order int NOT NULL CHECK (order >= 0),
+    sectionorder int NOT NULL CHECK (sectionorder >= 0),
     PRIMARY KEY (courseid, sectionid),
-    UNIQUE (courseid, order)
+    UNIQUE (courseid, sectionorder)
 )
 
 CREATE TABLE course_materials(
@@ -33,7 +33,8 @@ CREATE TABLE course_materials(
     author text NULL REFERENCES users(email) ON DELETE SET NULL,
     name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
     description text NOT NULL CHECK (length(description) BETWEEN 3 AND 10000),
-    sectionid int NOT NULL REFERENCES course_section(courseid, sectionid) ON DELETE CASCADE,
+    sectionid int NOT NULL,
+    FOREIGN KEY (courseid, sectionid) REFERENCES course_section(courseid, sectionid) ON DELETE CASCADE,
     PRIMARY KEY (courseid, matid)
 );
 
@@ -44,7 +45,8 @@ CREATE TABLE course_assignments(
     author text NULL REFERENCES users(email) ON DELETE SET NULL,
     name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
     description text NOT NULL CHECK (length(description) BETWEEN 3 AND 10000),
-    sectionid int NOT NULL REFERENCES course_section(courseid, sectionid) ON DELETE CASCADE,
+    sectionid int NOT NULL,
+    FOREIGN KEY (courseid, sectionid) REFERENCES course_section(courseid, sectionid) ON DELETE CASCADE,
     PRIMARY KEY (courseid, assid)
 );
 
@@ -121,7 +123,7 @@ CREATE TABLE submissions_files(
 
 CREATE OR REPLACE FUNCTION create_default_section() RETURNS trigger AS $$
 BEGIN
-    INSERT INTO course_section (courseid, name, order)
+    INSERT INTO course_section (courseid, name, sectionorder)
     VALUES (NEW.courseid, 'General', 0);
     RETURN NEW;
 END;

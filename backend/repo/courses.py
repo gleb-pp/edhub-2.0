@@ -50,7 +50,7 @@ def sql_select_course_info(db_cursor, course_id: str) -> Optional[Tuple[UUID, st
 def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, int, int, str, int, str, datetime, Optional[str]]]:
     db_cursor.execute(
         """
-        SELECT cs.cid, feed.postid, cs.sectionid, cs.name, cs.order, feed.type, feed.timeadded, feed.author
+        SELECT cs.cid, feed.postid, cs.sectionid, cs.name, cs.sectionorder, feed.type, feed.timeadded, feed.author
         FROM 
             (SELECT courseid AS cid, matid as postid, sectionid, 'mat' as type, timeadded, author
             FROM course_materials
@@ -60,10 +60,10 @@ def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, int, i
             FROM course_assignments
             WHERE courseid = %s) feed
             RIGHT JOIN 
-                (SELECT courseid, sectionid, name, order
+                (SELECT courseid, sectionid, name, sectionorder
                 FROM course_section
                 WHERE courseid = %s) cs ON feed.sectionid = cs.sectionid
-        ORDER BY cs.order ASC, feed.timeadded ASC
+        ORDER BY cs.sectionorder ASC, feed.timeadded ASC
         """,
         (course_id, course_id, course_id),
     )
@@ -73,9 +73,9 @@ def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, int, i
 def sql_insert_section(db_cursor, course_id: str, title: str) -> None:
     db_cursor.execute(
         """
-        INSERT INTO course_section (courseid, name, order)
+        INSERT INTO course_section (courseid, name, sectionorder)
         VALUES (%s, %s, 
-            (SELECT COALESCE(MAX(order), -1) + 1 FROM course_section WHERE courseid = %s) + 1
+            (SELECT COALESCE(MAX(sectionorder), -1) + 1 FROM course_section WHERE courseid = %s) + 1
         )
         RETURNING sectionid
         """,
