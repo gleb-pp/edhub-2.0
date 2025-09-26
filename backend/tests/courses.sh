@@ -246,6 +246,10 @@ engcourseid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/create_course?title=English&organization=Skyeng" | extract_field course_id)
 
+success_test "Add a new section to Bob's course by Bob" \
+    -X GET "$API_URL/create_section?course_id=$engcourseid&title=New%20Section" \
+    -H "Authorization: Bearer $TOKEN" \
+
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
@@ -274,7 +278,7 @@ materialid=$(curl -s -X POST \
 
 assignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_assignment?course_id=$engcourseid&section_id=3&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
+    "$API_URL/create_assignment?course_id=$engcourseid&section_id=4&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
 
 # --------------------------------------------------------------------
 
@@ -328,7 +332,7 @@ info=$(curl -s -X GET \
 
 expected='[
     {"course_id":"'"$engcourseid"'","post_id":'$materialid',"section_id":3,"section_name":"General","section_order":0,"type":"mat","author":"bob@example.com"},
-    {"course_id":"'"$engcourseid"'","post_id":'$assignmentid',"section_id":3,"section_name":"General","section_order":0,"type":"ass","author":"bob@example.com"}
+    {"course_id":"'"$engcourseid"'","post_id":'$assignmentid',"section_id":4,"section_name":"General","section_order":0,"type":"ass","author":"bob@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
@@ -352,7 +356,7 @@ info=$(curl -s -X GET \
     "$API_URL/get_assignment?course_id=$engcourseid&assignment_id=$assignmentid")
 
 expected='
-    {"course_id":"'"$engcourseid"'","assignment_id":'$assignmentid',"section_id":3,"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"bob@example.com"}
+    {"course_id":"'"$engcourseid"'","assignment_id":'$assignmentid',"section_id":4,"title":"Assignment 1","description":"To do exercise 10 from the course book","author":"bob@example.com"}
 '
 
 json_partial_match_test "Request the assignment info from Alice" "$info" "$expected" "assignment_id" "creation_time"
@@ -409,7 +413,8 @@ info=$(curl -s -X GET \
     "$API_URL/get_course_feed?course_id=$engcourseid")
 
 expected='[
-    {"course_id":"'"$engcourseid"'","post_id":null,"section_id":3,"section_name":"General","section_order":0,"type":null,"author":null}
+    {"course_id":"'"$engcourseid"'","post_id":null,"section_id":3,"section_name":"General","section_order":0,"type":null,"author":null},
+    {"course_id":"'"$engcourseid"'","post_id":null,"section_id":4,"section_name":"General","section_order":0,"type":null,"author":null}
 ]'
 
 json_partial_match_test "Request the empty course feed from Bob" "$info" "$expected" "post_id type" "timeadded"

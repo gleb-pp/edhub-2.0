@@ -25,7 +25,6 @@ async def get_course_feed(course_id: str, user_email: str = Depends(get_current_
         return logic.sections.get_course_feed(db_cursor, course_id, user_email)
 
 
-# TODO: add tests
 @router.post("/create_section", response_model=json_classes.SectionID, tags=["Courses"])
 async def create_section(
     course_id: str,
