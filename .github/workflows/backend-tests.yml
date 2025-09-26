@@ -215,7 +215,7 @@ jobs:
       # checking courses functionalities
       - name: Course tests
         run: |
-          ./backend/tests/courses.sh || exit 1
+          ./backend/tests/courses.sh || (docker logs backend && exit 1)
       
       - name: Students tests
         run: |
