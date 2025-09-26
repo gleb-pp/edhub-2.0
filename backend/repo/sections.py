@@ -31,7 +31,7 @@ def sql_insert_section(db_cursor, course_id: str, title: str) -> None:
         """
         INSERT INTO course_section (courseid, name, sectionorder)
         VALUES (%s, %s, 
-            (SELECT COALESCE(MAX(sectionorder), -1) + 1 FROM course_section WHERE courseid = %s) + 1
+            (SELECT COALESCE(MAX(sectionorder), -1) + 1 FROM course_section WHERE courseid = %s)
         )
         RETURNING sectionid
         """,
