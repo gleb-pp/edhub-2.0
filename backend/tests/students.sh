@@ -121,11 +121,11 @@ json_exact_match_test "Get students enrolled into Math course by Bob" "$info" "$
 # --------------------------------------------------------------------
 
 fail_test "Request to create a material from a student Bob" \
-    -X POST "$API_URL/create_material?course_id=$mathcourseid&section_id=4&title=Lecture%20material&description=Lecture%20material%20description" \
+    -X POST "$API_URL/create_material?course_id=$mathcourseid&section_id=1&title=Lecture%20material&description=Lecture%20material%20description" \
     -H "Authorization: Bearer $TOKEN" \
 
 fail_test "Request to create an assignment from a student Bob" \
-    -X POST "$API_URL/create_assignment?course_id=$mathcourseid&section_id=4&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" \
+    -X POST "$API_URL/create_assignment?course_id=$mathcourseid&section_id=1&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" \
     -H "Authorization: Bearer $TOKEN" \
 
 fail_test "Request to remove Charlie from Math course by Bob" \
@@ -235,17 +235,4 @@ json_exact_match_test "Get students enrolled into Math course by Alice" "$info" 
 
 # --------------------------------------------------------------------
 
-success_test "Removing Alice's account from Alice" \
-    -X POST "$API_URL/remove_user?deleted_user_email=alice@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
-
-# --------------------------------------------------------------------
-
-login_and_get_token "Login as Bob" \
-    -X POST $API_URL/login \
-    -H "Content-Type: application/json" \
-    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\"}"
-
-success_test "Removing Bob's account from Bob" \
-    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
+./backend/tests/dbreset.sh || exit 1

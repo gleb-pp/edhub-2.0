@@ -124,13 +124,4 @@ success_test "Removing Alice account from Alice" \
 
 # --------------------------------------------------------------------
 
-login_and_get_token "Correct login as Bob" \
-    -X POST $API_URL/login \
-    -H "Content-Type: application/json" \
-    -d "{\"email\":\"bob@example.com\",\"password\":\"bobPass123!\"}"
-
-# --------------------------------------------------------------------
-
-success_test "Removing Bob account from Bob" \
-    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
+./backend/tests/dbreset.sh || exit 1

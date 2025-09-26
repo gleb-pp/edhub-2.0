@@ -149,27 +149,4 @@ json_exact_match_test "Get the Eugene's role in course Math" "$info" "$expected"
 
 # --------------------------------------------------------------------
 
-login_and_get_token "Login as Admin" \
-    -X POST $API_URL/login \
-    -H "Content-Type: application/json" \
-    -d "{\"email\":\"admin\",\"password\":\"admin\"}"
-
-success_test "Removing Alice account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=alice@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Removing Bob account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Removing Charlie account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=charlie@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Removing Dmitry account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=dmitry@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Removing Eugene account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=eugene@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
+./backend/tests/dbreset.sh || exit 1

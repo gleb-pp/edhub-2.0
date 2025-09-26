@@ -123,3 +123,5 @@ success_test "Removing Alice account from Admin" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
+
+./backend/tests/dbreset.sh || exit 1

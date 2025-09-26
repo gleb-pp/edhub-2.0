@@ -499,6 +499,4 @@ success_test "Delete Alice's course" \
 
 # --------------------------------------------------------------------
 
-success_test "Removing Alice's account from Alice" \
-    -X POST "$API_URL/remove_user?deleted_user_email=alice@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
+./backend/tests/dbreset.sh || exit 1
