@@ -247,7 +247,7 @@ engcourseid=$(curl -s -X POST \
     "$API_URL/create_course?title=English&organization=Skyeng" | extract_field course_id)
 
 success_test "Add a new section to Bob's course by Bob" \
-    -X GET "$API_URL/create_section?course_id=$engcourseid&title=New%20Section" \
+    -X POST "$API_URL/create_section?course_id=$engcourseid&title=New%20Section" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
