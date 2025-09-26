@@ -24,7 +24,7 @@ CREATE TABLE course_section(
     sectionorder int NOT NULL CHECK (sectionorder >= 0),
     PRIMARY KEY (courseid, sectionid),
     UNIQUE (courseid, sectionorder)
-)
+);
 
 CREATE TABLE course_materials(
     courseid uuid REFERENCES courses ON DELETE CASCADE,
