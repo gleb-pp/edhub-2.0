@@ -7,6 +7,7 @@ import routers.assignments
 import routers.submissions
 import routers.grades
 import routers.courses
+import routers.sections
 import routers.materials
 import routers.parents
 import routers.students
@@ -37,6 +38,7 @@ app.include_router(routers.assignments.router)
 app.include_router(routers.submissions.router)
 app.include_router(routers.grades.router)
 app.include_router(routers.courses.router)
+app.include_router(routers.sections.router)
 app.include_router(routers.materials.router)
 app.include_router(routers.parents.router)
 app.include_router(routers.students.router)
