@@ -46,7 +46,7 @@ def change_section_order(db_conn, db_cursor, course_id: str, new_order: List[int
         raise HTTPException(status_code=400, detail="Provided parameter new_order is not a list of integers")
 
     sections = repo.sections.sql_select_sections(db_cursor, course_id)
-    if set(new_order) != set(sections):
+    if len(new_order) != len(sections) or set(new_order) != set(sections):
         raise HTTPException(status_code=400, detail="Provided parameter new_order does not match with the list of sections at this course")
 
     repo.sections.sql_update_section_order(db_cursor, course_id, new_order)
