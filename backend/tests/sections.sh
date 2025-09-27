@@ -75,8 +75,8 @@ info=$(curl -s -X GET \
     "$API_URL/get_course_feed?course_id=$mathcourseid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"section_id":1,"section_name":"General","section_order":0,"type":"ass","author":"bob@example.com"},
-    {"course_id":"'"$mathcourseid"'","post_id":'$materialid',"section_id":2,"section_name":"New Section","section_order":1,"type":"mat","author":"bob@example.com"}
+    {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"section_id":1,"section_name":"General","section_order":0,"type":"ass","author":"alice@example.com"},
+    {"course_id":"'"$mathcourseid"'","post_id":'$materialid',"section_id":2,"section_name":"New Section","section_order":1,"type":"mat","author":"alice@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
@@ -94,8 +94,27 @@ info=$(curl -s -X GET \
     "$API_URL/get_course_feed?course_id=$mathcourseid")
 
 expected='[
-    {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"section_id":1,"section_name":"General","section_order":0,"type":"ass","author":"bob@example.com"},
-    {"course_id":"'"$mathcourseid"'","post_id":'$materialid',"section_id":2,"section_name":"New Section","section_order":1,"type":"mat","author":"bob@example.com"}
+    {"course_id":"'"$mathcourseid"'","post_id":'$materialid',"section_id":2,"section_name":"New Section","section_order":0,"type":"mat","author":"alice@example.com"},
+    {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"section_id":1,"section_name":"General","section_order":1,"type":"ass","author":"alice@example.com"}
+]'
+
+json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
+
+# --------------------------------------------------------------------
+
+success_test "Delete the material in Math course by Alice" \
+    -X POST "$API_URL/remove_material?course_id=$mathcourseid&material_id=$materialid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_course_feed?course_id=$mathcourseid")
+
+expected='[
+    {"course_id":"'"$mathcourseid"'","post_id":null,"section_id":2,"section_name":"New Section","section_order":0,"type":null,"author":null},
+    {"course_id":"'"$mathcourseid"'","post_id":'$assignmentid',"section_id":1,"section_name":"General","section_order":1,"type":"ass","author":"alice@example.com"}
 ]'
 
 json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
