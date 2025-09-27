@@ -2,10 +2,10 @@ from typing import List, Tuple, Optional
 from uuid import UUID
 from datetime import datetime
 
-def sql_insert_material(db_cursor, course_id: str, title: str, description: str, user_email: str) -> int:
+def sql_insert_material(db_cursor, course_id: str, section_id: int, title: str, description: str, user_email: str) -> int:
     db_cursor.execute(
-        "INSERT INTO course_materials (courseid, name, description, timeadded, author) VALUES (%s, %s, %s, now(), %s) RETURNING matid",
-        (course_id, title, description, user_email),
+        "INSERT INTO course_materials (courseid, sectionid, name, description, timeadded, author) VALUES (%s, %s, %s, %s, now(), %s) RETURNING matid",
+        (course_id, section_id, title, description, user_email),
     )
     return db_cursor.fetchone()[0]
 
@@ -17,10 +17,10 @@ def sql_delete_material(db_cursor, course_id: str, material_id: str) -> None:
     )
 
 
-def sql_select_material(db_cursor, course_id: str, material_id: str) -> Optional[Tuple[UUID, int, datetime, str, str, Optional[str]]]:
+def sql_select_material(db_cursor, course_id: str, material_id: str) -> Optional[Tuple[UUID, int, int, datetime, str, str, Optional[str]]]:
     db_cursor.execute(
         """
-        SELECT courseid, matid, timeadded, name, description, author
+        SELECT courseid, matid, sectionid, timeadded, name, description, author
         FROM course_materials
         WHERE courseid = %s AND matid = %s
         """,

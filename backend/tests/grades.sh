@@ -48,11 +48,11 @@ mathcourseid=$(curl -s -X POST \
 
 firstassignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_assignment?course_id=$mathcourseid&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
+    "$API_URL/create_assignment?course_id=$mathcourseid&section_id=1&title=Assignment%201&description=To%20do%20exercise%2010%20from%20the%20course%20book" | extract_field assignment_id)
 
 secondassignmentid=$(curl -s -X POST \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_URL/create_assignment?course_id=$mathcourseid&title=Assignment%202&description=To%20do%20exercise%2020%20from%20the%20course%20book" | extract_field assignment_id)
+    "$API_URL/create_assignment?course_id=$mathcourseid&section_id=1&title=Assignment%202&description=To%20do%20exercise%2020%20from%20the%20course%20book" | extract_field assignment_id)
 
 # --------------------------------------------------------------------
 
@@ -158,23 +158,4 @@ fail_test "Request Charlie's assignment grades from Eugene" \
 
 # --------------------------------------------------------------------
 
-login_and_get_token "Login as Admin" \
-    -X POST $API_URL/login \
-    -H "Content-Type: application/json" \
-    -d "{\"email\":\"admin\",\"password\":\"admin\"}"
-
-success_test "Removing Alice account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=alice@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Removing Bob account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=bob@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Removing Charlie account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=charlie@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
-
-success_test "Removing Eugene account from Admin" \
-    -X POST "$API_URL/remove_user?deleted_user_email=eugene@example.com" \
-    -H "Authorization: Bearer $TOKEN" \
+./backend/tests/dbreset.sh || exit 1

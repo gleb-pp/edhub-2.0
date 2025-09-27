@@ -83,18 +83,3 @@ async def get_course_info(course_id: str, user_email: str = Depends(get_current_
     """
     with get_db() as (db_conn, db_cursor):
         return logic.courses.get_course_info(db_cursor, course_id, user_email)
-
-
-@router.get("/get_course_feed", response_model=List[json_classes.CoursePost], tags=["Courses"])
-async def get_course_feed(course_id: str, user_email: str = Depends(get_current_user)):
-    """
-    Get the course feed with all its materials.
-
-    Materials are ordered by creation_date, the first posts are new.
-
-    Returns the list of (course_id, post_id, type, timeadded, author) for each material.
-
-    Course role (Primary Instructor, Teacher, Student, Parent) required.
-    """
-    with get_db() as (db_conn, db_cursor):
-        return logic.courses.get_course_feed(db_cursor, course_id, user_email)

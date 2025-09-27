@@ -45,23 +45,3 @@ def sql_select_course_info(db_cursor, course_id: str) -> Optional[Tuple[UUID, st
         (course_id,),
     )
     return db_cursor.fetchone()
-
-
-def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, int, str, datetime, Optional[str]]]:
-    db_cursor.execute(
-        """
-        SELECT courseid AS cid, matid as postid, 'mat' as type, timeadded, author
-        FROM course_materials
-        WHERE courseid = %s
-
-        UNION
-
-        SELECT courseid AS cid, assid as postid, 'ass' as type, timeadded, author
-        FROM course_assignments
-        WHERE courseid = %s
-
-        ORDER BY timeadded DESC
-        """,
-        (course_id, course_id),
-    )
-    return db_cursor.fetchall()
