@@ -17,7 +17,7 @@ CREATE TABLE courses(
     timecreated timestamp NOT NULL
 );
 
-CREATE TABLE course_section(
+CREATE TABLE course_sections(
     courseid uuid REFERENCES courses ON DELETE CASCADE,
     sectionid serial NOT NULL,
     name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
@@ -33,7 +33,7 @@ CREATE TABLE course_materials(
     name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
     description text NOT NULL CHECK (length(description) BETWEEN 3 AND 10000),
     sectionid int NOT NULL,
-    FOREIGN KEY (courseid, sectionid) REFERENCES course_section(courseid, sectionid) ON DELETE CASCADE,
+    FOREIGN KEY (courseid, sectionid) REFERENCES course_sections(courseid, sectionid) ON DELETE CASCADE,
     PRIMARY KEY (courseid, matid)
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE course_assignments(
     name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
     description text NOT NULL CHECK (length(description) BETWEEN 3 AND 10000),
     sectionid int NOT NULL,
-    FOREIGN KEY (courseid, sectionid) REFERENCES course_section(courseid, sectionid) ON DELETE CASCADE,
+    FOREIGN KEY (courseid, sectionid) REFERENCES course_sections(courseid, sectionid) ON DELETE CASCADE,
     PRIMARY KEY (courseid, assid)
 );
 
@@ -122,7 +122,7 @@ CREATE TABLE submissions_files(
 
 CREATE OR REPLACE FUNCTION create_default_section() RETURNS trigger AS $$
 BEGIN
-    INSERT INTO course_section (courseid, name, sectionorder)
+    INSERT INTO course_sections (courseid, name, sectionorder)
     VALUES (NEW.courseid, 'General', 0);
     RETURN NEW;
 END;

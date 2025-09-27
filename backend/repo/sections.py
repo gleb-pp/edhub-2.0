@@ -17,7 +17,7 @@ def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, Option
             WHERE courseid = %s) feed
             RIGHT JOIN 
                 (SELECT courseid, sectionid, name, sectionorder
-                FROM course_section
+                FROM course_sections
                 WHERE courseid = %s) cs ON feed.sectionid = cs.sectionid
         ORDER BY cs.sectionorder ASC, feed.timeadded ASC
         """,
@@ -29,9 +29,9 @@ def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, Option
 def sql_insert_section(db_cursor, course_id: str, title: str) -> int:
     db_cursor.execute(
         """
-        INSERT INTO course_section (courseid, name, sectionorder)
+        INSERT INTO course_sections (courseid, name, sectionorder)
         VALUES (%s, %s, 
-            (SELECT COALESCE(MAX(sectionorder), -1) + 1 FROM course_section WHERE courseid = %s)
+            (SELECT COALESCE(MAX(sectionorder), -1) + 1 FROM course_sections WHERE courseid = %s)
         )
         RETURNING sectionid
         """,
@@ -43,7 +43,7 @@ def sql_insert_section(db_cursor, course_id: str, title: str) -> int:
 def sql_select_sections(db_cursor, course_id: str) -> List[int]:
     db_cursor.execute(
         """
-        SELECT sectionid FROM course_section WHERE courseid = %s
+        SELECT sectionid FROM course_sections WHERE courseid = %s
         """,
         (course_id, ),
     )
@@ -54,7 +54,7 @@ def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) ->
     for final_order, section_id in enumerate(new_order):
         db_cursor.execute(
             """
-            UPDATE course_section
+            UPDATE course_sections
             SET sectionorder = %s
             WHERE courseid = %s AND sectionid = %s
             """,
@@ -64,7 +64,7 @@ def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) ->
 def sql_remove_section(db_cursor, course_id: str, section_id: int) -> None:
     db_cursor.execute(
         """
-        DELETE FROM course_section
+        DELETE FROM course_sections
         WHERE courseid = %s AND sectionid = %s
         """
         , (course_id, section_id)

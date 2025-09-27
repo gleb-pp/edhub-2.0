@@ -5,7 +5,7 @@ docker exec -i system_db psql -U postgres -d edhub -v ON_ERROR_STOP=1 -c "
   TRUNCATE TABLE
     users, 
     courses,
-    course_section,
+    course_sections,
     course_materials,
     course_assignments,
     course_assignments_submissions,
