@@ -51,15 +51,17 @@ def sql_select_sections(db_cursor, course_id: str) -> List[int]:
 
 
 def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) -> None:
-    for final_order, section_id in enumerate(new_order):
-        db_cursor.execute(
-            """
-            UPDATE course_sections
-            SET sectionorder = %s
-            WHERE courseid = %s AND sectionid = %s
-            """,
-            (final_order, course_id, section_id)
-        )
+    values_to_update = [(section_id, index) for index, section_id in enumerate(new_order)]
+    values_str = ", ".join(f"(%s, %s)" for _ in values_to_update)
+    flat_values = [val for pair in values_to_update for val in pair]
+    db_cursor.execute(f"""
+        UPDATE course_sections cs
+        SET sectionorder = new.sectionorder
+        FROM (VALUES {values_str}) AS new(sectionid, sectionorder)
+        WHERE cs.courseid = %s AND cs.sectionid = new.sectionid
+        """,
+        flat_values + [course_id]
+    )
 
 def sql_remove_section(db_cursor, course_id: str, section_id: int) -> None:
     db_cursor.execute(
