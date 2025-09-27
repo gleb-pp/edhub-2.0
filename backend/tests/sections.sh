@@ -52,6 +52,18 @@ json_partial_match_test "Request the course feed from Alice" "$info" "$expected"
 
 # --------------------------------------------------------------------
 
+fail_test "Request to create the section with too short name" \
+    -X POST "$API_URL/create_section?course_id=$mathcourseid&title=N" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the section with too long name" \
+    -X POST "$API_URL/create_section?course_id=$mathcourseid&title=MathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMathMath" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to create the section with invalid name" \
+    -X POST "$API_URL/create_section?course_id=$mathcourseid&title=M%24ath" \
+    -H "Authorization: Bearer $TOKEN" \
+
 success_test "Add a new section to Math course by Alice" \
     -X POST "$API_URL/create_section?course_id=$mathcourseid&title=New%20Section" \
     -H "Authorization: Bearer $TOKEN" \
