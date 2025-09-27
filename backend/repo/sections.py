@@ -60,3 +60,12 @@ def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) ->
             """,
             (final_order, course_id, section_id)
         )
+
+def sql_remove_section(db_cursor, course_id: str, section_id: int) -> None:
+    db_cursor.execute(
+        """
+        DELETE FROM course_section
+        WHERE courseid = %s AND sectionid = %s
+        """
+        , (course_id, section_id)
+    )

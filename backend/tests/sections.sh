@@ -121,6 +121,34 @@ json_partial_match_test "Request the course feed from Alice" "$info" "$expected"
 
 # --------------------------------------------------------------------
 
+success_test "Remove the section from the Math course by Alice" \
+    -X POST "$API_URL/remove_section?course_id=$mathcourseid&section_id=1" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+info=$(curl -s -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/get_course_feed?course_id=$mathcourseid")
+
+expected='[
+    {"course_id":"'"$mathcourseid"'","post_id":null,"section_id":2,"section_name":"New Section","section_order":0,"type":null,"author":null}
+]'
+
+json_partial_match_test "Request the course feed from Alice" "$info" "$expected" "post_id type" "timeadded"
+
+# --------------------------------------------------------------------
+
+fail_test "Request to remove the last section from the Math course by Alice" \
+    -X POST "$API_URL/remove_section?course_id=$mathcourseid&section_id=2" \
+    -H "Authorization: Bearer $TOKEN" \
+
+success_test "Add a new section to Math course by Alice" \
+    -X POST "$API_URL/create_section?course_id=$mathcourseid&title=One%20More%20Section" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
 login_and_get_token "Login as Bob" \
     -X POST $API_URL/login \
     -H "Content-Type: application/json" \
@@ -134,6 +162,10 @@ fail_test "Add a new section to Math course by Bob" \
 
 fail_test "Request to change the section order in Math course by Bob" \
     -X POST "$API_URL/change_section_order?course_id=$mathcourseid&new_order=1&new_order=2" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to remove the section from the Math course by Bob" \
+    -X POST "$API_URL/remove_section?course_id=$mathcourseid&section_id=2" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------

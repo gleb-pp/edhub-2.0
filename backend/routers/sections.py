@@ -43,12 +43,13 @@ async def create_section(
     Title contain only letters, digits, spaces, and underscores.
 
     Title must contains from 3 to 80 symbols.
+
+    Teacher OR Primary Instructor role required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic.sections.create_section(db_conn, db_cursor, course_id, title, user_email)
 
 
-# TODO: add tests
 @router.post("/change_section_order", response_model=json_classes.Success, tags=["Courses"])
 async def change_section_order(
     course_id: str,
@@ -59,10 +60,28 @@ async def change_section_order(
     Change the order of sections within the course with provided course_id.
 
     The list of section_ids should be passed as a new_order parameter.
+
+    Teacher OR Primary Instructor role required.
     """
     with get_db() as (db_conn, db_cursor):
         return logic.sections.change_section_order(db_conn, db_cursor, course_id, new_order, user_email)
 
 
 # TODO: add tests
-# TODO: remove_section
+@router.post("/remove_section", response_model=json_classes.Success, tags=["Courses"])
+async def remove_section(
+    course_id: str,
+    section_id: int,
+    user_email: str = Depends(get_current_user),
+):
+    """
+    Remove the section with provided section_id from the course with provided course_id.
+
+    All the materials and assignments within the removed section will be also removed.
+
+    Impossible to remove the last section from the course.
+
+    Teacher OR Primary Instructor role required.
+    """
+    with get_db() as (db_conn, db_cursor):
+        return logic.sections.remove_section(db_conn, db_cursor, course_id, section_id, user_email)
