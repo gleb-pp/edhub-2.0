@@ -22,7 +22,8 @@ CREATE TABLE course_sections(
     sectionid serial NOT NULL,
     name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
     sectionorder int NOT NULL CHECK (sectionorder >= 0),
-    PRIMARY KEY (courseid, sectionid)
+    PRIMARY KEY (courseid, sectionid),
+    UNIQUE (courseid, sectionorder)
 );
 
 CREATE TABLE course_materials(
