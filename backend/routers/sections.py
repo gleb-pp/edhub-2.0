@@ -67,7 +67,6 @@ async def change_section_order(
         return logic.sections.change_section_order(db_conn, db_cursor, course_id, new_order, user_email)
 
 
-# TODO: add tests
 @router.post("/remove_section", response_model=json_classes.Success, tags=["Courses"])
 async def remove_section(
     course_id: str,

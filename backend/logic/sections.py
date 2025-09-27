@@ -41,7 +41,7 @@ def change_section_order(db_conn, db_cursor, course_id: str, new_order: List[int
 
     if not isinstance(new_order, list):
         raise HTTPException(status_code=400, detail="Provided parameter new_order is not a list")
-    
+
     if not all(isinstance(i, int) for i in new_order):
         raise HTTPException(status_code=400, detail="Provided parameter new_order is not a list of integers")
 
@@ -65,7 +65,7 @@ def remove_section(db_conn, db_cursor, course_id: str, section_id: int, user_ema
         raise HTTPException(status_code=422, detail="Cannot remove the last section from the course")
 
     # remove section
-    repo.sections.sql_update_section_order(db_cursor, course_id, section_id)
+    repo.sections.sql_remove_section(db_cursor, course_id, section_id)
 
     logger.log(db_conn, logger.TAG_SECTION_DEL, f"User {user_email} deleted a section {section_id} from the course {course_id}")
     return {"success": True}
