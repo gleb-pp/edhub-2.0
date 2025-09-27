@@ -68,9 +68,11 @@ def sql_select_assignment_attachments(db_cursor, course_id: str, assignment_id: 
 def sql_select_course_assignments(db_cursor, course_id: str) -> List[Tuple[UUID, int, int, datetime, str, str, Optional[str]]]:
     db_cursor.execute(
         """
-        SELECT courseid, assid, sectionid, timeadded, name, description, author
-        FROM course_assignments
-        WHERE courseid = %s ORDER BY assid
+        SELECT ca.courseid, ca.assid, ca.sectionid, ca.timeadded, ca.name, ca.description, ca.author
+        FROM course_assignments ca
+        JOIN course_sections cs ON ca.courseid = cs.courseid AND ca.sectionid = cs.sectionid
+        WHERE ca.courseid = %s
+        ORDER BY cs.sectionorder ASC, ca.timeadded ASC
         """,
         (course_id, ),
     )

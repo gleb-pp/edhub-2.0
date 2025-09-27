@@ -36,8 +36,9 @@ def sql_select_student_grades(db_cursor, course_id: str, student_email: str) -> 
            AND sbmt.email = %s
         LEFT JOIN users tch
             ON sbmt.gradedby = tch.email
+        JOIN course_sections cs ON ass.courseid = cs.courseid AND ass.sectionid = cs.sectionid
         WHERE ass.courseid = %s
-        ORDER BY ass.assid
+        ORDER BY cs.sectionorder ASC, ass.timeadded ASC
         """,
         (student_email, course_id),
     )
@@ -59,8 +60,9 @@ def sql_select_all_grades(db_cursor, course_id: str) -> List[Tuple[str, str, int
             ON sbmt.courseid = ass.courseid
            AND sbmt.assid = ass.assid
            AND sbmt.email = st.email
+        JOIN course_sections cs ON ass.courseid = cs.courseid AND ass.sectionid = cs.sectionid
         WHERE st.courseid = %s
-        ORDER BY u.publicname, st.email, ass.assid;
+        ORDER BY u.publicname, st.email, cs.sectionorder ASC, ass.timeadded ASC;
         """,
         (course_id,)
     )

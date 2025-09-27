@@ -58,6 +58,10 @@ async def get_all_course_grades(
 
     Each row has the following format: {name: str, email: str, grades: List[Optional[int]]}
 
+    Students (rows) are ordered by user name, then by email.
+
+    Assignments (grades) are ordered by section_order, then by creation_date, old posts go first.
+
     Grades list can contain `null` values if the assignment was not graded yet.    
     """
 
@@ -82,6 +86,8 @@ async def get_student_course_grades(
     Returns the list where each row corresponds to some assignment.
 
     Each row has the following format: {assignment_name: str, assignment_id: int, grade: Optional[int], comment: Optional[str], grader_name: Optional[str], grader_email: Optional[str]}
+
+    Assignments are ordered by section_order, then by creation_date, old posts go first.
 
     `grade`, `comment`, `grader_name`, and `grader_email` can be `null` if the assignment was not graded yet. 
     """

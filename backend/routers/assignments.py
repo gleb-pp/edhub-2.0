@@ -87,6 +87,8 @@ async def get_course_assignments(course_id: str, user_email: str = Depends(get_c
 
     Author can be NULL if the author deleted their account.
 
+    Assignments are ordered by section_order, then by creation_date, old posts go first.
+
     The format of creation time is TIME_FORMAT.
 
     Course role (Primary Instructor, Teacher, Student, Parent) required.
