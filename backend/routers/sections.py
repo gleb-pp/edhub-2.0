@@ -49,7 +49,19 @@ async def create_section(
 
 
 # TODO: add tests
-# TODO: change_section_order
+@router.post("/change_section_order", response_model=json_classes.Success, tags=["Courses"])
+async def change_section_order(
+    course_id: str,
+    new_order: List[int] = Query(...),
+    user_email: str = Depends(get_current_user),
+):
+    """
+    Change the order of sections within the course with provided course_id.
+
+    The list of section_ids should be passed as a new_order parameter.
+    """
+    with get_db() as (db_conn, db_cursor):
+        return logic.sections.change_section_order(db_conn, db_cursor, course_id, new_order, user_email)
 
 
 # TODO: add tests

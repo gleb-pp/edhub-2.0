@@ -38,3 +38,25 @@ def sql_insert_section(db_cursor, course_id: str, title: str) -> int:
         (course_id, title, course_id),
     )
     return db_cursor.fetchone()[0]
+
+
+def sql_select_sections(db_cursor, course_id: str) -> List[int]:
+    db_cursor.execute(
+        """
+        SELECT sectionid FROM course_section WHERE courseid = %s
+        """,
+        (course_id, ),
+    )
+    return [i[0] for i in db_cursor.fetchall()]
+
+
+def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) -> None:
+    for final_order, section_id in enumerate(new_order):
+        db_cursor.execute(
+            """
+            UPDATE course_section
+            SET sectionorder = %s
+            WHERE courseid = %s AND sectionid = %s
+            """,
+            (final_order, course_id, section_id)
+        )

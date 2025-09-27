@@ -1,3 +1,5 @@
+from typing import List
+from fastapi import HTTPException
 from constants import TIME_FORMAT
 import constraints
 import repo.sections
@@ -31,3 +33,23 @@ def create_section(db_conn, db_cursor, course_id: str, title: str, user_email: s
 
     logger.log(db_conn, logger.TAG_SECTION_ADD, f"User {user_email} created a section {section_id} within the course {course_id}")
     return {"section_id": section_id}
+
+
+def change_section_order(db_conn, db_cursor, course_id: str, new_order: List[int], user_email: str):
+    # checking contraints
+    constraints.assert_teacher_access(db_cursor, user_email, course_id)
+
+    if not isinstance(new_order, list):
+        raise HTTPException(status_code=400, detail="Provided parameter new_order is not a list")
+    
+    if not all(isinstance(i, int) for i in new_order):
+        raise HTTPException(status_code=400, detail="Provided parameter new_order is not a list of integers")
+
+    sections = repo.sections.sql_select_sections(db_cursor, course_id)
+    if set(new_order) != set(sections):
+        raise HTTPException(status_code=400, detail="Provided parameter new_order does not match with the list of sections at this course")
+
+    repo.sections.sql_update_section_order(db_cursor, course_id, new_order)
+
+    logger.log(db_conn, logger.TAG_SECTION_EDIT, f"User {user_email} changed a section order within the course {course_id}")
+    return {"success": True}

@@ -202,20 +202,21 @@ jobs:
         run: |
           chmod +x ./backend/tests/*.sh
 
-      # checking registration, login, changing password, and removing account
       - name: Authorization tests
         run: |
           ./backend/tests/authorization.sh || (docker logs backend && exit 1)
 
-      # checking admin functionalities
       - name: Admin tests
         run: |
           ./backend/tests/admin.sh || (docker logs backend && exit 1)
 
-      # checking courses functionalities
       - name: Course tests
         run: |
           ./backend/tests/courses.sh || (docker logs backend && exit 1)
+      
+      - name: Sections tests
+        run: |
+          ./backend/tests/sections.sh || (docker logs backend && exit 1)
       
       - name: Students tests
         run: |
