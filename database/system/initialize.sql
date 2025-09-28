@@ -158,10 +158,9 @@ CREATE INDEX idx_logs_t ON logs(t);
 -------------- PERSONAL COURSE INFO --------------
 
 CREATE TABLE emoji(
-    id serial NOT NULL,
-    name text NOT NULL CHECK (length(filename) <= 80),
-    fileid uuid,
-    PRIMARY KEY (id)
+    id serial PRIMARY KEY,
+    name text NOT NULL CHECK (length(name) <= 80),
+    fileid uuid
 );
 
 CREATE TABLE personal_course_info(
