@@ -13,7 +13,7 @@ def sql_update_courses_order(db_cursor, new_order: List[str], user_email: str) -
         UPDATE personal_course_info pci
         SET courseorder = new.courseorder
         FROM (VALUES {values_str}) AS new(courseid, courseorder)
-        WHERE pci.email = %s AND pci.courseid = new.courseid::uuid
+        WHERE pci.email = %s AND pci.courseid = new.courseid
         """,
         flat_values + [user_email]
     )
@@ -24,7 +24,7 @@ def sql_set_course_emoji(db_cursor, course_id: str, emoji_id: int, user_email: s
         """
         UPDATE personal_course_info
         SET emojiid = %s
-        WHERE email = %s AND courseid = %s::uuid
+        WHERE email = %s AND courseid = %s
         """,
         (emoji_id, user_email, course_id)
     )

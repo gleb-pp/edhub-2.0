@@ -38,7 +38,7 @@ def sql_select_course_info(db_cursor, course_id: str, user_email: str) -> Option
         SELECT c.courseid, c.name, c.instructor, c.organization, c.timecreated, pci.emojiid
         FROM courses c
         LEFT JOIN personal_course_info pci ON c.courseid = pci.courseid AND pci.email = %s
-        WHERE c.courseid = %s::uuid
+        WHERE c.courseid = %s
         """,
         (user_email, course_id),
     )
