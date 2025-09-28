@@ -211,13 +211,12 @@ BEGIN
                  WHERE email = v_email),
                 0
             )
-        )
+        );
         RETURN NEW;
 
     ELSIF (TG_OP = 'DELETE') THEN
         DELETE FROM personal_course_info
         WHERE courseid = v_courseid AND email = v_email;
-
         RETURN OLD;
     END IF;
     RETURN NULL;
