@@ -83,7 +83,7 @@ json_exact_match_test "Get Alice's role in course Math" "$info" "$expected" "is_
 # --------------------------------------------------------------------
 
 success_test "Set course emoji" \
-    -X POST "$API_URL/set_course_emoji?course_id=$noorgcourseid&emoji_id=1" \
+    -X POST "$API_URL/set_course_emoji?course_id=$mathcourseid&emoji_id=1" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
