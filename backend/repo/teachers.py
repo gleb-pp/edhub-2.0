@@ -37,6 +37,6 @@ def sql_update_instructor(db_cursor, course_id: str, old_instructor: str, new_in
     # old instructor is now a "teacher"
     # new instructor is no longer a "teacher"
     db_cursor.execute(
-        "UPDATE teaches SET email = %s WHERE email = %s",
-        (old_instructor, new_instructor),
+        "UPDATE teaches SET email = %s WHERE email = %s AND courseid = %s",
+        (old_instructor, new_instructor, course_id),
     )
