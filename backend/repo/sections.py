@@ -52,7 +52,7 @@ def sql_select_sections(db_cursor, course_id: str) -> List[int]:
 
 def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) -> None:
 
-    # postpone the checking of uniqueness contraints
+    # postpone the checking of uniqueness constraints
     db_cursor.execute("SET CONSTRAINTS course_sections_courseid_sectionorder_key DEFERRED")
 
     # set correct values

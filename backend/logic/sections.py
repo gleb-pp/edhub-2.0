@@ -26,7 +26,7 @@ def get_course_feed(db_cursor, course_id: str, user_email: str):
 
 
 def create_section(db_conn, db_cursor, course_id: str, title: str, user_email: str):
-    # checking contraints
+    # checking constraints
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
 
     section_id = repo.sections.sql_insert_section(db_cursor, course_id, title)
@@ -36,7 +36,7 @@ def create_section(db_conn, db_cursor, course_id: str, title: str, user_email: s
 
 
 def change_section_order(db_conn, db_cursor, course_id: str, new_order: List[int], user_email: str):
-    # checking contraints
+    # checking constraints
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
 
     if not isinstance(new_order, list):
@@ -56,7 +56,7 @@ def change_section_order(db_conn, db_cursor, course_id: str, new_order: List[int
 
 
 def remove_section(db_conn, db_cursor, course_id: str, section_id: int, user_email: str):
-    # checking contraints
+    # checking constraints
     constraints.assert_teacher_access(db_cursor, user_email, course_id)
     constraints.assert_section_exists(db_cursor, course_id, section_id)
 

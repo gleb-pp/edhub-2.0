@@ -2,7 +2,7 @@ from typing import List
 
 def sql_update_courses_order(db_cursor, new_order: List[str], user_email: str) -> None:
 
-    # postpone the checking of uniqueness contraints
+    # postpone the checking of uniqueness constraints
     db_cursor.execute("SET CONSTRAINTS personal_course_info_email_courseorder_key DEFERRED")
 
     # set correct values
