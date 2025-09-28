@@ -39,3 +39,22 @@ def sql_select_course_info(db_cursor, course_id: str) -> Optional[Tuple[UUID, st
         (course_id,),
     )
     return db_cursor.fetchone()
+
+
+def sql_update_courses_order(db_cursor, new_order: List[str], user_email: str) -> None:
+
+    # postpone the checking of uniqueness contraints
+    db_cursor.execute("SET CONSTRAINTS personal_course_info_email_courseorder_key DEFERRED")
+
+    # set correct values
+    values_to_update = [(course_id, index) for index, course_id in enumerate(new_order)]
+    values_str = ", ".join(f"(%s, %s)" for _ in values_to_update)
+    flat_values = [val for pair in values_to_update for val in pair]
+    db_cursor.execute(f"""
+        UPDATE personal_course_info pci
+        SET courseorder = new.courseorder
+        FROM (VALUES {values_str}) AS new(courseid, courseorder)
+        WHERE pci.email = %s
+        """,
+        flat_values + [user_email]
+    )

@@ -314,6 +314,25 @@ json_exact_match_test "Request the list of available courses from Alice" "$cours
 
 # --------------------------------------------------------------------
 
+success_test "Change the order of available courses by Alice" \
+    -X POST "$API_URL/change_courses_order?new_order=$engcourseid&new_order=$mathcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+courses=$(curl -s -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/available_courses")
+
+expected='[
+    {"course_id":"'"$engcourseid"'"},
+    {"course_id":"'"$mathcourseid"'"}
+]'
+
+json_exact_match_test "Request the list of available courses from Alice" "$courses" "$expected" "course_id"
+
+# --------------------------------------------------------------------
+
 courses=$(curl -s -X GET \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/get_instructor_courses")

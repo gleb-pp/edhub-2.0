@@ -83,3 +83,17 @@ async def get_course_info(course_id: str, user_email: str = Depends(get_current_
     """
     with get_db() as (db_conn, db_cursor):
         return logic.courses.get_course_info(db_cursor, course_id, user_email)
+
+
+@router.post("/change_courses_order", response_model=json_classes.Success, tags=["Courses"])
+async def change_courses_order(
+    new_order: List[str] = Query(...),
+    user_email: str = Depends(get_current_user),
+):
+    """
+    Change the order of courses.
+
+    The list of course_ids should be passed as a new_order parameter.
+    """
+    with get_db() as (db_conn, db_cursor):
+        return logic.courses.change_courses_order(db_conn, db_cursor, new_order, user_email)
