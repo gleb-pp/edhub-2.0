@@ -27,6 +27,7 @@ class Course(CourseID):
     instructor: str
     organization: Optional[str]
     creation_time: str
+    emoji_id: Optional[int]
 
 
 class SectionID(BaseModel):
