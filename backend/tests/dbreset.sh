@@ -15,7 +15,8 @@ docker exec -i system_db psql -U postgres -d edhub -v ON_ERROR_STOP=1 -c "
     logs,
     material_files,
     assignment_files,
-    submissions_files
+    submissions_files,
+    personal_course_info
   RESTART IDENTITY CASCADE;
 "
 
