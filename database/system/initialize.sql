@@ -188,14 +188,35 @@ BEGIN
         WHEN 'teaches' THEN
             v_email := COALESCE(NEW.email, OLD.email);
             v_courseid := COALESCE(NEW.courseid, OLD.courseid);
-
-        WHEN 'parent_of_at_course' THEN
-            v_email := COALESCE(NEW.parentemail, OLD.parentemail);
-            v_courseid := COALESCE(NEW.courseid, OLD.courseid);
-
+        
         WHEN 'courses' THEN
             v_email := COALESCE(NEW.instructor, OLD.instructor);
             v_courseid := COALESCE(NEW.courseid, OLD.courseid);
+
+        WHEN 'parent_of_at_course' THEN
+            IF TG_OP = 'DELETE' THEN
+                IF (SELECT COUNT(*) 
+                    FROM parent_of_at_course
+                    WHERE parentemail = COALESCE(OLD.parentemail, NEW.parentemail)
+                    AND courseid = COALESCE(OLD.courseid, NEW.courseid)
+                ) > 0 THEN
+                    RETURN NULL;
+                END IF;
+            END IF;
+
+            IF TG_OP = 'INSERT' THEN
+                IF (SELECT COUNT(*) 
+                    FROM parent_of_at_course
+                    WHERE parentemail = COALESCE(NEW.parentemail, OLD.parentemail)
+                    AND courseid = COALESCE(NEW.courseid, OLD.courseid)
+                ) > 1 THEN
+                    RETURN NULL;
+                END IF;
+            END IF;
+
+            v_email := COALESCE(NEW.parentemail, OLD.parentemail);
+            v_courseid := COALESCE(NEW.courseid, OLD.courseid);
+
         ELSE
             RAISE EXCEPTION 'Unsupported table: %', TG_TABLE_NAME;
     END CASE;
