@@ -69,19 +69,12 @@ CREATE TABLE course_assignments_submissions(
 CREATE TABLE teaches(
     email text REFERENCES users ON DELETE CASCADE,
     courseid uuid REFERENCES courses ON DELETE CASCADE,
-    emojiid int NULL REFERENCES emoji(id) ON DELETE SET NULL,
-    courseorder int NOT NULL CHECK (courseorder >= 0),
-    UNIQUE (email, courseorder),
     PRIMARY KEY (email, courseid)
 );
 
 CREATE TABLE student_at(
     email text REFERENCES users ON DELETE CASCADE,
     courseid uuid REFERENCES courses ON DELETE CASCADE,
-    emojiid int NULL REFERENCES emoji(id) ON DELETE SET NULL,
-    courseorder int NOT NULL CHECK (courseorder >= 0),
-    grade int NULL,
-    UNIQUE (email, courseorder),
     PRIMARY KEY (email, courseid)
 );
 
@@ -89,9 +82,6 @@ CREATE TABLE parent_of_at_course(
     parentemail text REFERENCES users ON DELETE CASCADE,
     studentemail text REFERENCES users ON DELETE CASCADE,
     courseid uuid REFERENCES courses ON DELETE CASCADE,
-    emojiid int NULL REFERENCES emoji(id) ON DELETE SET NULL,
-    courseorder int NOT NULL CHECK (courseorder >= 0),
-    UNIQUE (email, courseorder),
     FOREIGN KEY (studentemail, courseid) REFERENCES student_at ON DELETE CASCADE,
     PRIMARY KEY (parentemail, studentemail, courseid)
 );
@@ -131,13 +121,6 @@ CREATE TABLE submissions_files(
     uploadtime timestamp NOT NULL,
     FOREIGN KEY (courseid, assid, email) REFERENCES course_assignments_submissions ON DELETE CASCADE,
     PRIMARY KEY (courseid, assid, email, fileid)
-);
-
-CREATE TABLE emoji(
-    id serial NOT NULL,
-    name text NOT NULL CHECK (length(filename) <= 80),
-    fileid uuid,
-    PRIMARY KEY (id)
 );
 
 CREATE OR REPLACE FUNCTION create_default_section() RETURNS trigger AS $$
