@@ -212,7 +212,6 @@ BEGIN
                 0
             )
         )
-        ON CONFLICT DO NOTHING;
         RETURN NEW;
 
     ELSIF (TG_OP = 'DELETE') THEN
