@@ -154,18 +154,12 @@ CREATE INDEX idx_parent_course_student ON parent_of_at_course(courseid, studente
 CREATE INDEX idx_parent_course_parent ON parent_of_at_course(courseid, parentemail);
 CREATE INDEX idx_logs_t ON logs(t);
 
-
 -------------- PERSONAL COURSE INFO --------------
-
-CREATE TABLE emoji(
-    id serial PRIMARY KEY,
-    name text NOT NULL CHECK (length(name) <= 80)
-);
 
 CREATE TABLE personal_course_info(
     courseid uuid REFERENCES courses ON DELETE CASCADE,
     email text REFERENCES users ON DELETE CASCADE,
-    emojiid int NULL REFERENCES emoji(id) ON DELETE SET NULL,
+    emojiid int NULL CHECK (emojiid BETWEEN 0 AND 80),
     courseorder int NOT NULL CHECK (courseorder >= 0),
     PRIMARY KEY (courseid, email),
     CONSTRAINT personal_course_info_email_courseorder_key
@@ -225,7 +219,7 @@ BEGIN
         VALUES (
             v_courseid,
             v_email,
-            (SELECT id FROM emoji ORDER BY random() LIMIT 1),
+            floor(random() * (80 + 1))::integer,
             COALESCE(
                 (SELECT MAX(courseorder) + 1
                  FROM personal_course_info

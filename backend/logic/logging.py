@@ -8,7 +8,7 @@ def log(db_conn, tag: str, msg: str):
 
 _TAG_ASSIGNMENT = "assignment"
 _TAG_COURSE = "course"
-_TAG_COURSE_PERS_INFO = "course personal info"
+_TAG_PERSONALIZATION = "personalization"
 _TAG_SECTION = "section"
 _TAG_MATERIAL = "material"
 _TAG_PARENT = "parent"
@@ -35,8 +35,6 @@ TAG_ASSIGNMENT_GRADE = f"{_TAG_ASSIGNMENT} {_ACT_GRADE}"
 
 TAG_COURSE_ADD = f"{_TAG_COURSE} {_ACT_ADD}"
 TAG_COURSE_DEL = f"{_TAG_COURSE} {_ACT_DEL}"
-
-_TAG_COURSE_PERS_INFO_EDIT = f"{_TAG_COURSE_PERS_INFO} {_ACT_EDIT}"
 
 TAG_SECTION_ADD = f"{_TAG_SECTION} {_ACT_ADD}"
 TAG_SECTION_DEL = f"{_TAG_SECTION} {_ACT_DEL}"

@@ -13,6 +13,7 @@ import routers.parents
 import routers.students
 import routers.teachers
 import routers.users
+import routers.personalization
 
 
 app = FastAPI(
@@ -38,6 +39,7 @@ app.include_router(routers.assignments.router)
 app.include_router(routers.submissions.router)
 app.include_router(routers.grades.router)
 app.include_router(routers.courses.router)
+app.include_router(routers.personalization.router)
 app.include_router(routers.sections.router)
 app.include_router(routers.materials.router)
 app.include_router(routers.parents.router)

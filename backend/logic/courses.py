@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 from fastapi import HTTPException
 from constants import TIME_FORMAT
 import constraints
@@ -49,20 +49,3 @@ def get_course_info(db_cursor, course_id: str, user_email: str):
         "creation_time": course[4].strftime(TIME_FORMAT)
     }
     return res
-
-
-def change_courses_order(db_conn, db_cursor, new_order: List[str], user_email: str):
-    if not isinstance(new_order, list):
-        raise HTTPException(status_code=400, detail="Provided parameter new_order is not a list")
-
-    if not all(isinstance(i, str) for i in new_order):
-        raise HTTPException(status_code=400, detail="Provided parameter new_order is not a list of strings")
-
-    courses = repo.courses.sql_select_available_courses(db_cursor, user_email)
-    if len(new_order) != len(courses) or set(new_order) != set(courses):
-        raise HTTPException(status_code=400, detail="Provided parameter new_order does not match with the list of available courses")
-
-    repo.courses.sql_update_courses_order(db_cursor, new_order, user_email)
-
-    logger.log(db_conn, logger._TAG_COURSE_PERS_INFO_EDIT, f"User {user_email} changed an order of available courses")
-    return {"success": True}
