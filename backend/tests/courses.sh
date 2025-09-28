@@ -86,6 +86,14 @@ success_test "Set course emoji" \
     -X POST "$API_URL/set_course_emoji?course_id=$mathcourseid&emoji_id=1" \
     -H "Authorization: Bearer $TOKEN" \
 
+fail_test "Set course emoji with too large ID" \
+    -X POST "$API_URL/set_course_emoji?course_id=$mathcourseid&emoji_id=10000" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Set course emoji with negative ID" \
+    -X POST "$API_URL/set_course_emoji?course_id=$mathcourseid&emoji_id=-10" \
+    -H "Authorization: Bearer $TOKEN" \
+
 # --------------------------------------------------------------------
 
 info=$(curl -s -X GET \
@@ -322,6 +330,10 @@ json_exact_match_test "Request the list of available courses from Alice" "$cours
 
 success_test "Change the order of available courses by Alice" \
     -X POST "$API_URL/change_courses_order?new_order=$engcourseid&new_order=$mathcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to change the order of courses to repeating ones by Alice" \
+    -X POST "$API_URL/change_courses_order?new_order=$mathcourseid&new_order=$mathcourseid" \
     -H "Authorization: Bearer $TOKEN" \
 
 # --------------------------------------------------------------------
