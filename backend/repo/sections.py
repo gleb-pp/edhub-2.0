@@ -52,18 +52,8 @@ def sql_select_sections(db_cursor, course_id: str) -> List[int]:
 
 def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) -> None:
 
-    # set negative values (to avoid conflicts with UNIQUE)
-    values_to_update = [(section_id, -(index + 1)) for index, section_id in enumerate(new_order)]
-    values_str = ", ".join(f"(%s, %s)" for _ in values_to_update)
-    flat_values = [val for pair in values_to_update for val in pair]
-    db_cursor.execute(f"""
-        UPDATE course_sections cs
-        SET sectionorder = new.sectionorder
-        FROM (VALUES {values_str}) AS new(sectionid, sectionorder)
-        WHERE cs.courseid = %s AND cs.sectionid = new.sectionid
-        """,
-        flat_values + [course_id]
-    )
+    # postpone the checking of uniqueness contraints
+    db_cursor.execute("SET CONSTRAINTS course_sections_courseid_sectionorder_key DEFERRED")
 
     # set correct values
     values_to_update = [(section_id, index) for index, section_id in enumerate(new_order)]
