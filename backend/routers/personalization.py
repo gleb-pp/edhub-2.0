@@ -23,7 +23,7 @@ async def change_courses_order(
         return logic.personalization.change_courses_order(db_conn, db_cursor, new_order, user_email)
 
 
-@router.post("/set_course_emoji", response_model=json_classes.Course, tags=["Personalization"])
+@router.post("/set_course_emoji", response_model=json_classes.Success, tags=["Personalization"])
 async def set_course_emoji(
     course_id: str,
     emoji_id: int = Query(..., ge=0, le=EMOJI_COUNT),
@@ -35,4 +35,4 @@ async def set_course_emoji(
     Course role (Primary Instructor, Teacher, Student, Parent) required.
     """
     with get_db() as (db_conn, db_cursor):
-        return logic.personalization.set_course_emoji(db_cursor, course_id, emoji_id, user_email)
+        return logic.personalization.set_course_emoji(db_conn, db_cursor, course_id, emoji_id, user_email)
