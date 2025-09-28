@@ -5,15 +5,9 @@ from datetime import datetime
 def sql_select_available_courses(db_cursor, user_email: str) -> List[UUID]:
     db_cursor.execute(
         """
-        SELECT courseid AS cid FROM courses WHERE instructor = %s
-        UNION
-        SELECT courseid AS cid FROM teaches WHERE email = %s
-        UNION
-        SELECT courseid AS cid FROM student_at WHERE email = %s
-        UNION
-        SELECT courseid AS cid FROM parent_of_at_course WHERE parentemail = %s
+        SELECT courseid FROM personal_course_info WHERE email = %s
         """,
-        (user_email, user_email, user_email, user_email),
+        (user_email, ),
     )
     return [i[0] for i in db_cursor.fetchall()]
 
