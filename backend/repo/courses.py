@@ -5,7 +5,10 @@ from datetime import datetime
 def sql_select_available_courses(db_cursor, user_email: str) -> List[UUID]:
     db_cursor.execute(
         """
-        SELECT courseid FROM personal_course_info WHERE email = %s
+        SELECT courseid
+        FROM personal_course_info
+        WHERE email = %s
+        ORDER BY courseorder ASC
         """,
         (user_email, ),
     )
