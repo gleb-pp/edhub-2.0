@@ -159,8 +159,7 @@ CREATE INDEX idx_logs_t ON logs(t);
 
 CREATE TABLE emoji(
     id serial PRIMARY KEY,
-    name text NOT NULL CHECK (length(name) <= 80),
-    fileid uuid
+    name text NOT NULL CHECK (length(name) <= 80)
 );
 
 CREATE TABLE personal_course_info(
@@ -222,10 +221,11 @@ BEGIN
     END CASE;
 
     IF (TG_OP = 'INSERT') THEN
-        INSERT INTO personal_course_info (courseid, email, courseorder)
+        INSERT INTO personal_course_info (courseid, email, emojiid, courseorder)
         VALUES (
             v_courseid,
             v_email,
+            (SELECT id FROM emoji ORDER BY random() LIMIT 1),
             COALESCE(
                 (SELECT MAX(courseorder) + 1
                  FROM personal_course_info
