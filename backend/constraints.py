@@ -86,18 +86,12 @@ def check_course_access(db_cursor, user_email: str, course_id: str) -> bool:
     db_cursor.execute(
         """
         SELECT EXISTS(
-            SELECT 1 FROM courses WHERE instructor = %s AND courseid = %s
-            UNION
-            SELECT 1 FROM teaches WHERE email = %s AND courseid = %s
-            UNION
-            SELECT 1 FROM student_at WHERE email = %s AND courseid = %s
-            UNION
-            SELECT 1 FROM parent_of_at_course WHERE parentemail = %s AND courseid = %s
+            SELECT 1 FROM personal_course_info WHERE email = %s AND courseid = %s
             UNION
             SELECT 1 FROM users WHERE email = %s AND isadmin
         )
     """,
-        (user_email, course_id, user_email, course_id, user_email, course_id, user_email, course_id, user_email),
+        (user_email, course_id, user_email),
     )
     has_access = db_cursor.fetchone()[0]
     return has_access

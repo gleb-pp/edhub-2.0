@@ -75,7 +75,9 @@ async def remove_course(course_id: str, user_email: str = Depends(get_current_us
 @router.get("/get_course_info", response_model=json_classes.Course, tags=["Courses"])
 async def get_course_info(course_id: str, user_email: str = Depends(get_current_user)):
     """
-    Get information about the course: course_id, title, instructor, organization, and creation date.
+    Get information about the course: course_id, title, instructor, organization, creation date, and personal emoji_id.
+
+    emoji_id is optional (can be None).
 
     Organization can be None.
 

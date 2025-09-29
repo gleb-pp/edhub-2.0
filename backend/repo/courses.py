@@ -5,15 +5,12 @@ from datetime import datetime
 def sql_select_available_courses(db_cursor, user_email: str) -> List[UUID]:
     db_cursor.execute(
         """
-        SELECT courseid AS cid FROM courses WHERE instructor = %s
-        UNION
-        SELECT courseid AS cid FROM teaches WHERE email = %s
-        UNION
-        SELECT courseid AS cid FROM student_at WHERE email = %s
-        UNION
-        SELECT courseid AS cid FROM parent_of_at_course WHERE parentemail = %s
+        SELECT courseid
+        FROM personal_course_info
+        WHERE email = %s
+        ORDER BY courseorder ASC
         """,
-        (user_email, user_email, user_email, user_email),
+        (user_email, ),
     )
     return [i[0] for i in db_cursor.fetchall()]
 
@@ -35,13 +32,14 @@ def sql_delete_course(db_cursor, course_id: str) -> None:
     db_cursor.execute("DELETE FROM courses WHERE courseid = %s", (course_id,))
 
 
-def sql_select_course_info(db_cursor, course_id: str) -> Optional[Tuple[UUID, str, str, Optional[str], datetime]]:
+def sql_select_course_info(db_cursor, course_id: str, user_email: str) -> Optional[Tuple[UUID, str, str, Optional[str], datetime, Optional[int]]]:
     db_cursor.execute(
         """
-        SELECT courseid, name, instructor, organization, timecreated
-        FROM courses
-        WHERE courseid = %s
+        SELECT c.courseid, c.name, c.instructor, c.organization, c.timecreated, pci.emojiid
+        FROM courses c
+        LEFT JOIN personal_course_info pci ON c.courseid = pci.courseid AND pci.email = %s
+        WHERE c.courseid = %s::uuid
         """,
-        (course_id,),
+        (user_email, course_id),
     )
     return db_cursor.fetchone()

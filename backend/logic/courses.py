@@ -38,7 +38,7 @@ def remove_course(db_conn, db_cursor, course_id: str, user_email: str):
 
 def get_course_info(db_cursor, course_id: str, user_email: str):
     constraints.assert_course_access(db_cursor, user_email, course_id)
-    course = repo.courses.sql_select_course_info(db_cursor, course_id)
+    course = repo.courses.sql_select_course_info(db_cursor, course_id, user_email)
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
     res = {
@@ -46,6 +46,7 @@ def get_course_info(db_cursor, course_id: str, user_email: str):
         "title": course[1],
         "instructor": course[2],
         "organization": course[3],
-        "creation_time": course[4].strftime(TIME_FORMAT)
+        "creation_time": course[4].strftime(TIME_FORMAT),
+        "emoji_id": course[5],
     }
     return res

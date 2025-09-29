@@ -82,12 +82,26 @@ json_exact_match_test "Get Alice's role in course Math" "$info" "$expected" "is_
 
 # --------------------------------------------------------------------
 
+success_test "Set course emoji" \
+    -X POST "$API_URL/set_course_emoji?course_id=$mathcourseid&emoji_id=1" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Set course emoji with too large ID" \
+    -X POST "$API_URL/set_course_emoji?course_id=$mathcourseid&emoji_id=10000" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Set course emoji with negative ID" \
+    -X POST "$API_URL/set_course_emoji?course_id=$mathcourseid&emoji_id=-10" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
 info=$(curl -s -X GET \
     -H "Authorization: Bearer $TOKEN" \
     "$API_URL/get_course_info?course_id=$mathcourseid")
 
 expected='
-    {"course_id":"'"$mathcourseid"'","title":"Math","instructor":"alice@example.com","organization":"Innopolis University"}
+    {"course_id":"'"$mathcourseid"'","title":"Math","instructor":"alice@example.com","organization":"Innopolis University","emoji_id":1}
 '
 
 json_partial_match_test "Request the course info from Alice" "$info" "$expected" "course_id" "creation_time"
@@ -308,6 +322,29 @@ courses=$(curl -s -X GET \
 expected='[
     {"course_id":"'"$mathcourseid"'"},
     {"course_id":"'"$engcourseid"'"}
+]'
+
+json_exact_match_test "Request the list of available courses from Alice" "$courses" "$expected" "course_id"
+
+# --------------------------------------------------------------------
+
+success_test "Change the order of available courses by Alice" \
+    -X POST "$API_URL/change_courses_order?new_order=$engcourseid&new_order=$mathcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+fail_test "Request to change the order of courses to repeating ones by Alice" \
+    -X POST "$API_URL/change_courses_order?new_order=$mathcourseid&new_order=$mathcourseid" \
+    -H "Authorization: Bearer $TOKEN" \
+
+# --------------------------------------------------------------------
+
+courses=$(curl -s -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    "$API_URL/available_courses")
+
+expected='[
+    {"course_id":"'"$engcourseid"'"},
+    {"course_id":"'"$mathcourseid"'"}
 ]'
 
 json_exact_match_test "Request the list of available courses from Alice" "$courses" "$expected" "course_id"

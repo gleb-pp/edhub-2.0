@@ -1,6 +1,8 @@
 CREATE DATABASE edhub;
 \c edhub
 
+-------------- MAIN TABLES --------------
+
 CREATE TABLE users(
     email text PRIMARY KEY CHECK (length(email) <= 254),
     publicname text NOT NULL CHECK (length(publicname) <= 80),
@@ -22,7 +24,10 @@ CREATE TABLE course_sections(
     sectionid serial NOT NULL,
     name text NOT NULL CHECK (length(name) BETWEEN 3 AND 80),
     sectionorder int NOT NULL CHECK (sectionorder >= 0),
-    PRIMARY KEY (courseid, sectionid)
+    PRIMARY KEY (courseid, sectionid),
+    CONSTRAINT course_sections_courseid_sectionorder_key
+        UNIQUE (courseid, sectionorder)
+        DEFERRABLE INITIALLY IMMEDIATE
 );
 
 CREATE TABLE course_materials(
@@ -133,6 +138,8 @@ CREATE TRIGGER courses_default_section_trigger
     FOR EACH ROW
     EXECUTE PROCEDURE create_default_section();
 
+-------------- INDEXES --------------
+
 CREATE INDEX idx_users_isadmin_true ON users(isadmin) WHERE isadmin = true;
 CREATE INDEX idx_courses_instructor ON courses(instructor);
 CREATE INDEX idx_materials_course_time ON course_materials(courseid, timeadded);
@@ -146,3 +153,104 @@ CREATE INDEX idx_student_at_course ON student_at(courseid);
 CREATE INDEX idx_parent_course_student ON parent_of_at_course(courseid, studentemail);
 CREATE INDEX idx_parent_course_parent ON parent_of_at_course(courseid, parentemail);
 CREATE INDEX idx_logs_t ON logs(t);
+
+-------------- PERSONAL COURSE INFO --------------
+
+CREATE TABLE personal_course_info(
+    courseid uuid REFERENCES courses ON DELETE CASCADE,
+    email text REFERENCES users ON DELETE CASCADE,
+    emojiid int NULL CHECK (emojiid BETWEEN 0 AND 80),
+    courseorder int NOT NULL CHECK (courseorder >= 0),
+    PRIMARY KEY (courseid, email),
+    CONSTRAINT personal_course_info_email_courseorder_key
+        UNIQUE (email, courseorder)
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+CREATE OR REPLACE FUNCTION trg_personal_course_info()
+RETURNS trigger AS $$
+DECLARE
+    v_email text;
+    v_courseid uuid;
+BEGIN
+    CASE TG_TABLE_NAME
+        WHEN 'student_at' THEN
+            v_email := COALESCE(NEW.email, OLD.email);
+            v_courseid := COALESCE(NEW.courseid, OLD.courseid);
+
+        WHEN 'teaches' THEN
+            v_email := COALESCE(NEW.email, OLD.email);
+            v_courseid := COALESCE(NEW.courseid, OLD.courseid);
+        
+        WHEN 'courses' THEN
+            v_email := COALESCE(NEW.instructor, OLD.instructor);
+            v_courseid := COALESCE(NEW.courseid, OLD.courseid);
+
+        WHEN 'parent_of_at_course' THEN
+            IF TG_OP = 'DELETE' THEN
+                IF (SELECT COUNT(*) 
+                    FROM parent_of_at_course
+                    WHERE parentemail = COALESCE(OLD.parentemail, NEW.parentemail)
+                    AND courseid = COALESCE(OLD.courseid, NEW.courseid)
+                ) > 0 THEN
+                    RETURN NULL;
+                END IF;
+            END IF;
+
+            IF TG_OP = 'INSERT' THEN
+                IF (SELECT COUNT(*) 
+                    FROM parent_of_at_course
+                    WHERE parentemail = COALESCE(NEW.parentemail, OLD.parentemail)
+                    AND courseid = COALESCE(NEW.courseid, OLD.courseid)
+                ) > 1 THEN
+                    RETURN NULL;
+                END IF;
+            END IF;
+
+            v_email := COALESCE(NEW.parentemail, OLD.parentemail);
+            v_courseid := COALESCE(NEW.courseid, OLD.courseid);
+
+        ELSE
+            RAISE EXCEPTION 'Unsupported table: %', TG_TABLE_NAME;
+    END CASE;
+
+    IF (TG_OP = 'INSERT') THEN
+        INSERT INTO personal_course_info (courseid, email, emojiid, courseorder)
+        VALUES (
+            v_courseid,
+            v_email,
+            floor(random() * (80 + 1))::integer,
+            COALESCE(
+                (SELECT MAX(courseorder) + 1
+                 FROM personal_course_info
+                 WHERE email = v_email),
+                0
+            )
+        );
+        RETURN NEW;
+
+    ELSIF (TG_OP = 'DELETE') THEN
+        DELETE FROM personal_course_info
+        WHERE courseid = v_courseid AND email = v_email;
+        RETURN OLD;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_student_info
+    AFTER INSERT OR DELETE ON student_at
+    FOR EACH ROW EXECUTE FUNCTION trg_personal_course_info();
+
+CREATE TRIGGER trg_teacher_info
+    AFTER INSERT OR DELETE ON teaches
+    FOR EACH ROW EXECUTE FUNCTION trg_personal_course_info();
+
+CREATE TRIGGER trg_parent_info
+    AFTER INSERT OR DELETE ON parent_of_at_course
+    FOR EACH ROW EXECUTE FUNCTION trg_personal_course_info();
+
+CREATE TRIGGER trg_instructor_info
+    AFTER INSERT OR DELETE ON courses
+    FOR EACH ROW EXECUTE FUNCTION trg_personal_course_info();

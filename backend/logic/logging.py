@@ -8,6 +8,7 @@ def log(db_conn, tag: str, msg: str):
 
 _TAG_ASSIGNMENT = "assignment"
 _TAG_COURSE = "course"
+_TAG_PERSONALIZATION = "personalization"
 _TAG_SECTION = "section"
 _TAG_MATERIAL = "material"
 _TAG_PARENT = "parent"

@@ -70,9 +70,7 @@ def change_course_instructor(db_conn, db_cursor, course_id: str, teacher_email: 
     constraints.assert_instructor_access(db_cursor, instructor_email, course_id)
     constraints.assert_teacher_access(db_cursor, teacher_email, course_id)
 
-    repo_teachers.sql_delete_teacher(db_cursor, course_id, teacher_email)
-    repo_teachers.sql_insert_teacher(db_cursor, course_id, instructor_email)
-    repo_teachers.sql_update_instructor(db_cursor, course_id, teacher_email)
+    repo_teachers.sql_update_instructor(db_cursor, course_id, instructor_email, teacher_email)
 
     logger.log(db_conn, logger.TAG_INSTRUCTOR_EDIT, f"Course {course_id} now have new instructor {teacher_email} instead of {instructor_email}")
 

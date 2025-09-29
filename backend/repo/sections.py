@@ -51,6 +51,11 @@ def sql_select_sections(db_cursor, course_id: str) -> List[int]:
 
 
 def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) -> None:
+
+    # postpone the checking of uniqueness constraints
+    db_cursor.execute("SET CONSTRAINTS course_sections_courseid_sectionorder_key DEFERRED")
+
+    # set correct values
     values_to_update = [(section_id, index) for index, section_id in enumerate(new_order)]
     values_str = ", ".join(f"(%s, %s)" for _ in values_to_update)
     flat_values = [val for pair in values_to_update for val in pair]
