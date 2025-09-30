@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from os import environ
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import HTTPException, Depends, APIRouter
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
@@ -68,7 +68,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             raise ValueError("Invalid token structure")
 
         # checking token expiration time
-        if datetime.utcnow() > datetime.fromtimestamp(expire_timestamp):
+        if datetime.now(tz=timezone.utc) > datetime.fromtimestamp(expire_timestamp, tz=timezone.utc):
             raise ValueError("Token expired")
 
     except (JWTError, ValueError) as e:

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException
 from jose import jwt
 import constraints
@@ -35,7 +35,7 @@ def create_user(db_conn, db_cursor, user):
     if not (
         match(pattern, user.email)
         and len(user.email) <= 254
-        and not ".." in user.email
+        and ".." not in user.email
         and len(user.email.split("@")[0]) <= 64
     ):
         raise HTTPException(status_code=422, detail="Incorrect email format")
@@ -71,7 +71,7 @@ def create_user(db_conn, db_cursor, user):
     # giving access_token
     data = {
         "email": user.email,
-        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     }
     access_token = jwt.encode(data, JWT_SECRET_KEY, algorithm=ALGORITHM)
 
@@ -95,7 +95,7 @@ def login(db_cursor, user):
     # giving access token
     data = {
         "email": user.email,
-        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     }
     access_token = jwt.encode(data, JWT_SECRET_KEY, algorithm=ALGORITHM)
 

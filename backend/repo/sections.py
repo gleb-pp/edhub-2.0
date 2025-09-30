@@ -57,7 +57,7 @@ def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) ->
 
     # set correct values
     values_to_update = [(section_id, index) for index, section_id in enumerate(new_order)]
-    values_str = ", ".join(f"(%s, %s)" for _ in values_to_update)
+    values_str = ", ".join("(%s, %s)" for _ in values_to_update)
     flat_values = [val for pair in values_to_update for val in pair]
     db_cursor.execute(f"""
         UPDATE course_sections cs

@@ -7,7 +7,7 @@ def sql_update_courses_order(db_cursor, new_order: List[str], user_email: str) -
 
     # set correct values
     values_to_update = [(course_id, index) for index, course_id in enumerate(new_order)]
-    values_str = ", ".join(f"(%s, %s)" for _ in values_to_update)
+    values_str = ", ".join("(%s, %s)" for _ in values_to_update)
     flat_values = [val for pair in values_to_update for val in pair]
     db_cursor.execute(f"""
         UPDATE personal_course_info pci
