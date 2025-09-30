@@ -150,8 +150,8 @@ def remove_user(db_conn, db_cursor, deleted_user_email: str, user_email: str):
 
 
 def create_admin_account(db_conn, db_cursor):
-    repo_users.sql_insert_user(db_cursor, 'admin', 'admin', pwd_hasher.hash('admin'))
-    repo_users.sql_give_admin_permissions(db_cursor, 'admin')
+    repo_users.sql_insert_user(db_cursor, "admin", "admin", pwd_hasher.hash("admin"))
+    repo_users.sql_give_admin_permissions(db_cursor, "admin")
 
     logger.log(db_conn, logger.TAG_USER_ADD, "Created new user: admin")
     logger.log(db_conn, logger.TAG_ADMIN_ADD, "Added admin privileges to user: admin")

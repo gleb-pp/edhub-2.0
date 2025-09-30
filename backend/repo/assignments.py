@@ -32,7 +32,7 @@ def sql_select_assignment(db_cursor, course_id: str, assignment_id: str) -> Opti
 def sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id: str, assignment_id: str, filename: str, contents: bytes) -> Tuple[UUID, datetime]:
     storage_db_cursor.execute(
         """
-        INSERT INTO files 
+        INSERT INTO files
         (id, content)
         VALUES (gen_random_uuid(), %s)
         RETURNING id
@@ -43,7 +43,7 @@ def sql_insert_assignment_attachment(db_cursor, storage_db_cursor, course_id: st
 
     db_cursor.execute(
         """
-        INSERT INTO assignment_files 
+        INSERT INTO assignment_files
         (courseid, assid, fileid, filename, uploadtime)
         VALUES (%s, %s, %s, %s, now())
         RETURNING fileid, uploadtime

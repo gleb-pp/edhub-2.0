@@ -48,7 +48,7 @@ def get_all_course_grades(db_cursor, course_id: str, user_email: str):
     current_student = None
     current_record = None
 
-    for email, name, assid, assname, grade in grades:
+    for email, name, _assid, _assname, grade in grades:
         if current_student != email:
             if current_record:
                 table.append(current_record)

@@ -103,9 +103,9 @@ async def create_assignment_attachment(db_conn, db_cursor, storage_db_conn, stor
     return {
         "course_id": course_id,
         "assignment_id": assignment_id,
-        'file_id': attachment_metadata[0],
-        'filename' : file.filename,
-        'upload_time' : attachment_metadata[1].strftime(TIME_FORMAT)
+        "file_id": attachment_metadata[0],
+        "filename" : file.filename,
+        "upload_time" : attachment_metadata[1].strftime(TIME_FORMAT)
     }
 
 

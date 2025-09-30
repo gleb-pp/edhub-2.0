@@ -113,7 +113,7 @@ async def get_submission_attachments(course_id: str, assignment_id: str, student
     - Teacher OR Primary Instructor can get all submission attachments of the course
     - Parent can get the submission attachments of their student
     - Student can get their submission attachments
-    
+
     Returns list of attachments metadata (course_id, assignment_id, student_email, file_id, filename, upload_time).
 
     The format of upload_time is TIME_FORMAT.

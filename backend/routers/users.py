@@ -80,7 +80,7 @@ async def remove_user(deleted_user_email: str, user_email: str = Depends(get_cur
     Delete user account from the system.
 
     The user will be removed from courses where they were a Parent, Student, or Teacher.
-    
+
     Courses where the user is the Primary Instructor will be deleted.
 
     The user's assignment submissions will be removed.

@@ -15,7 +15,7 @@ def sql_update_courses_order(db_cursor, new_order: List[str], user_email: str) -
         FROM (VALUES {values_str}) AS new(courseid, courseorder)
         WHERE pci.email = %s AND pci.courseid = new.courseid::uuid
         """,
-        flat_values + [user_email]
+        [*flat_values, user_email]
     )
 
 

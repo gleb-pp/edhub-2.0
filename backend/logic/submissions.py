@@ -123,10 +123,10 @@ async def create_submission_attachment(db_conn, db_cursor, storage_db_conn, stor
     return {
         "course_id": course_id,
         "assignment_id": assignment_id,
-        'student_email': student_email,
-        'file_id': attachment_metadata[0],
-        'filename' : file.filename,
-        'upload_time' : attachment_metadata[1].strftime(TIME_FORMAT)
+        "student_email": student_email,
+        "file_id": attachment_metadata[0],
+        "filename" : file.filename,
+        "upload_time" : attachment_metadata[1].strftime(TIME_FORMAT)
     }
 
 
@@ -147,7 +147,7 @@ def get_submission_attachments(db_cursor, course_id: str, assignment_id: str, st
     res = [{
         "course_id": course_id,
         "assignment_id": assignment_id,
-        'student_email': student_email,
+        "student_email": student_email,
         "file_id": file[0],
         "filename": file[1],
         "upload_time": file[2].strftime(TIME_FORMAT)

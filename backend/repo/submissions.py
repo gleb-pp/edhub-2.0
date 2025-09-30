@@ -13,7 +13,7 @@ def sql_insert_submission(db_cursor, course_id: str, assignment_id: str, student
 def sql_insert_submission_attachment(db_cursor, storage_db_cursor, course_id: str, assignment_id: str, student_email: str, filename: str, contents: bytes) -> Tuple[UUID, datetime]:
     storage_db_cursor.execute(
         """
-        INSERT INTO files 
+        INSERT INTO files
         (id, content)
         VALUES (gen_random_uuid(), %s)
         RETURNING id
@@ -24,7 +24,7 @@ def sql_insert_submission_attachment(db_cursor, storage_db_cursor, course_id: st
 
     db_cursor.execute(
         """
-        INSERT INTO submissions_files 
+        INSERT INTO submissions_files
         (courseid, assid, email, fileid, filename, uploadtime)
         VALUES (%s, %s, %s, %s, %s, now())
         RETURNING fileid, uploadtime

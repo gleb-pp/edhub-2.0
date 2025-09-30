@@ -32,7 +32,7 @@ def sql_select_material(db_cursor, course_id: str, material_id: str) -> Optional
 def sql_insert_material_attachment(db_cursor, storage_db_cursor, course_id: str, material_id: str, filename: str, contents: bytes) -> Tuple[UUID, datetime]:
     storage_db_cursor.execute(
         """
-        INSERT INTO files 
+        INSERT INTO files
         (id, content)
         VALUES (gen_random_uuid(), %s)
         RETURNING id
@@ -43,7 +43,7 @@ def sql_insert_material_attachment(db_cursor, storage_db_cursor, course_id: str,
 
     db_cursor.execute(
         """
-        INSERT INTO material_files 
+        INSERT INTO material_files
         (courseid, matid, fileid, filename, uploadtime)
         VALUES (%s, %s, %s, %s, now())
         RETURNING fileid, uploadtime

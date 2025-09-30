@@ -7,7 +7,7 @@ def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, Option
     db_cursor.execute(
         """
         SELECT cs.courseid, feed.postid, cs.sectionid, cs.name, cs.sectionorder, feed.type, feed.timeadded, feed.author
-        FROM 
+        FROM
             (SELECT courseid AS cid, matid as postid, sectionid, 'mat' as type, timeadded, author
             FROM course_materials
             WHERE courseid = %s
@@ -15,7 +15,7 @@ def sql_select_course_feed(db_cursor, course_id: str) -> List[Tuple[UUID, Option
             SELECT courseid AS cid, assid as postid, sectionid, 'ass' as type, timeadded, author
             FROM course_assignments
             WHERE courseid = %s) feed
-            RIGHT JOIN 
+            RIGHT JOIN
                 (SELECT courseid, sectionid, name, sectionorder
                 FROM course_sections
                 WHERE courseid = %s) cs ON feed.sectionid = cs.sectionid
@@ -30,7 +30,7 @@ def sql_insert_section(db_cursor, course_id: str, title: str) -> int:
     db_cursor.execute(
         """
         INSERT INTO course_sections (courseid, name, sectionorder)
-        VALUES (%s, %s, 
+        VALUES (%s, %s,
             (SELECT COALESCE(MAX(sectionorder), -1) + 1 FROM course_sections WHERE courseid = %s)
         )
         RETURNING sectionid
@@ -65,7 +65,7 @@ def sql_update_section_order(db_cursor, course_id: str, new_order: List[int]) ->
         FROM (VALUES {values_str}) AS new(sectionid, sectionorder)
         WHERE cs.courseid = %s AND cs.sectionid = new.sectionid
         """,
-        flat_values + [course_id]
+        [*flat_values, course_id]
     )
 
 def sql_remove_section(db_cursor, course_id: str, section_id: int) -> None:

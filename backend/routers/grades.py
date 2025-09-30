@@ -62,7 +62,7 @@ async def get_all_course_grades(
 
     Assignments (grades) are ordered by section_order, then by creation_date, old posts go first.
 
-    Grades list can contain `null` values if the assignment was not graded yet.    
+    Grades list can contain `null` values if the assignment was not graded yet.
     """
 
     # connection to database
@@ -89,7 +89,7 @@ async def get_student_course_grades(
 
     Assignments are ordered by section_order, then by creation_date, old posts go first.
 
-    `grade`, `comment`, `grader_name`, and `grader_email` can be `null` if the assignment was not graded yet. 
+    `grade`, `comment`, `grader_name`, and `grader_email` can be `null` if the assignment was not graded yet.
     """
 
     # connection to database

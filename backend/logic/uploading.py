@@ -19,5 +19,5 @@ async def careful_upload(file: UploadFile):
             )
         chunks.append(chunk)
 
-    file_data = b''.join(chunks)
+    file_data = b"".join(chunks)
     return file_data

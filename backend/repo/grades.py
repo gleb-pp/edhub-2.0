@@ -22,7 +22,7 @@ def sql_update_submission_grade(db_cursor, grade: int, comment: Optional[str], u
 def sql_select_student_grades(db_cursor, course_id: str, student_email: str) -> List[Tuple[str, int, Optional[int], Optional[str], Optional[str], Optional[str]]]:
     db_cursor.execute(
         """
-        SELECT 
+        SELECT
             ass.name AS assignment_name,
             ass.assid AS assignment_id,
             sbmt.grade,
@@ -47,7 +47,7 @@ def sql_select_student_grades(db_cursor, course_id: str, student_email: str) -> 
 def sql_select_all_grades(db_cursor, course_id: str) -> List[Tuple[str, str, int, str, Optional[int]]]:
     db_cursor.execute(
         """
-        SELECT 
+        SELECT
             st.email AS student_email,
             u.publicname AS student_name,
             ass.assid AS assignment_id,
